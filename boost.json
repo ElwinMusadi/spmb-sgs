@@ -16,6 +16,8 @@
         "fluxui-development",
         "livewire-development",
         "tailwindcss-development",
-        "blaze-optimize"
+        "blaze-optimize",
+        "laravel-specialist",
+        "stitch-laravel-converter"
     ]
 }
