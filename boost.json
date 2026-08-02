@@ -18,6 +18,7 @@
         "tailwindcss-development",
         "blaze-optimize",
         "laravel-specialist",
-        "stitch-laravel-converter"
+        "stitch-laravel-converter",
+        "stitch-laravel-functionalizer"
     ]
 }
