@@ -7,7 +7,7 @@
         <img src="{{ asset('images/logo-stella-gracia.png') }}" alt="Logo Stella Gracia School Kupang"
           class="h-10 w-10 rounded-lg object-contain">
         <div class="hidden sm:block">
-          <p class="font-heading text-sm font-bold leading-tight text-navy-dark">Stella Gracia School Kupang
+          <p class="font-heading text-base font-bold leading-tight text-navy-dark">Stella Gracia School Kupang
           </p>
           <p class="font-body text-xs text-on-surface-variant leading-tight">Sistem Penerimaan Murid Baru</p>
         </div>

@@ -6,7 +6,7 @@
   {{-- ============================================ --}}
   {{-- HERO SECTION --}}
   {{-- ============================================ --}}
-  <section id="beranda" class="relative min-h-[600px] lg:min-h-[700px] flex items-center overflow-hidden">
+  <section id="beranda" class="relative min-h-150 lg:min-h-175 flex items-center overflow-hidden">
     {{-- Background Image --}}
     <div class="absolute inset-0">
       <img src="{{ asset('images/gedung-stella-gracia.jpg') }}" alt="Gedung Stella Gracia School Kupang"
@@ -82,7 +82,7 @@
   {{-- KEUNGGULAN / FEATURES SECTION --}}
   {{-- ============================================ --}}
   <section id="keunggulan" class="py-20 lg:py-28 bg-surface">
-    <div class="max-w-[1280px] mx-auto px-6 lg:px-10">
+    <div class="max-w-7xl mx-auto px-6 lg:px-10">
       {{-- Section Header --}}
       <div class="text-center max-w-2xl mx-auto mb-16">
         <span class="inline-block font-body text-sm font-semibold text-royal uppercase tracking-wider mb-3">Keunggulan
