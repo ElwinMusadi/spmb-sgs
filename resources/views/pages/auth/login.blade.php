@@ -1,11 +1,11 @@
-<x-layouts::auth :title="__('Log in')">
+<x-layouts::auth-custom :title="__('Log in')">
   <main class="relative min-h-screen bg-surface p-6 lg:p-12 flex flex-col items-center justify-center">
     <div
       class="grid grid-cols-1 lg:grid-cols-12 bg-white rounded-2xl shadow-xl overflow-hidden min-h-[700px] w-full max-w-[1200px] mx-auto relative">
 
       {{-- Left Brand Panel (desktop only) --}}
       <div class="hidden lg:flex lg:col-span-6 relative flex-col justify-between p-12 text-white bg-navy-dark"
-        style="background-image: url('{{ asset('images/gedung-stella-gracia.jpg') }}')">
+        style="background-image: url('{{ asset('images/school-building.jpg') }}')">
         <div class="absolute inset-0 bg-gradient-to-br from-navy-dark/90 via-navy/80 to-navy-dark/60 z-0 mix-blend-multiply">
         </div>
 
@@ -125,4 +125,4 @@
       </div>
     </div>
   </main>
-</x-layouts::auth>
+</x-layouts::auth-custom>

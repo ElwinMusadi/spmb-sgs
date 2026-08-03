@@ -6,7 +6,7 @@
 @source '../../vendor/livewire/flux-pro/stubs/**/*.blade.php';
 @source '../../vendor/livewire/flux/stubs/**/*.blade.php';
 
-@custom-variant dark (&:where(.dark, .dark *));
+@custom-variant dark (&:where(.never-match-dark-mode));
 
 @theme {
   --font-sans:
@@ -27,8 +27,8 @@
   --color-zinc-900: #171717;
   --color-zinc-950: #0a0a0a;
 
-  --color-accent: var(--color-neutral-800);
-  --color-accent-content: var(--color-neutral-800);
+  --color-accent: var(--color-navy);
+  --color-accent-content: var(--color-navy-dark);
   --color-accent-foreground: var(--color-white);
 
   /* Stella Gracia Design System Colors */

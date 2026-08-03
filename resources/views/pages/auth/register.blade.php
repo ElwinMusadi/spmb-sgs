@@ -1,4 +1,4 @@
-<x-layouts::auth :title="__('Register')">
+<x-layouts::auth-custom :title="__('Register')">
 <main class="relative min-h-screen bg-surface p-6 lg:p-12 flex flex-col items-center justify-center overflow-hidden">
     {{-- Ambient Background (moved to body level for unified card) --}}
     <div class="absolute inset-0 z-0 pointer-events-none opacity-30">
@@ -137,4 +137,4 @@
       </div>
     </div>
   </main>
-</x-layouts::auth>
+</x-layouts::auth-custom>
