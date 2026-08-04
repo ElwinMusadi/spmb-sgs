@@ -3,17 +3,25 @@
 ])
 
 @if ($sidebar)
-  <flux:sidebar.brand :name="config('app.name', 'Laravel')" {{ $attributes }}>
-    <x-slot name="logo"
-      class="flex aspect-square size-8 items-center justify-center rounded-md bg-accent-content text-accent-foreground">
-      <x-app-logo-icon class="size-5 fill-current text-white dark:text-black" />
+  <flux:sidebar.brand href="{{ route('home') }}" class="gap-3" aria-label="Stella Gracia School - Beranda" {{ $attributes }}>
+    <x-slot name="logo">
+      <img src="{{ asset('images/logo-stella-gracia.png') }}" alt="Logo Stella Gracia School Kupang"
+        class="h-10 w-10 rounded-lg object-contain">
     </x-slot>
+    <div class="text-left">
+      <p class="font-heading text-sm font-bold leading-tight text-navy-dark dark:text-white">Stella Gracia School Kupang</p>
+      <p class="font-body text-[10px] text-on-surface-variant dark:text-gray-400 leading-tight mt-0.5">Sistem Penerimaan Murid Baru</p>
+    </div>
   </flux:sidebar.brand>
 @else
-  <flux:brand :name="config('app.name', 'Laravel')" {{ $attributes }}>
-    <x-slot name="logo"
-      class="flex aspect-square size-8 items-center justify-center rounded-md bg-accent-content text-accent-foreground">
-      <x-app-logo-icon class="size-5 fill-current text-white dark:text-black" />
+  <flux:brand href="{{ route('home') }}" class="gap-3" aria-label="Stella Gracia School - Beranda" {{ $attributes }}>
+    <x-slot name="logo">
+      <img src="{{ asset('images/logo-stella-gracia.png') }}" alt="Logo Stella Gracia School Kupang"
+        class="h-10 w-10 rounded-lg object-contain">
     </x-slot>
+    <div class="hidden sm:block text-left">
+      <p class="font-heading text-base font-bold leading-tight text-navy-dark dark:text-white">Stella Gracia School Kupang</p>
+      <p class="font-body text-xs text-on-surface-variant dark:text-gray-400 leading-tight mt-0.5">Sistem Penerimaan Murid Baru</p>
+    </div>
   </flux:brand>
 @endif

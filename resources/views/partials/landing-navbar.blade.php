@@ -5,7 +5,7 @@
       {{-- Logo --}}
       <a href="{{ route('home') }}" class="flex items-center gap-3" aria-label="Stella Gracia School - Beranda">
         <img src="{{ asset('images/logo-stella-gracia.png') }}" alt="Logo Stella Gracia School Kupang"
-          class="h-10 w-10 rounded-lg object-contain">
+          class="h-12 w-12 rounded-lg object-contain">
         <div class="hidden sm:block">
           <p class="font-heading text-base font-bold leading-tight text-navy-dark">Stella Gracia School Kupang
           </p>
