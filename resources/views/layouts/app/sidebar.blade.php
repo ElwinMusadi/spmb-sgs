@@ -19,6 +19,10 @@
           wire:navigate>
           {{ __('Dashboard') }}
         </flux:sidebar.item>
+        <flux:sidebar.item icon="document-text" :href="route('application')" :current="request()->routeIs('application')"
+          wire:navigate>
+          {{ __('My Application') }}
+        </flux:sidebar.item>
       </flux:sidebar.group>
     </flux:sidebar.nav>
 

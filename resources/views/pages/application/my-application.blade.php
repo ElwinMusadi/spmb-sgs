@@ -1,0 +1,866 @@
+<?php
+
+use App\Models\AcademicYear;
+use App\Models\Application;
+use App\Models\SchoolLevel;
+use Flux\Flux;
+use Illuminate\Support\Facades\Auth;
+use Livewire\Attributes\Computed;
+use Livewire\Attributes\Title;
+use Livewire\Component;
+use Livewire\WithFileUploads;
+
+new #[Title("My Application")] class extends Component {
+  use WithFileUploads;
+
+  // Wizard State
+  public int $currentStep = 2;
+
+  // Academic Selection
+  public ?int $school_level_id = null;
+  public ?int $academic_year_id = null;
+  public ?string $grade_level = null;
+
+  // Student Data
+  public ?string $student_full_name = null;
+  public ?string $student_nik = null;
+  public ?string $student_nisn = null;
+  public ?string $student_birth_place = null;
+  public ?string $student_birth_date = null;
+  public ?string $student_gender = null;
+  public ?string $student_religion = null;
+  public ?string $student_citizenship = null;
+  public ?string $student_address = null;
+  public ?string $student_previous_school = null;
+
+  // Parent Data - Father
+  public ?string $father_name = null;
+  public ?string $father_phone = null;
+  public ?string $father_email = null;
+  public ?string $father_occupation = null;
+  public ?string $father_address = null;
+
+  // Parent Data - Mother
+  public ?string $mother_name = null;
+  public ?string $mother_phone = null;
+  public ?string $mother_email = null;
+  public ?string $mother_occupation = null;
+  public ?string $mother_address = null;
+
+  // Parent Data - Guardian
+  public ?string $guardian_name = null;
+  public ?string $guardian_phone = null;
+  public ?string $guardian_email = null;
+  public ?string $guardian_occupation = null;
+  public ?string $guardian_address = null;
+
+  // Document Uploads
+  public $doc_akta_kelahiran;
+  public $doc_kartu_keluarga;
+  public $doc_ijazah;
+  public $doc_pas_foto;
+
+  public bool $has_akta_kelahiran = false;
+  public bool $has_kartu_keluarga = false;
+  public bool $has_ijazah = false;
+  public bool $has_pas_foto = false;
+
+  // UI State
+  public string $activeParentTab = "father";
+
+  // Internal
+  public ?int $applicationId = null;
+
+  /**
+   * Mount the component.
+   */
+  public function mount(): void
+  {
+    $application = Auth::user()
+      ->applications()
+      ->latest()
+      ->first();
+
+    if ($application) {
+      $this->applicationId = $application->id;
+      $this->currentStep = max(2, $application->current_step);
+      $this->fillFromApplication($application);
+      $this->loadExistingDocuments($application);
+    }
+  }
+
+  /**
+   * Fill form fields from an existing application.
+   */
+  private function fillFromApplication(Application $application): void
+  {
+    $this->school_level_id = $application->school_level_id;
+    $this->academic_year_id = $application->academic_year_id;
+    $this->grade_level = $application->grade_level;
+
+    $this->student_full_name = $application->student_full_name;
+    $this->student_nik = $application->student_nik;
+    $this->student_nisn = $application->student_nisn;
+    $this->student_birth_place = $application->student_birth_place;
+    $this->student_birth_date = $application->student_birth_date?->format(
+      "Y-m-d",
+    );
+    $this->student_gender = $application->student_gender;
+    $this->student_religion = $application->student_religion;
+    $this->student_citizenship = $application->student_citizenship;
+    $this->student_address = $application->student_address;
+    $this->student_previous_school = $application->student_previous_school;
+
+    $this->father_name = $application->father_name;
+    $this->father_phone = $application->father_phone;
+    $this->father_email = $application->father_email;
+    $this->father_occupation = $application->father_occupation;
+    $this->father_address = $application->father_address;
+
+    $this->mother_name = $application->mother_name;
+    $this->mother_phone = $application->mother_phone;
+    $this->mother_email = $application->mother_email;
+    $this->mother_occupation = $application->mother_occupation;
+    $this->mother_address = $application->mother_address;
+
+    $this->guardian_name = $application->guardian_name;
+    $this->guardian_phone = $application->guardian_phone;
+    $this->guardian_email = $application->guardian_email;
+    $this->guardian_occupation = $application->guardian_occupation;
+    $this->guardian_address = $application->guardian_address;
+  }
+
+  /**
+   * Load existing documents state.
+   */
+  private function loadExistingDocuments(Application $application): void
+  {
+    $docs = $application->documents()->pluck('document_type')->toArray();
+    $this->has_akta_kelahiran = in_array('akta_kelahiran', $docs);
+    $this->has_kartu_keluarga = in_array('kartu_keluarga', $docs);
+    $this->has_ijazah = in_array('ijazah', $docs);
+    $this->has_pas_foto = in_array('pas_foto', $docs);
+  }
+
+  /**
+   * Get all form data as an array.
+   *
+   * @return array<string, mixed>
+   */
+  private function getFormData(): array
+  {
+    return [
+      "school_level_id" => $this->school_level_id,
+      "academic_year_id" => $this->academic_year_id,
+      "grade_level" => $this->grade_level,
+      "student_full_name" => $this->student_full_name,
+      "student_nik" => $this->student_nik,
+      "student_nisn" => $this->student_nisn,
+      "student_birth_place" => $this->student_birth_place,
+      "student_birth_date" => $this->student_birth_date ?: null,
+      "student_gender" => $this->student_gender,
+      "student_religion" => $this->student_religion,
+      "student_citizenship" => $this->student_citizenship,
+      "student_address" => $this->student_address,
+      "student_previous_school" => $this->student_previous_school,
+      "father_name" => $this->father_name,
+      "father_phone" => $this->father_phone,
+      "father_email" => $this->father_email,
+      "father_occupation" => $this->father_occupation,
+      "father_address" => $this->father_address,
+      "mother_name" => $this->mother_name,
+      "mother_phone" => $this->mother_phone,
+      "mother_email" => $this->mother_email,
+      "mother_occupation" => $this->mother_occupation,
+      "mother_address" => $this->mother_address,
+      "guardian_name" => $this->guardian_name,
+      "guardian_phone" => $this->guardian_phone,
+      "guardian_email" => $this->guardian_email,
+      "guardian_occupation" => $this->guardian_occupation,
+      "guardian_address" => $this->guardian_address,
+    ];
+  }
+
+  /**
+   * Save the application data to database.
+   */
+  private function saveApplicationData(int $targetStep): void
+  {
+    $data = array_merge($this->getFormData(), [
+      "status" => "draft",
+      "current_step" => $targetStep,
+    ]);
+
+    if ($this->applicationId) {
+      $application = Auth::user()
+        ->applications()
+        ->findOrFail($this->applicationId);
+      $application->update($data);
+    } else {
+      $application = Auth::user()->applications()->create($data);
+      $this->applicationId = $application->id;
+    }
+  }
+
+  /**
+   * Save the application as a draft.
+   */
+  public function saveAsDraft(): void
+  {
+    $this->saveApplicationData($this->currentStep);
+    Flux::toast(variant: "success", text: __("Application saved as draft."));
+  }
+
+  /**
+   * Go to the previous step.
+   */
+  public function previousStep(): void
+  {
+    if ($this->currentStep > 2) {
+      $this->currentStep--;
+    }
+  }
+
+  /**
+   * Save and continue to the next step.
+   */
+  public function saveAndContinue(): void
+  {
+    if ($this->currentStep === 2) {
+      $this->validate([
+        "school_level_id" => ["required", "exists:school_levels,id"],
+        "academic_year_id" => ["required", "exists:academic_years,id"],
+        "grade_level" => ["required", "string", "max:50"],
+        "student_full_name" => ["required", "string", "max:255"],
+        "student_nik" => ["required", "string", "size:16"],
+        "student_nisn" => ["nullable", "string", "size:10"],
+        "student_birth_place" => ["required", "string", "max:255"],
+        "student_birth_date" => ["required", "date", "before:today"],
+        "student_gender" => ["required", "in:male,female"],
+        "student_religion" => [
+          "required",
+          "in:Islam,Protestant,Catholic,Hindu,Buddhist,Confucian",
+        ],
+        "student_citizenship" => ["required", "string", "max:100"],
+        "student_address" => ["required", "string", "max:1000"],
+        "father_name" => ["required", "string", "max:255"],
+        "father_phone" => ["required", "string", "max:20"],
+        "mother_name" => ["required", "string", "max:255"],
+        "mother_phone" => ["required", "string", "max:20"],
+      ]);
+
+      $this->saveApplicationData(3);
+      $this->currentStep = 3;
+      Flux::toast(
+        variant: "success",
+        text: __("Form saved! Please upload required documents."),
+      );
+    } elseif ($this->currentStep === 3) {
+      $this->validate([
+        "doc_akta_kelahiran" => [$this->has_akta_kelahiran ? "nullable" : "required", "file", "mimes:pdf,jpg,jpeg,png", "max:5120"],
+        "doc_kartu_keluarga" => [$this->has_kartu_keluarga ? "nullable" : "required", "file", "mimes:pdf,jpg,jpeg,png", "max:5120"],
+        "doc_ijazah" => [$this->has_ijazah ? "nullable" : "required", "file", "mimes:pdf,jpg,jpeg,png", "max:5120"],
+        "doc_pas_foto" => [$this->has_pas_foto ? "nullable" : "required", "file", "mimes:jpg,jpeg,png", "max:5120"],
+      ], [
+        "doc_pas_foto.mimes" => __("Pas Foto must be an image (JPEG, JPG, PNG)."),
+      ]);
+
+      $application = Auth::user()->applications()->findOrFail($this->applicationId);
+      $year = date('Y');
+      $identifier = $this->student_nisn ?: $this->applicationId;
+      $path = "documents/{$year}/{$identifier}";
+
+      $docsToUpload = [
+        "akta_kelahiran" => $this->doc_akta_kelahiran,
+        "kartu_keluarga" => $this->doc_kartu_keluarga,
+        "ijazah" => $this->doc_ijazah,
+        "pas_foto" => $this->doc_pas_foto,
+      ];
+
+      foreach ($docsToUpload as $type => $file) {
+        if ($file) {
+          $filename = $file->getClientOriginalName();
+          $storedPath = $file->storeAs($path, uniqid() . '_' . $filename, 'public');
+          
+          $application->documents()->updateOrCreate(
+            ['document_type' => $type],
+            [
+              'file_path' => $storedPath,
+              'file_name' => $filename,
+              'file_size' => $file->getSize(),
+            ]
+          );
+        }
+      }
+
+      $this->loadExistingDocuments($application);
+      $this->saveApplicationData(4);
+      $this->currentStep = 4;
+      Flux::toast(
+        variant: "success",
+        text: __("Documents confirmed! Please proceed to payment."),
+      );
+    }
+  }
+
+  /**
+   * Set the active parent/guardian tab.
+   */
+  public function setParentTab(string $tab): void
+  {
+    $this->activeParentTab = $tab;
+  }
+
+  /**
+   * Get the available school levels.
+   *
+   * @return \Illuminate\Database\Eloquent\Collection<int, SchoolLevel>
+   */
+  #[Computed]
+  public function schoolLevels()
+  {
+    return SchoolLevel::where("is_active", true)->get();
+  }
+
+  /**
+   * Get the available academic years.
+   *
+   * @return \Illuminate\Database\Eloquent\Collection<int, AcademicYear>
+   */
+  #[Computed]
+  public function academicYears()
+  {
+    return AcademicYear::where("is_active", true)->get();
+  }
+
+  /**
+   * Get the current application instance.
+   */
+  #[Computed]
+  public function application(): ?Application
+  {
+    if (!$this->applicationId) {
+      return null;
+    }
+
+    return Auth::user()
+      ->applications()
+      ->find($this->applicationId);
+  }
+};
+?>
+
+<div class="flex flex-col w-full max-w-7xl mx-auto gap-8 pb-16">
+
+  {{-- Page Header --}}
+  <div class="flex flex-col gap-2">
+    <div class="flex items-center gap-3">
+      <span class="material-symbols-outlined text-navy text-[32px]">edit_document</span>
+      <h1 class="font-heading text-3xl font-semibold text-navy">{{ __('My Application') }}</h1>
+    </div>
+    <p class="font-body text-lg text-on-surface-variant max-w-3xl">
+      {{ __('Complete your application details below. You can save your progress and return at any time before the final submission deadline.') }}
+    </p>
+  </div>
+
+  {{-- Application Progress Card --}}
+  <div class="bg-white rounded-xl shadow-sm p-8 border border-outline-variant/30">
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+      <div class="flex flex-col gap-1">
+        <h2 class="font-heading text-xl font-semibold text-on-surface">{{ __('Application Progress') }}</h2>
+        <p class="text-sm text-on-surface-variant">
+          @if ($currentStep === 2)
+            {{ __('Please complete all required fields in the Student and Parent data sections.') }}
+          @elseif ($currentStep === 3)
+            {{ __('Please upload all required documents to proceed.') }}
+          @elseif ($currentStep === 4)
+            {{ __('Please complete the registration payment.') }}
+          @endif
+        </p>
+      </div>
+      <div class="px-3 py-1.5 bg-gold-pale/30 rounded-full flex items-center gap-1.5 self-start md:self-center">
+        <div class="w-2 h-2 rounded-full bg-gold animate-pulse"></div>
+        <span class="font-body text-xs font-semibold text-gold-dark uppercase tracking-wider">
+          @if ($currentStep === 2)
+            {{ __('Form Filling') }}
+          @elseif ($currentStep === 3)
+            {{ __('Document Upload') }}
+          @elseif ($currentStep === 4)
+            {{ __('Payment') }}
+          @endif
+        </span>
+      </div>
+    </div>
+
+    {{-- Progress Stepper --}}
+    <div class="relative pt-6 pb-2 px-2 md:px-6">
+      {{-- Background Line --}}
+      <div class="absolute top-[46px] left-[12%] right-[12%] md:left-[10%] md:right-[10%] h-1.5 bg-slate-200 rounded-full z-0"></div>
+      
+      {{-- Active Line --}}
+      <div class="absolute top-[46px] left-[12%] md:left-[10%] h-1.5 bg-navy rounded-full z-0 transition-all duration-700 ease-in-out shadow-[0_0_10px_rgba(25,55,109,0.3)]" 
+        style="width: {{ $currentStep === 2 ? '30%' : ($currentStep === 3 ? '60%' : '80%') }};"></div>
+      
+      <div class="flex justify-between relative z-10">
+        {{-- Step 1: Account (Always completed) --}}
+        <div class="flex flex-col items-center gap-2.5 w-20 md:w-24 group cursor-default">
+          <div class="w-11 h-11 md:w-12 md:h-12 rounded-full bg-navy flex items-center justify-center text-white shadow-md ring-4 ring-white transition-transform group-hover:scale-105">
+            <span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">check</span>
+          </div>
+          <span class="font-body text-[11px] md:text-xs font-bold text-navy text-center uppercase tracking-wider">{{ __('Account') }}</span>
+        </div>
+        
+        {{-- Step 2: Form --}}
+        <div class="flex flex-col items-center gap-2.5 w-20 md:w-24 group cursor-default">
+          @if ($currentStep > 2)
+            <div class="w-11 h-11 md:w-12 md:h-12 rounded-full bg-navy flex items-center justify-center text-white shadow-md ring-4 ring-white transition-transform group-hover:scale-105">
+              <span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">check</span>
+            </div>
+            <span class="font-body text-[11px] md:text-xs font-bold text-navy text-center uppercase tracking-wider">{{ __('Form') }}</span>
+          @elseif ($currentStep === 2)
+            <div class="w-11 h-11 md:w-12 md:h-12 rounded-full bg-white border-[3px] border-navy flex items-center justify-center text-navy shadow-[0_0_15px_rgba(25,55,109,0.2)] ring-4 ring-white transition-transform scale-110">
+              <span class="font-body text-base font-bold">2</span>
+            </div>
+            <span class="font-body text-[11px] md:text-xs font-bold text-navy text-center uppercase tracking-wider">{{ __('Form') }}</span>
+          @else
+            <div class="w-11 h-11 md:w-12 md:h-12 rounded-full bg-surface-container-high flex items-center justify-center text-on-surface-variant border-2 border-white ring-4 ring-white transition-colors">
+              <span class="font-body text-base font-semibold">2</span>
+            </div>
+            <span class="font-body text-[11px] md:text-xs font-medium text-on-surface-variant text-center uppercase tracking-wider">{{ __('Form') }}</span>
+          @endif
+        </div>
+        
+        {{-- Step 3: Documents --}}
+        <div class="flex flex-col items-center gap-2.5 w-20 md:w-24 group cursor-default">
+          @if ($currentStep > 3)
+            <div class="w-11 h-11 md:w-12 md:h-12 rounded-full bg-navy flex items-center justify-center text-white shadow-md ring-4 ring-white transition-transform group-hover:scale-105">
+              <span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">check</span>
+            </div>
+            <span class="font-body text-[11px] md:text-xs font-bold text-navy text-center uppercase tracking-wider">{{ __('Documents') }}</span>
+          @elseif ($currentStep === 3)
+            <div class="w-11 h-11 md:w-12 md:h-12 rounded-full bg-white border-[3px] border-navy flex items-center justify-center text-navy shadow-[0_0_15px_rgba(25,55,109,0.2)] ring-4 ring-white transition-transform scale-110">
+              <span class="font-body text-base font-bold">3</span>
+            </div>
+            <span class="font-body text-[11px] md:text-xs font-bold text-navy text-center uppercase tracking-wider">{{ __('Documents') }}</span>
+          @else
+            <div class="w-11 h-11 md:w-12 md:h-12 rounded-full bg-surface-container-high flex items-center justify-center text-on-surface-variant border-2 border-white ring-4 ring-white transition-colors">
+              <span class="font-body text-base font-semibold">3</span>
+            </div>
+            <span class="font-body text-[11px] md:text-xs font-medium text-on-surface-variant text-center uppercase tracking-wider">{{ __('Documents') }}</span>
+          @endif
+        </div>
+        
+        {{-- Step 4: Payment --}}
+        <div class="flex flex-col items-center gap-2.5 w-20 md:w-24 group cursor-default">
+          @if ($currentStep > 4)
+            <div class="w-11 h-11 md:w-12 md:h-12 rounded-full bg-navy flex items-center justify-center text-white shadow-md ring-4 ring-white transition-transform group-hover:scale-105">
+              <span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">check</span>
+            </div>
+            <span class="font-body text-[11px] md:text-xs font-bold text-navy text-center uppercase tracking-wider">{{ __('Payment') }}</span>
+          @elseif ($currentStep === 4)
+            <div class="w-11 h-11 md:w-12 md:h-12 rounded-full bg-white border-[3px] border-navy flex items-center justify-center text-navy shadow-[0_0_15px_rgba(25,55,109,0.2)] ring-4 ring-white transition-transform scale-110">
+              <span class="font-body text-base font-bold">4</span>
+            </div>
+            <span class="font-body text-[11px] md:text-xs font-bold text-navy text-center uppercase tracking-wider">{{ __('Payment') }}</span>
+          @else
+            <div class="w-11 h-11 md:w-12 md:h-12 rounded-full bg-surface-container-high flex items-center justify-center text-on-surface-variant border-2 border-white ring-4 ring-white transition-colors">
+              <span class="font-body text-base font-semibold">4</span>
+            </div>
+            <span class="font-body text-[11px] md:text-xs font-medium text-on-surface-variant text-center uppercase tracking-wider">{{ __('Payment') }}</span>
+          @endif
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {{-- Main Content Grid --}}
+  <div class="grid grid-cols-12 gap-8">
+
+    {{-- Left Column: Main Content --}}
+    <div class="col-span-12 lg:col-span-8 flex flex-col gap-8">
+
+      @if ($currentStep === 2)
+        {{-- STEP 2: FORM CONTENT --}}
+        
+        {{-- Academic Selection Card --}}
+        <div class="bg-white rounded-xl shadow-sm p-8 border border-outline-variant/30">
+          <h3 class="font-heading text-lg font-semibold text-navy border-b border-surface-container-high pb-3 mb-6">{{ __('Academic Selection') }}</h3>
+
+          {{-- School Level Radio Buttons --}}
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+            @foreach ($this->schoolLevels as $level)
+              <label class="cursor-pointer group">
+                <input wire:model="school_level_id" type="radio" name="school_level" value="{{ $level->id }}" class="peer sr-only" />
+                <div class="px-4 py-3 rounded-lg border border-outline-variant text-center transition-all
+                  peer-checked:bg-navy peer-checked:border-navy peer-checked:text-white
+                  group-hover:border-navy hover:bg-surface-container">
+                  <span class="font-body text-sm font-semibold block">{{ $level->code }}</span>
+                  <span class="font-body text-xs opacity-70 block mt-1">{{ $level->description }}</span>
+                </div>
+              </label>
+            @endforeach
+          </div>
+          @error('school_level_id') <p class="text-red-600 text-sm mb-4">{{ $message }}</p> @enderror
+
+          {{-- Academic Year & Grade Level --}}
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="flex flex-col gap-1.5">
+              <flux:select wire:model="grade_level" :label="__('Grade Level')" :placeholder="__('Select Grade')">
+                <flux:select.option value="Grade 1">Grade 1</flux:select.option>
+                <flux:select.option value="Grade 2">Grade 2</flux:select.option>
+                <flux:select.option value="Grade 3">Grade 3</flux:select.option>
+                <flux:select.option value="Grade 4">Grade 4</flux:select.option>
+                <flux:select.option value="Grade 5">Grade 5</flux:select.option>
+                <flux:select.option value="Grade 6">Grade 6</flux:select.option>
+              </flux:select>
+            </div>
+            <div class="flex flex-col gap-1.5">
+              <flux:select wire:model="academic_year_id" :label="__('Academic Year')" :placeholder="__('Select Year')">
+                @foreach ($this->academicYears as $year)
+                  <flux:select.option value="{{ $year->id }}">{{ $year->name }}</flux:select.option>
+                @endforeach
+              </flux:select>
+            </div>
+          </div>
+        </div>
+
+        {{-- Student Data Card --}}
+        <div class="bg-white rounded-xl shadow-sm p-8 border border-outline-variant/30">
+          <h3 class="font-heading text-lg font-semibold text-navy border-b border-surface-container-high pb-3 mb-6 flex justify-between items-center">
+            {{ __('Student Data') }}
+            <span class="text-xs font-body font-semibold text-red-600 bg-red-50 px-3 py-1 rounded-full">{{ __('Required') }}</span>
+          </h3>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 gap-y-5">
+            <div class="md:col-span-2">
+              <flux:input wire:model="student_full_name" :label="__('Full Name (as per Birth Certificate)')" type="text" :placeholder="__('Enter full name')" />
+            </div>
+
+            <flux:input wire:model="student_nik" :label="__('NIK (Nomor Induk Kependudukan)')" type="text" maxlength="16" :placeholder="__('16-digit NIK')" />
+            <flux:input wire:model="student_nisn" :label="__('NISN (Optional)')" type="text" maxlength="10" :placeholder="__('10-digit NISN')" />
+
+            <flux:input wire:model="student_birth_place" :label="__('Place of Birth')" type="text" :placeholder="__('City')" />
+            <flux:input wire:model="student_birth_date" :label="__('Date of Birth')" type="date" />
+
+            <flux:radio.group wire:model="student_gender" :label="__('Gender')" class="flex items-start gap-6 pt-2">
+              <flux:radio value="male" :label="__('Male')" />
+              <flux:radio value="female" :label="__('Female')" />
+            </flux:radio.group>
+
+            <flux:select wire:model="student_religion" :label="__('Religion')" :placeholder="__('Select Religion')">
+              <flux:select.option value="Islam">Islam</flux:select.option>
+              <flux:select.option value="Protestant">Protestant</flux:select.option>
+              <flux:select.option value="Catholic">Catholic</flux:select.option>
+              <flux:select.option value="Hindu">Hindu</flux:select.option>
+              <flux:select.option value="Buddhist">Buddhist</flux:select.option>
+              <flux:select.option value="Confucian">Confucian</flux:select.option>
+            </flux:select>
+            
+            <flux:input wire:model="student_citizenship" :label="__('Citizenship')" type="text" :placeholder="__('e.g. WNI or WNA')" />
+
+            <div class="md:col-span-2">
+              <flux:textarea wire:model="student_address" :label="__('Complete Address')" rows="3" :placeholder="__('Street, RT/RW, Village, District, City, Province, Postal Code')" />
+            </div>
+
+            <div class="md:col-span-2">
+              <flux:input wire:model="student_previous_school" :label="__('Previous School (if applicable)')" type="text" :placeholder="__('Name of previous school')" />
+            </div>
+          </div>
+        </div>
+
+        {{-- Parent / Guardian Data Card --}}
+        <div class="bg-white rounded-xl shadow-sm p-8 border border-outline-variant/30">
+          <h3 class="font-heading text-lg font-semibold text-navy border-b border-surface-container-high pb-3 mb-6 flex justify-between items-center">
+            {{ __('Parent / Guardian Data') }}
+            <span class="text-xs font-body font-semibold text-red-600 bg-red-50 px-3 py-1 rounded-full">{{ __('Required') }}</span>
+          </h3>
+
+          <div class="space-y-6">
+            {{-- Tab Navigation --}}
+            <div class="flex gap-4 border-b border-surface-container-high pb-0">
+              <button wire:click.prevent="setParentTab('father')" type="button"
+                class="font-body text-sm font-semibold pb-2.5 px-2 transition-colors border-b-2
+                {{ $activeParentTab === 'father' ? 'text-navy border-navy' : 'text-on-surface-variant border-transparent hover:text-navy' }}">
+                {{ __('Father') }}
+              </button>
+              <button wire:click.prevent="setParentTab('mother')" type="button"
+                class="font-body text-sm font-semibold pb-2.5 px-2 transition-colors border-b-2
+                {{ $activeParentTab === 'mother' ? 'text-navy border-navy' : 'text-on-surface-variant border-transparent hover:text-navy' }}">
+                {{ __('Mother') }}
+              </button>
+              <button wire:click.prevent="setParentTab('guardian')" type="button"
+                class="font-body text-sm font-semibold pb-2.5 px-2 transition-colors border-b-2
+                {{ $activeParentTab === 'guardian' ? 'text-navy border-navy' : 'text-on-surface-variant border-transparent hover:text-navy' }}">
+                {{ __('Guardian') }}
+              </button>
+            </div>
+
+            {{-- Father Tab --}}
+            @if ($activeParentTab === 'father')
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4 gap-y-5 pt-2">
+                <div class="md:col-span-2">
+                  <flux:input wire:model="father_name" :label="__('Full Name')" type="text" :placeholder="__('Enter full name')" />
+                </div>
+                <flux:input wire:model="father_phone" :label="__('Mobile Number')" type="tel" placeholder="+62" />
+                <flux:input wire:model="father_email" :label="__('Email Address')" type="email" placeholder="example@email.com" />
+                <div class="md:col-span-2">
+                  <flux:input wire:model="father_occupation" :label="__('Occupation')" type="text" :placeholder="__('Current occupation')" />
+                </div>
+                <div class="md:col-span-2">
+                  <flux:textarea wire:model="father_address" :label="__('Home Address')" :placeholder="__('Full residential address')" rows="3" />
+                </div>
+              </div>
+            @endif
+
+            {{-- Mother Tab --}}
+            @if ($activeParentTab === 'mother')
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4 gap-y-5 pt-2">
+                <div class="md:col-span-2">
+                  <flux:input wire:model="mother_name" :label="__('Full Name')" type="text" :placeholder="__('Enter full name')" />
+                </div>
+                <flux:input wire:model="mother_phone" :label="__('Mobile Number')" type="tel" placeholder="+62" />
+                <flux:input wire:model="mother_email" :label="__('Email Address')" type="email" placeholder="example@email.com" />
+                <div class="md:col-span-2">
+                  <flux:input wire:model="mother_occupation" :label="__('Occupation')" type="text" :placeholder="__('Current occupation')" />
+                </div>
+                <div class="md:col-span-2">
+                  <flux:textarea wire:model="mother_address" :label="__('Home Address')" :placeholder="__('Full residential address')" rows="3" />
+                </div>
+              </div>
+            @endif
+
+            {{-- Guardian Tab --}}
+            @if ($activeParentTab === 'guardian')
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4 gap-y-5 pt-2">
+                <div class="md:col-span-2">
+                  <flux:input wire:model="guardian_name" :label="__('Full Name')" type="text" :placeholder="__('Enter full name')" />
+                </div>
+                <flux:input wire:model="guardian_phone" :label="__('Mobile Number')" type="tel" placeholder="+62" />
+                <flux:input wire:model="guardian_email" :label="__('Email Address')" type="email" placeholder="example@email.com" />
+                <div class="md:col-span-2">
+                  <flux:input wire:model="guardian_occupation" :label="__('Occupation')" type="text" :placeholder="__('Current occupation')" />
+                </div>
+                <div class="md:col-span-2">
+                  <flux:textarea wire:model="guardian_address" :label="__('Home Address')" :placeholder="__('Full residential address')" rows="3" />
+                </div>
+              </div>
+            @endif
+          </div>
+        </div>
+
+      @elseif ($currentStep === 3)
+        {{-- STEP 3: DOCUMENTS CONTENT --}}
+        <div class="bg-white rounded-xl shadow-sm p-8 border border-outline-variant/30">
+          <div class="mb-6">
+            <h3 class="font-heading text-lg font-semibold text-navy">{{ __('Upload Required Documents') }}</h3>
+            <p class="text-sm text-on-surface-variant">{{ __('Please upload all the required documents below. Maximum file size is 5MB per file.') }}</p>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {{-- Akta Kelahiran --}}
+            <div class="bg-surface-container-lowest p-5 rounded-xl border border-outline-variant/50">
+              <div class="flex items-start gap-4 mb-4">
+                <div class="w-10 h-10 rounded-lg bg-navy/10 text-navy flex items-center justify-center shrink-0">
+                  <span class="material-symbols-outlined">description</span>
+                </div>
+                <div>
+                  <h4 class="font-semibold text-on-surface text-sm">{{ __('Akta Kelahiran') }}</h4>
+                  <p class="text-xs text-on-surface-variant">{{ __('PDF, JPG, PNG') }}</p>
+                  @if($has_akta_kelahiran)
+                    <span class="inline-flex items-center gap-1 text-xs font-semibold text-green-600 mt-1">
+                      <span class="material-symbols-outlined text-[14px]">check_circle</span>
+                      {{ __('Document uploaded') }}
+                    </span>
+                  @endif
+                </div>
+              </div>
+              <flux:input type="file" wire:model="doc_akta_kelahiran" accept=".pdf,.jpg,.jpeg,.png" />
+            </div>
+
+            {{-- Kartu Keluarga --}}
+            <div class="bg-surface-container-lowest p-5 rounded-xl border border-outline-variant/50">
+              <div class="flex items-start gap-4 mb-4">
+                <div class="w-10 h-10 rounded-lg bg-navy/10 text-navy flex items-center justify-center shrink-0">
+                  <span class="material-symbols-outlined">group</span>
+                </div>
+                <div>
+                  <h4 class="font-semibold text-on-surface text-sm">{{ __('Kartu Keluarga') }}</h4>
+                  <p class="text-xs text-on-surface-variant">{{ __('PDF, JPG, PNG') }}</p>
+                  @if($has_kartu_keluarga)
+                    <span class="inline-flex items-center gap-1 text-xs font-semibold text-green-600 mt-1">
+                      <span class="material-symbols-outlined text-[14px]">check_circle</span>
+                      {{ __('Document uploaded') }}
+                    </span>
+                  @endif
+                </div>
+              </div>
+              <flux:input type="file" wire:model="doc_kartu_keluarga" accept=".pdf,.jpg,.jpeg,.png" />
+            </div>
+
+            {{-- Ijazah --}}
+            <div class="bg-surface-container-lowest p-5 rounded-xl border border-outline-variant/50">
+              <div class="flex items-start gap-4 mb-4">
+                <div class="w-10 h-10 rounded-lg bg-navy/10 text-navy flex items-center justify-center shrink-0">
+                  <span class="material-symbols-outlined">school</span>
+                </div>
+                <div>
+                  <h4 class="font-semibold text-on-surface text-sm">{{ __('Ijazah & Transkrip Nilai') }}</h4>
+                  <p class="text-xs text-on-surface-variant">{{ __('PDF, JPG, PNG') }}</p>
+                  @if($has_ijazah)
+                    <span class="inline-flex items-center gap-1 text-xs font-semibold text-green-600 mt-1">
+                      <span class="material-symbols-outlined text-[14px]">check_circle</span>
+                      {{ __('Document uploaded') }}
+                    </span>
+                  @endif
+                </div>
+              </div>
+              <flux:input type="file" wire:model="doc_ijazah" accept=".pdf,.jpg,.jpeg,.png" />
+            </div>
+
+            {{-- Pas Foto --}}
+            <div class="bg-surface-container-lowest p-5 rounded-xl border border-outline-variant/50">
+              <div class="flex items-start gap-4 mb-4">
+                <div class="w-10 h-10 rounded-lg bg-navy/10 text-navy flex items-center justify-center shrink-0">
+                  <span class="material-symbols-outlined">portrait</span>
+                </div>
+                <div>
+                  <h4 class="font-semibold text-on-surface text-sm">{{ __('Pas Foto 4x6') }}</h4>
+                  <p class="text-xs text-on-surface-variant">{{ __('JPG, PNG Only') }}</p>
+                  @if($has_pas_foto)
+                    <span class="inline-flex items-center gap-1 text-xs font-semibold text-green-600 mt-1">
+                      <span class="material-symbols-outlined text-[14px]">check_circle</span>
+                      {{ __('Document uploaded') }}
+                    </span>
+                  @endif
+                </div>
+              </div>
+              <flux:input type="file" wire:model="doc_pas_foto" accept=".jpg,.jpeg,.png" />
+            </div>
+          </div>
+        </div>
+
+      @elseif ($currentStep === 4)
+        {{-- STEP 4: PAYMENT CONTENT --}}
+
+        <div class="bg-white rounded-xl shadow-sm p-12 border border-outline-variant/30 flex flex-col items-center justify-center text-center">
+          <div class="w-16 h-16 bg-gold-pale/30 text-gold-dark rounded-full flex items-center justify-center mb-4">
+            <span class="material-symbols-outlined text-[32px]">payments</span>
+          </div>
+          <h3 class="font-heading text-xl font-semibold text-navy mb-2">{{ __('Registration Payment') }}</h3>
+          <p class="text-on-surface-variant max-w-md">
+            {{ __('Payment gateway integration will be implemented in the final phase. Your application is saved successfully.') }}
+          </p>
+        </div>
+      @endif
+
+    </div>
+
+    {{-- Right Column: Sidebar Actions --}}
+    <div class="col-span-12 lg:col-span-4 flex flex-col gap-8">
+
+      @if ($currentStep === 2)
+        {{-- Required Documents Card (Preview in Step 2) --}}
+        <div class="bg-white rounded-xl shadow-sm p-8 border border-outline-variant/30">
+          <h3 class="font-heading text-lg font-semibold text-navy border-b border-surface-container-high pb-3 mb-6 flex justify-between items-center">
+            {{ __('Required Documents') }}
+            <span class="material-symbols-outlined text-on-surface-variant">help</span>
+          </h3>
+          <p class="font-body text-sm text-on-surface-variant mb-6">{{ __('You will need to upload these documents in the next step. Max 5MB per file (PDF, JPG, PNG).') }}</p>
+
+          <div class="space-y-3">
+            {{-- Akta Kelahiran --}}
+            <div class="p-3 rounded-lg border border-outline-variant flex items-center justify-between opacity-70">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-lg bg-royal-pale/20 flex items-center justify-center text-navy">
+                  <span class="material-symbols-outlined">description</span>
+                </div>
+                <div class="flex flex-col">
+                  <span class="font-body text-sm font-semibold text-on-surface">{{ __('Akta Kelahiran') }}</span>
+                  <span class="text-[10px] font-bold text-red-600 uppercase tracking-tighter">{{ __('Required') }}</span>
+                </div>
+              </div>
+            </div>
+
+            {{-- Kartu Keluarga --}}
+            <div class="p-3 rounded-lg border border-outline-variant flex items-center justify-between opacity-70">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-lg bg-royal-pale/20 flex items-center justify-center text-navy">
+                  <span class="material-symbols-outlined">group</span>
+                </div>
+                <div class="flex flex-col">
+                  <span class="font-body text-sm font-semibold text-on-surface">{{ __('Kartu Keluarga') }}</span>
+                  <span class="text-[10px] font-bold text-red-600 uppercase tracking-tighter">{{ __('Required') }}</span>
+                </div>
+              </div>
+            </div>
+
+            {{-- Ijazah & Transkrip Nilai --}}
+            <div class="p-3 rounded-lg border border-outline-variant flex items-center justify-between opacity-70">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-lg bg-royal-pale/20 flex items-center justify-center text-navy">
+                  <span class="material-symbols-outlined">school</span>
+                </div>
+                <div class="flex flex-col">
+                  <span class="font-body text-sm font-semibold text-on-surface">{{ __('Ijazah & Transkrip Nilai') }}</span>
+                  <span class="text-[10px] font-bold text-red-600 uppercase tracking-tighter">{{ __('Required') }}</span>
+                </div>
+              </div>
+            </div>
+
+            {{-- Pas Foto 4x6 --}}
+            <div class="p-3 rounded-lg border border-outline-variant flex items-center justify-between opacity-70">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-lg bg-royal-pale/20 flex items-center justify-center text-navy">
+                  <span class="material-symbols-outlined">portrait</span>
+                </div>
+                <div class="flex flex-col">
+                  <span class="font-body text-sm font-semibold text-on-surface">{{ __('Pas Foto 4x6') }}</span>
+                  <span class="text-[10px] font-bold text-red-600 uppercase tracking-tighter">{{ __('Required') }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      @endif
+
+      {{-- Action Card --}}
+      <div class="bg-white rounded-xl shadow-sm p-8 border border-outline-variant/30 sticky top-8">
+        <h3 class="font-heading text-lg font-semibold text-navy mb-4">{{ __('Actions') }}</h3>
+        
+        <div class="flex flex-col gap-3">
+          @if ($currentStep === 2)
+            <flux:button wire:click.prevent="saveAndContinue" variant="primary" class="w-full">
+              <div class="flex items-center justify-center gap-2 w-full">
+                <span>{{ __('Save & Continue') }}</span>
+                <span class="material-symbols-outlined text-[20px] pt-0.5">arrow_forward</span>
+              </div>
+            </flux:button>
+          @elseif ($currentStep === 3)
+            <flux:button wire:click.prevent="saveAndContinue" variant="primary" class="w-full">
+              <div class="flex items-center justify-center gap-2 w-full">
+                <span>{{ __('Confirm Documents') }}</span>
+                <span class="material-symbols-outlined text-[20px] pt-0.5">arrow_forward</span>
+              </div>
+            </flux:button>
+          @endif
+
+          <flux:button wire:click.prevent="saveAsDraft" variant="outline" class="w-full">
+            <div class="flex items-center justify-center gap-2 w-full">
+              <span>{{ __('Save as Draft') }}</span>
+              <span class="material-symbols-outlined text-[20px] pt-0.5">save</span>
+            </div>
+          </flux:button>
+          
+          @if ($currentStep > 2)
+            <flux:button wire:click.prevent="previousStep" variant="subtle" class="w-full mt-2">
+              <div class="flex items-center justify-center gap-2 w-full">
+                <span class="material-symbols-outlined text-[20px] pt-0.5">arrow_back</span>
+                <span>{{ __('Back to Previous Step') }}</span>
+              </div>
+            </flux:button>
+          @endif
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

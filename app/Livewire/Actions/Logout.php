@@ -9,16 +9,16 @@ use Livewire\Features\SupportRedirects\Redirector;
 
 class Logout
 {
-  /**
-   * Log the current user out of the application.
-   */
-  public function __invoke(): Redirector|RedirectResponse
-  {
-    Auth::guard("web")->logout();
+    /**
+     * Log the current user out of the application.
+     */
+    public function __invoke(): Redirector|RedirectResponse
+    {
+        Auth::guard('web')->logout();
 
-    Session::invalidate();
-    Session::regenerateToken();
+        Session::invalidate();
+        Session::regenerateToken();
 
-    return redirect("/");
-  }
+        return redirect('/');
+    }
 }
