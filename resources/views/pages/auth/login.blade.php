@@ -85,7 +85,7 @@
               <label class="flex items-center cursor-pointer group" for="remember">
                 <div class="relative flex items-center justify-center w-5 h-5 mr-3">
                   <input
-                    class="peer appearance-none w-5 h-5 rounded bg-surface checked:bg-navy-dark shadow-[0_0_0_1px_theme(colors.outline-variant)_inset] checked:shadow-none transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-navy-dark focus:ring-offset-2"
+                    class="peer appearance-none w-5 h-5 rounded bg-surface checked:bg-navy-dark shadow-[0_0_0_1px_var(--color-outline-variant)_inset] checked:shadow-none transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-navy-dark focus:ring-offset-2"
                     type="checkbox" name="remember" id="remember" {{ old('remember') ? 'checked' : '' }} />
                   <span
                     class="material-symbols-outlined absolute text-white text-[16px] opacity-0 peer-checked:opacity-100 pointer-events-none transition-opacity duration-200"
@@ -119,7 +119,7 @@
           {{-- Register Link --}}
           <div class="mt-8 pt-8 relative">
             <div
-              class="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-outline-variant to-transparent opacity-50">
+              class="absolute top-0 left-0 right-0 h-px bg-linear-to-r from-transparent via-outline-variant to-transparent opacity-50">
             </div>
             <p class="text-center font-body text-sm text-on-surface-variant">
               {{ __('Belum punya akun?') }}

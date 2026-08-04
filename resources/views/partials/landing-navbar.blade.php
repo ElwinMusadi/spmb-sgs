@@ -1,7 +1,7 @@
 <nav x-data="{ mobileMenuOpen: false }"
   class="fixed top-0 left-0 right-0 z-50 transition-all duration-300 bg-white/90 backdrop-blur-md border-b border-outline-variant/30">
-  <div class="max-w-[1280px] mx-auto px-6 lg:px-10">
-    <div class="flex items-center justify-between h-[72px]">
+  <div class="max-w-7xl mx-auto px-6 lg:px-10">
+    <div class="flex items-center justify-between h-18">
       {{-- Logo --}}
       <a href="{{ route('home') }}" class="flex items-center gap-3" aria-label="Stella Gracia School - Beranda">
         <img src="{{ asset('images/logo-stella-gracia.png') }}" alt="Logo Stella Gracia School Kupang"
@@ -102,4 +102,4 @@
 </nav>
 
 {{-- Spacer for fixed navbar --}}
-<div class="h-[72px]"></div>
+<div class="h-18"></div>

@@ -7,6 +7,8 @@ use App\Models\Application;
 use App\Models\SchoolLevel;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 use Livewire\Livewire;
 use Tests\TestCase;
 
@@ -98,8 +100,8 @@ class ApplicationTest extends TestCase
 
     public function test_documents_can_be_uploaded_in_step_3(): void
     {
-        \Illuminate\Support\Facades\Storage::fake('public');
-        
+        Storage::fake('public');
+
         $user = User::factory()->create();
         $application = Application::factory()->create([
             'user_id' => $user->id,
@@ -107,8 +109,8 @@ class ApplicationTest extends TestCase
             'student_nisn' => '1234567890',
         ]);
 
-        $filePdf = \Illuminate\Http\UploadedFile::fake()->create('document.pdf', 1024, 'application/pdf');
-        $fileJpg = \Illuminate\Http\UploadedFile::fake()->image('photo.jpg', 600, 800)->size(1024);
+        $filePdf = UploadedFile::fake()->create('document.pdf', 1024, 'application/pdf');
+        $fileJpg = UploadedFile::fake()->image('photo.jpg', 600, 800)->size(1024);
 
         Livewire::actingAs($user)
             ->test('pages::application.my-application')
