@@ -6,5 +6,16 @@
     "guidelines": true,
     "packages": [
         "livewire/blaze"
+    ],
+    "skills": [
+        "fortify-development",
+        "laravel-best-practices",
+        "fluxui-development",
+        "livewire-development",
+        "tailwindcss-development",
+        "blaze-optimize",
+        "laravel-specialist",
+        "stitch-laravel-converter",
+        "stitch-laravel-functionalizer"
     ]
 }
