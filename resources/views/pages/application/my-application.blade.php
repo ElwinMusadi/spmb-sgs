@@ -797,12 +797,14 @@ new #[Title('My Application')] class extends Component {
                      </span>
                   </div>
                   <div class="flex items-center gap-2">
-                    <flux:button size="sm" variant="subtle" wire:click.prevent="setPreview('akta_kelahiran')" class="flex-1">
-                      <span class="material-symbols-outlined text-[16px] mr-1">visibility</span> {{ __('Preview') }}
-                    </flux:button>
-                    <flux:button size="sm" variant="subtle" wire:click.prevent="removeDocument('akta_kelahiran')" class="flex-1 text-red-600 hover:bg-red-50">
-                      <span class="material-symbols-outlined text-[16px] mr-1">delete</span> {{ __('Remove') }}
-                    </flux:button>
+                    <button type="button" wire:click.prevent="setPreview('akta_kelahiran')" class="flex-1 flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg text-sm font-medium text-blue-700 bg-blue-50 hover:bg-blue-100 transition-colors">
+                      <span class="material-symbols-outlined text-[18px]">visibility</span>
+                      <span>{{ __('Preview') }}</span>
+                    </button>
+                    <button type="button" wire:click.prevent="removeDocument('akta_kelahiran')" class="flex-1 flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg text-sm font-medium text-red-700 bg-red-50 hover:bg-red-100 transition-colors">
+                      <span class="material-symbols-outlined text-[18px]">delete</span>
+                      <span>{{ __('Remove') }}</span>
+                    </button>
                   </div>
                 </div>
               @else
@@ -843,12 +845,14 @@ new #[Title('My Application')] class extends Component {
                      </span>
                   </div>
                   <div class="flex items-center gap-2">
-                    <flux:button size="sm" variant="subtle" wire:click.prevent="setPreview('kartu_keluarga')" class="flex-1">
-                      <span class="material-symbols-outlined text-[16px] mr-1">visibility</span> {{ __('Preview') }}
-                    </flux:button>
-                    <flux:button size="sm" variant="subtle" wire:click.prevent="removeDocument('kartu_keluarga')" class="flex-1 text-red-600 hover:bg-red-50">
-                      <span class="material-symbols-outlined text-[16px] mr-1">delete</span> {{ __('Remove') }}
-                    </flux:button>
+                    <button type="button" wire:click.prevent="setPreview('kartu_keluarga')" class="flex-1 flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg text-sm font-medium text-blue-700 bg-blue-50 hover:bg-blue-100 transition-colors">
+                      <span class="material-symbols-outlined text-[18px]">visibility</span>
+                      <span>{{ __('Preview') }}</span>
+                    </button>
+                    <button type="button" wire:click.prevent="removeDocument('kartu_keluarga')" class="flex-1 flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg text-sm font-medium text-red-700 bg-red-50 hover:bg-red-100 transition-colors">
+                      <span class="material-symbols-outlined text-[18px]">delete</span>
+                      <span>{{ __('Remove') }}</span>
+                    </button>
                   </div>
                 </div>
               @else
@@ -889,12 +893,14 @@ new #[Title('My Application')] class extends Component {
                      </span>
                   </div>
                   <div class="flex items-center gap-2">
-                    <flux:button size="sm" variant="subtle" wire:click.prevent="setPreview('ijazah')" class="flex-1">
-                      <span class="material-symbols-outlined text-[16px] mr-1">visibility</span> {{ __('Preview') }}
-                    </flux:button>
-                    <flux:button size="sm" variant="subtle" wire:click.prevent="removeDocument('ijazah')" class="flex-1 text-red-600 hover:bg-red-50">
-                      <span class="material-symbols-outlined text-[16px] mr-1">delete</span> {{ __('Remove') }}
-                    </flux:button>
+                    <button type="button" wire:click.prevent="setPreview('ijazah')" class="flex-1 flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg text-sm font-medium text-blue-700 bg-blue-50 hover:bg-blue-100 transition-colors">
+                      <span class="material-symbols-outlined text-[18px]">visibility</span>
+                      <span>{{ __('Preview') }}</span>
+                    </button>
+                    <button type="button" wire:click.prevent="removeDocument('ijazah')" class="flex-1 flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg text-sm font-medium text-red-700 bg-red-50 hover:bg-red-100 transition-colors">
+                      <span class="material-symbols-outlined text-[18px]">delete</span>
+                      <span>{{ __('Remove') }}</span>
+                    </button>
                   </div>
                 </div>
               @else
@@ -935,12 +941,14 @@ new #[Title('My Application')] class extends Component {
                      </span>
                   </div>
                   <div class="flex items-center gap-2">
-                    <flux:button size="sm" variant="subtle" wire:click.prevent="setPreview('pas_foto')" class="flex-1">
-                      <span class="material-symbols-outlined text-[16px] mr-1">visibility</span> {{ __('Preview') }}
-                    </flux:button>
-                    <flux:button size="sm" variant="subtle" wire:click.prevent="removeDocument('pas_foto')" class="flex-1 text-red-600 hover:bg-red-50">
-                      <span class="material-symbols-outlined text-[16px] mr-1">delete</span> {{ __('Remove') }}
-                    </flux:button>
+                    <button type="button" wire:click.prevent="setPreview('pas_foto')" class="flex-1 flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg text-sm font-medium text-blue-700 bg-blue-50 hover:bg-blue-100 transition-colors">
+                      <span class="material-symbols-outlined text-[18px]">visibility</span>
+                      <span>{{ __('Preview') }}</span>
+                    </button>
+                    <button type="button" wire:click.prevent="removeDocument('pas_foto')" class="flex-1 flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg text-sm font-medium text-red-700 bg-red-50 hover:bg-red-100 transition-colors">
+                      <span class="material-symbols-outlined text-[18px]">delete</span>
+                      <span>{{ __('Remove') }}</span>
+                    </button>
                   </div>
                 </div>
               @else
