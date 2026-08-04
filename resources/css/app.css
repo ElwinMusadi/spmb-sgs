@@ -87,3 +87,21 @@ select:focus[data-flux-control] {
 /* \[:where(&)\]:size-4 {
     @apply size-4;
 } */
+
+.shimmer-border {
+  background: linear-gradient(90deg, #bd9c4f, #ffd26a, #bd9c4f);
+
+  background-size: 300% 100%;
+
+  animation: borderShimmer 10s linear infinite;
+}
+
+@keyframes borderShimmer {
+  from {
+    background-position: -300% 0;
+  }
+
+  to {
+    background-position: 300% 0;
+  }
+}

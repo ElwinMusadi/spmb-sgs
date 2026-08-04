@@ -1,7 +1,8 @@
 <x-layouts::auth-custom :title="__('Log in')">
   <main class="relative min-h-screen bg-surface p-4 sm:p-8 flex">
     <div class="m-auto w-full max-w-300">
-      <div class="grid grid-cols-1 lg:grid-cols-12 bg-white rounded-2xl shadow-2xl overflow-hidden relative">
+      <div
+        class="grid grid-cols-1 lg:grid-cols-12 bg-white rounded-2xl shadow-2xl overflow-hidden relative min-h-[75vh] xl:min-h-[80vh] border-6 border-navy">
 
         {{-- Left Brand Panel (desktop only) --}}
         <div
@@ -42,7 +43,7 @@
         </div>
 
         {{-- Right Form Panel --}}
-        <div class="col-span-1 lg:col-span-6 flex flex-col justify-center p-6 sm:p-10 xl:p-12 bg-white relative">
+        <div class="col-span-1 lg:col-span-6 flex flex-col justify-between p-6 sm:p-10 xl:p-12 bg-white relative">
 
           {{-- Mobile Logo --}}
           <a href="{{ route('home') }}" class="lg:hidden flex items-center gap-3 mb-8"

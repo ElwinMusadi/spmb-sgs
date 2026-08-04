@@ -76,6 +76,10 @@ new #[Title('My Application')] class extends Component {
     public ?string $previewType = null;
     public bool $showPreviewModal = false;
 
+    // Payment State
+    public string $payment_method = 'bca';
+    public string $payment_status = 'awaiting';
+
     // Internal
     public ?int $applicationId = null;
 
@@ -206,6 +210,15 @@ new #[Title('My Application')] class extends Component {
             unset($this->stored_docs[$type]);
             $this->{"has_$type"} = false;
         }
+    }
+    /**
+     * Simulate Payment.
+     */
+    public function simulatePayment(): void
+    {
+        // Simulate a delay
+        sleep(1);
+        $this->payment_status = 'paid';
     }
 
     /**
@@ -789,28 +802,32 @@ new #[Title('My Application')] class extends Component {
               </div>
 
               @if ($has_akta_kelahiran || $doc_akta_kelahiran)
-                <div class="mt-4 p-3 bg-surface-container rounded-lg flex flex-col gap-3 border border-outline-variant/30">
+                <div class="mt-4 p-3 bg-surface rounded-lg flex flex-col gap-3 border border-outline-variant/30">
                   <div class="flex items-center gap-2 overflow-hidden">
-                     <span class="material-symbols-outlined text-navy text-[20px] shrink-0">draft</span>
-                     <span class="text-sm font-medium text-on-surface truncate">
-                       {{ $has_akta_kelahiran ? ($stored_docs['akta_kelahiran']['name'] ?? 'Document') : $doc_akta_kelahiran->getClientOriginalName() }}
-                     </span>
+                    <span class="material-symbols-outlined text-navy text-[20px] shrink-0">draft</span>
+                    <span class="text-sm font-medium text-on-surface truncate">
+                      {{ $has_akta_kelahiran ? $stored_docs['akta_kelahiran']['name'] ?? 'Document' : $doc_akta_kelahiran->getClientOriginalName() }}
+                    </span>
                   </div>
                   <div class="flex items-center gap-2">
-                    <button type="button" wire:click.prevent="setPreview('akta_kelahiran')" class="flex-1 flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg text-sm font-medium text-blue-700 bg-blue-50 hover:bg-blue-100 transition-colors">
-                      <span class="material-symbols-outlined text-[18px]">visibility</span>
+                    <button type="button" wire:click.prevent="setPreview('akta_kelahiran')"
+                      class="flex-1 flex items-center justify-center gap-1 py-1.5 px-2 rounded-md text-xs font-medium text-blue-700 bg-blue-50 hover:bg-blue-100 transition-colors">
+                      <span class="material-symbols-outlined text-[16px]">visibility</span>
                       <span>{{ __('Preview') }}</span>
                     </button>
-                    <button type="button" wire:click.prevent="removeDocument('akta_kelahiran')" class="flex-1 flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg text-sm font-medium text-red-700 bg-red-50 hover:bg-red-100 transition-colors">
-                      <span class="material-symbols-outlined text-[18px]">delete</span>
+                    <button type="button" wire:click.prevent="removeDocument('akta_kelahiran')"
+                      class="flex-1 flex items-center justify-center gap-1 py-1.5 px-2 rounded-md text-xs font-medium text-red-700 bg-red-50 hover:bg-red-100 transition-colors">
+                      <span class="material-symbols-outlined text-[16px]">delete</span>
                       <span>{{ __('Remove') }}</span>
                     </button>
                   </div>
                 </div>
               @else
                 <flux:input type="file" wire:model="doc_akta_kelahiran" accept=".pdf,.jpg,.jpeg,.png" />
-                <div wire:loading wire:target="doc_akta_kelahiran" class="text-sm text-navy mt-1 font-semibold flex items-center gap-1">
-                  <span class="material-symbols-outlined text-[16px] animate-spin">progress_activity</span> {{ __('Uploading...') }}
+                <div wire:loading wire:target="doc_akta_kelahiran"
+                  class="text-sm text-navy mt-1 font-semibold flex items-center gap-1">
+                  <span class="material-symbols-outlined text-[16px] animate-spin">progress_activity</span>
+                  {{ __('Uploading...') }}
                 </div>
                 @error('doc_akta_kelahiran')
                   <p class="text-red-600 text-xs mt-1">{{ $message }}</p>
@@ -837,28 +854,32 @@ new #[Title('My Application')] class extends Component {
               </div>
 
               @if ($has_kartu_keluarga || $doc_kartu_keluarga)
-                <div class="mt-4 p-3 bg-surface-container rounded-lg flex flex-col gap-3 border border-outline-variant/30">
+                <div class="mt-4 p-3 bg-surface rounded-lg flex flex-col gap-3 border border-outline-variant/30">
                   <div class="flex items-center gap-2 overflow-hidden">
-                     <span class="material-symbols-outlined text-navy text-[20px] shrink-0">draft</span>
-                     <span class="text-sm font-medium text-on-surface truncate">
-                       {{ $has_kartu_keluarga ? ($stored_docs['kartu_keluarga']['name'] ?? 'Document') : $doc_kartu_keluarga->getClientOriginalName() }}
-                     </span>
+                    <span class="material-symbols-outlined text-navy text-[20px] shrink-0">draft</span>
+                    <span class="text-sm font-medium text-on-surface truncate">
+                      {{ $has_kartu_keluarga ? $stored_docs['kartu_keluarga']['name'] ?? 'Document' : $doc_kartu_keluarga->getClientOriginalName() }}
+                    </span>
                   </div>
                   <div class="flex items-center gap-2">
-                    <button type="button" wire:click.prevent="setPreview('kartu_keluarga')" class="flex-1 flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg text-sm font-medium text-blue-700 bg-blue-50 hover:bg-blue-100 transition-colors">
-                      <span class="material-symbols-outlined text-[18px]">visibility</span>
+                    <button type="button" wire:click.prevent="setPreview('kartu_keluarga')"
+                      class="flex-1 flex items-center justify-center gap-1 py-1.5 px-2 rounded-md text-xs font-medium text-blue-700 bg-blue-50 hover:bg-blue-100 transition-colors">
+                      <span class="material-symbols-outlined text-[16px]">visibility</span>
                       <span>{{ __('Preview') }}</span>
                     </button>
-                    <button type="button" wire:click.prevent="removeDocument('kartu_keluarga')" class="flex-1 flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg text-sm font-medium text-red-700 bg-red-50 hover:bg-red-100 transition-colors">
-                      <span class="material-symbols-outlined text-[18px]">delete</span>
+                    <button type="button" wire:click.prevent="removeDocument('kartu_keluarga')"
+                      class="flex-1 flex items-center justify-center gap-1 py-1.5 px-2 rounded-md text-xs font-medium text-red-700 bg-red-50 hover:bg-red-100 transition-colors">
+                      <span class="material-symbols-outlined text-[16px]">delete</span>
                       <span>{{ __('Remove') }}</span>
                     </button>
                   </div>
                 </div>
               @else
                 <flux:input type="file" wire:model="doc_kartu_keluarga" accept=".pdf,.jpg,.jpeg,.png" />
-                <div wire:loading wire:target="doc_kartu_keluarga" class="text-sm text-navy mt-1 font-semibold flex items-center gap-1">
-                  <span class="material-symbols-outlined text-[16px] animate-spin">progress_activity</span> {{ __('Uploading...') }}
+                <div wire:loading wire:target="doc_kartu_keluarga"
+                  class="text-sm text-navy mt-1 font-semibold flex items-center gap-1">
+                  <span class="material-symbols-outlined text-[16px] animate-spin">progress_activity</span>
+                  {{ __('Uploading...') }}
                 </div>
                 @error('doc_kartu_keluarga')
                   <p class="text-red-600 text-xs mt-1">{{ $message }}</p>
@@ -885,28 +906,32 @@ new #[Title('My Application')] class extends Component {
               </div>
 
               @if ($has_ijazah || $doc_ijazah)
-                <div class="mt-4 p-3 bg-surface-container rounded-lg flex flex-col gap-3 border border-outline-variant/30">
+                <div class="mt-4 p-3 bg-surface rounded-lg flex flex-col gap-3 border border-outline-variant/30">
                   <div class="flex items-center gap-2 overflow-hidden">
-                     <span class="material-symbols-outlined text-navy text-[20px] shrink-0">draft</span>
-                     <span class="text-sm font-medium text-on-surface truncate">
-                       {{ $has_ijazah ? ($stored_docs['ijazah']['name'] ?? 'Document') : $doc_ijazah->getClientOriginalName() }}
-                     </span>
+                    <span class="material-symbols-outlined text-navy text-[20px] shrink-0">draft</span>
+                    <span class="text-sm font-medium text-on-surface truncate">
+                      {{ $has_ijazah ? $stored_docs['ijazah']['name'] ?? 'Document' : $doc_ijazah->getClientOriginalName() }}
+                    </span>
                   </div>
                   <div class="flex items-center gap-2">
-                    <button type="button" wire:click.prevent="setPreview('ijazah')" class="flex-1 flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg text-sm font-medium text-blue-700 bg-blue-50 hover:bg-blue-100 transition-colors">
-                      <span class="material-symbols-outlined text-[18px]">visibility</span>
+                    <button type="button" wire:click.prevent="setPreview('ijazah')"
+                      class="flex-1 flex items-center justify-center gap-1 py-1.5 px-2 rounded-md text-xs font-medium text-blue-700 bg-blue-50 hover:bg-blue-100 transition-colors">
+                      <span class="material-symbols-outlined text-[16px]">visibility</span>
                       <span>{{ __('Preview') }}</span>
                     </button>
-                    <button type="button" wire:click.prevent="removeDocument('ijazah')" class="flex-1 flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg text-sm font-medium text-red-700 bg-red-50 hover:bg-red-100 transition-colors">
-                      <span class="material-symbols-outlined text-[18px]">delete</span>
+                    <button type="button" wire:click.prevent="removeDocument('ijazah')"
+                      class="flex-1 flex items-center justify-center gap-1 py-1.5 px-2 rounded-md text-xs font-medium text-red-700 bg-red-50 hover:bg-red-100 transition-colors">
+                      <span class="material-symbols-outlined text-[16px]">delete</span>
                       <span>{{ __('Remove') }}</span>
                     </button>
                   </div>
                 </div>
               @else
                 <flux:input type="file" wire:model="doc_ijazah" accept=".pdf,.jpg,.jpeg,.png" />
-                <div wire:loading wire:target="doc_ijazah" class="text-sm text-navy mt-1 font-semibold flex items-center gap-1">
-                  <span class="material-symbols-outlined text-[16px] animate-spin">progress_activity</span> {{ __('Uploading...') }}
+                <div wire:loading wire:target="doc_ijazah"
+                  class="text-sm text-navy mt-1 font-semibold flex items-center gap-1">
+                  <span class="material-symbols-outlined text-[16px] animate-spin">progress_activity</span>
+                  {{ __('Uploading...') }}
                 </div>
                 @error('doc_ijazah')
                   <p class="text-red-600 text-xs mt-1">{{ $message }}</p>
@@ -933,28 +958,32 @@ new #[Title('My Application')] class extends Component {
               </div>
 
               @if ($has_pas_foto || $doc_pas_foto)
-                <div class="mt-4 p-3 bg-surface-container rounded-lg flex flex-col gap-3 border border-outline-variant/30">
+                <div class="mt-4 p-3 bg-surface rounded-lg flex flex-col gap-3 border border-outline-variant/30">
                   <div class="flex items-center gap-2 overflow-hidden">
-                     <span class="material-symbols-outlined text-navy text-[20px] shrink-0">draft</span>
-                     <span class="text-sm font-medium text-on-surface truncate">
-                       {{ $has_pas_foto ? ($stored_docs['pas_foto']['name'] ?? 'Document') : $doc_pas_foto->getClientOriginalName() }}
-                     </span>
+                    <span class="material-symbols-outlined text-navy text-[20px] shrink-0">draft</span>
+                    <span class="text-sm font-medium text-on-surface truncate">
+                      {{ $has_pas_foto ? $stored_docs['pas_foto']['name'] ?? 'Document' : $doc_pas_foto->getClientOriginalName() }}
+                    </span>
                   </div>
                   <div class="flex items-center gap-2">
-                    <button type="button" wire:click.prevent="setPreview('pas_foto')" class="flex-1 flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg text-sm font-medium text-blue-700 bg-blue-50 hover:bg-blue-100 transition-colors">
-                      <span class="material-symbols-outlined text-[18px]">visibility</span>
+                    <button type="button" wire:click.prevent="setPreview('pas_foto')"
+                      class="flex-1 flex items-center justify-center gap-1 py-1.5 px-2 rounded-md text-xs font-medium text-blue-700 bg-blue-50 hover:bg-blue-100 transition-colors">
+                      <span class="material-symbols-outlined text-[16px]">visibility</span>
                       <span>{{ __('Preview') }}</span>
                     </button>
-                    <button type="button" wire:click.prevent="removeDocument('pas_foto')" class="flex-1 flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg text-sm font-medium text-red-700 bg-red-50 hover:bg-red-100 transition-colors">
-                      <span class="material-symbols-outlined text-[18px]">delete</span>
+                    <button type="button" wire:click.prevent="removeDocument('pas_foto')"
+                      class="flex-1 flex items-center justify-center gap-1 py-1.5 px-2 rounded-md text-xs font-medium text-red-700 bg-red-50 hover:bg-red-100 transition-colors">
+                      <span class="material-symbols-outlined text-[16px]">delete</span>
                       <span>{{ __('Remove') }}</span>
                     </button>
                   </div>
                 </div>
               @else
                 <flux:input type="file" wire:model="doc_pas_foto" accept=".jpg,.jpeg,.png" />
-                <div wire:loading wire:target="doc_pas_foto" class="text-sm text-navy mt-1 font-semibold flex items-center gap-1">
-                  <span class="material-symbols-outlined text-[16px] animate-spin">progress_activity</span> {{ __('Uploading...') }}
+                <div wire:loading wire:target="doc_pas_foto"
+                  class="text-sm text-navy mt-1 font-semibold flex items-center gap-1">
+                  <span class="material-symbols-outlined text-[16px] animate-spin">progress_activity</span>
+                  {{ __('Uploading...') }}
                 </div>
                 @error('doc_pas_foto')
                   <p class="text-red-600 text-xs mt-1">{{ $message }}</p>
@@ -967,14 +996,16 @@ new #[Title('My Application')] class extends Component {
           <flux:modal wire:model="showPreviewModal" class="min-w-[50vw]">
             <div class="flex justify-between items-center mb-4">
               <flux:heading size="lg">{{ __('Document Preview') }}</flux:heading>
-              @if($previewName)
-                <span class="text-sm text-on-surface-variant max-w-[200px] truncate" title="{{ $previewName }}">{{ $previewName }}</span>
+              @if ($previewName)
+                <span class="text-sm text-on-surface-variant max-w-[200px] truncate"
+                  title="{{ $previewName }}">{{ $previewName }}</span>
               @endif
             </div>
 
-            <div class="bg-surface-container-lowest rounded-xl overflow-hidden border border-outline-variant/30 flex items-center justify-center min-h-[400px]">
-              @if($previewUrl)
-                @if($previewType === 'image')
+            <div
+              class="bg-surface-container-lowest rounded-xl overflow-hidden border border-outline-variant/30 flex items-center justify-center min-h-[400px]">
+              @if ($previewUrl)
+                @if ($previewType === 'image')
                   <img src="{{ $previewUrl }}" alt="Preview" class="max-w-full max-h-[70vh] object-contain" />
                 @else
                   <iframe src="{{ $previewUrl }}" class="w-full h-[70vh] border-0"></iframe>
@@ -991,15 +1022,109 @@ new #[Title('My Application')] class extends Component {
       @elseif ($currentStep === 4)
         {{-- STEP 4: PAYMENT CONTENT --}}
 
-        <div
-          class="bg-white rounded-xl shadow-sm p-12 border border-outline-variant/30 flex flex-col items-center justify-center text-center">
-          <div class="w-16 h-16 bg-gold-pale/30 text-gold-dark rounded-full flex items-center justify-center mb-4">
-            <span class="material-symbols-outlined text-[32px]">payments</span>
+        <div class="flex flex-col gap-6">
+          <header
+            class="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-surface-container-high pb-6">
+            <div class="flex flex-col gap-1">
+              <h1 class="font-heading text-2xl font-semibold text-on-surface">{{ __('Payment & Invoices') }}</h1>
+              <p class="font-body text-base text-on-surface-variant">
+                {{ __('Review and manage your registration fees.') }}</p>
+            </div>
+            <div class="flex items-center gap-3">
+              <button
+                class="px-4 py-2 flex items-center gap-2 rounded-lg bg-surface-container text-on-surface hover:bg-surface-container-high transition-colors font-body text-sm font-semibold">
+                <span class="material-symbols-outlined text-[20px]">download</span>
+                {{ __('Download Invoice (PDF)') }}
+              </button>
+            </div>
+          </header>
+
+          <div class="flex flex-col gap-6">
+            <div class="bg-white rounded-xl shadow-sm border border-outline-variant/30 overflow-hidden">
+              <div class="p-6 border-b border-outline-variant/30 flex justify-between items-start">
+                <div class="flex flex-col gap-1">
+                  <span
+                    class="font-body text-xs font-semibold text-on-surface-variant uppercase tracking-wider">{{ __('Invoice No.') }}</span>
+                  <span
+                    class="font-heading text-xl font-semibold text-navy">INV-SGS-{{ date('Y') }}-{{ str_pad($applicationId ?? 0, 4, '0', STR_PAD_LEFT) }}</span>
+                  <span class="font-body text-sm text-on-surface-variant mt-2">{{ __('Issued:') }}
+                    {{ now()->format('M d, Y') }} &bull; {{ __('Due:') }}
+                    {{ now()->addDays(7)->format('M d, Y') }}</span>
+                </div>
+                @if ($payment_status === 'paid')
+                  <div
+                    class="px-3 py-1.5 bg-green-100 text-green-800 rounded-full font-body text-sm font-semibold flex items-center gap-1.5">
+                    <span class="material-symbols-outlined text-[16px]">check_circle</span>
+                    {{ __('Lunas / Paid') }}
+                  </div>
+                @else
+                  <div
+                    class="px-3 py-1.5 bg-red-100 text-red-800 rounded-full font-body text-sm font-semibold flex items-center gap-1.5">
+                    <span class="material-symbols-outlined text-[16px]">pending_actions</span>
+                    {{ __('Awaiting Payment') }}
+                  </div>
+                @endif
+              </div>
+              <div class="p-6">
+                <table class="w-full text-left border-collapse">
+                  <thead>
+                    <tr class="border-b border-outline-variant/30">
+                      <th class="py-3 font-body text-sm font-semibold text-on-surface-variant w-3/5">
+                        {{ __('Description') }}</th>
+                      <th class="py-3 font-body text-sm font-semibold text-on-surface-variant text-right">
+                        {{ __('Amount (IDR)') }}</th>
+                    </tr>
+                  </thead>
+                  <tbody class="font-body text-base text-on-surface">
+                    <tr class="border-b border-outline-variant/10">
+                      <td class="py-4">
+                        <div class="font-medium">{{ __('Registration Fee - Academic Year') }}
+                          {{ date('Y') }}/{{ date('Y') + 1 }}</div>
+                        <div class="text-sm text-on-surface-variant mt-1">{{ __('Grade') }}
+                          {{ $grade_level ?? '-' }}</div>
+                      </td>
+                      <td class="py-4 text-right">500,000</td>
+                    </tr>
+                    <tr class="border-b border-outline-variant/10">
+                      <td class="py-4">
+                        <div class="font-medium">{{ __('Entrance Assessment Test') }}</div>
+                        <div class="text-sm text-on-surface-variant mt-1">
+                          {{ __('Computer-based cognitive assessment') }}</div>
+                      </td>
+                      <td class="py-4 text-right">250,000</td>
+                    </tr>
+                  </tbody>
+                  <tfoot>
+                    <tr>
+                      <td class="py-4 font-body text-sm font-semibold text-on-surface-variant text-right pr-6">
+                        {{ __('Subtotal') }}</td>
+                      <td class="py-4 font-body text-base text-on-surface text-right">750,000</td>
+                    </tr>
+                    <tr>
+                      <td class="py-2 font-body text-sm font-semibold text-on-surface-variant text-right pr-6">
+                        {{ __('Admin Fee (Virtual Account)') }}</td>
+                      <td class="py-2 font-body text-base text-on-surface text-right">4,500</td>
+                    </tr>
+                    <tr class="border-t border-outline-variant mt-3">
+                      <td class="pt-6 font-heading text-xl font-semibold text-on-surface text-right pr-6">
+                        {{ __('Total Due') }}</td>
+                      <td class="pt-6 font-heading text-xl font-semibold text-navy text-right">754,500</td>
+                    </tr>
+                  </tfoot>
+                </table>
+              </div>
+            </div>
+            <div class="bg-surface-container rounded-xl p-6 flex items-start gap-4">
+              <span class="material-symbols-outlined text-gold-dark mt-1">info</span>
+              <div>
+                <h4 class="font-body text-sm font-semibold text-on-surface mb-1">{{ __('Payment Verification') }}
+                </h4>
+                <p class="font-body text-sm text-on-surface-variant">
+                  {{ __('Payments made via Virtual Account or QRIS are verified automatically within 10-15 minutes. Please retain your payment receipt until the status updates to "Lunas".') }}
+                </p>
+              </div>
+            </div>
           </div>
-          <h3 class="font-heading text-xl font-semibold text-navy mb-2">{{ __('Registration Payment') }}</h3>
-          <p class="text-on-surface-variant max-w-md">
-            {{ __('Payment gateway integration will be implemented in the final phase. Your application is saved successfully.') }}
-          </p>
         </div>
       @endif
 
@@ -1007,6 +1132,123 @@ new #[Title('My Application')] class extends Component {
 
     {{-- Right Column: Sidebar Actions --}}
     <div class="col-span-12 lg:col-span-4 flex flex-col gap-8">
+
+      @if ($currentStep === 4)
+        <div class="flex flex-col gap-6">
+          <h3 class="font-heading text-xl font-semibold text-on-surface mb-2">{{ __('Select Payment Method') }}
+          </h3>
+          <div class="flex flex-col gap-3">
+            <label
+              class="relative flex flex-col bg-white border {{ $payment_method === 'bca' ? 'border-navy ring-1 ring-navy' : 'border-outline-variant/50 hover:border-navy opacity-70' }} rounded-xl p-4 cursor-pointer transition-colors">
+              <div class="flex items-center justify-between {{ $payment_method === 'bca' ? 'mb-3' : '' }}">
+                <div class="flex items-center gap-3">
+                  <input wire:model.live="payment_method" class="text-navy focus:ring-navy h-4 w-4 border-outline"
+                    name="payment_method" type="radio" value="bca">
+                  <span class="font-body text-sm font-semibold text-on-surface">BCA Virtual Account</span>
+                </div>
+                <div
+                  class="w-10 h-10 bg-surface-container rounded flex items-center justify-center font-bold text-on-surface-variant text-[10px]">
+                  BCA</div>
+              </div>
+              @if ($payment_method === 'bca')
+                <div class="pl-7">
+                  <div
+                    class="font-heading text-lg font-semibold text-on-surface tracking-widest bg-surface-container p-2 rounded inline-block">
+                    089 2384 1928 44</div>
+                  <p class="font-body text-xs text-on-surface-variant mt-1">Expires in 23:59:12</p>
+                </div>
+              @endif
+            </label>
+
+            <label
+              class="relative flex flex-col bg-white border {{ $payment_method === 'mandiri' ? 'border-navy ring-1 ring-navy' : 'border-outline-variant/50 hover:border-navy opacity-70' }} rounded-xl p-4 cursor-pointer transition-colors">
+              <div class="flex items-center justify-between {{ $payment_method === 'mandiri' ? 'mb-3' : '' }}">
+                <div class="flex items-center gap-3">
+                  <input wire:model.live="payment_method" class="text-navy focus:ring-navy h-4 w-4 border-outline"
+                    name="payment_method" type="radio" value="mandiri">
+                  <span class="font-body text-sm font-semibold text-on-surface">Mandiri Virtual Account</span>
+                </div>
+                <div
+                  class="w-10 h-10 bg-surface-container rounded flex items-center justify-center font-bold text-on-surface-variant text-[10px]">
+                  MNDR</div>
+              </div>
+              @if ($payment_method === 'mandiri')
+                <div class="pl-7">
+                  <div
+                    class="font-heading text-lg font-semibold text-on-surface tracking-widest bg-surface-container p-2 rounded inline-block">
+                    8928 1192 8493</div>
+                  <p class="font-body text-xs text-on-surface-variant mt-1">Expires in 23:59:12</p>
+                </div>
+              @endif
+            </label>
+
+            <label
+              class="relative flex flex-col bg-white border {{ $payment_method === 'bni' ? 'border-navy ring-1 ring-navy' : 'border-outline-variant/50 hover:border-navy opacity-70' }} rounded-xl p-4 cursor-pointer transition-colors">
+              <div class="flex items-center justify-between {{ $payment_method === 'bni' ? 'mb-3' : '' }}">
+                <div class="flex items-center gap-3">
+                  <input wire:model.live="payment_method" class="text-navy focus:ring-navy h-4 w-4 border-outline"
+                    name="payment_method" type="radio" value="bni">
+                  <span class="font-body text-sm font-semibold text-on-surface">BNI Virtual Account</span>
+                </div>
+                <div
+                  class="w-10 h-10 bg-surface-container rounded flex items-center justify-center font-bold text-on-surface-variant text-[10px]">
+                  BNI</div>
+              </div>
+              @if ($payment_method === 'bni')
+                <div class="pl-7">
+                  <div
+                    class="font-heading text-lg font-semibold text-on-surface tracking-widest bg-surface-container p-2 rounded inline-block">
+                    988 2938 4810</div>
+                  <p class="font-body text-xs text-on-surface-variant mt-1">Expires in 23:59:12</p>
+                </div>
+              @endif
+            </label>
+
+            <label
+              class="relative flex flex-col bg-white border {{ $payment_method === 'qris' ? 'border-navy ring-1 ring-navy' : 'border-outline-variant/50 hover:border-navy opacity-70' }} rounded-xl p-4 cursor-pointer transition-colors">
+              <div class="flex items-center justify-between {{ $payment_method === 'qris' ? 'mb-3' : '' }}">
+                <div class="flex items-center gap-3">
+                  <input wire:model.live="payment_method" class="text-navy focus:ring-navy h-4 w-4 border-outline"
+                    name="payment_method" type="radio" value="qris">
+                  <span class="font-body text-sm font-semibold text-on-surface">QRIS</span>
+                </div>
+                <span class="material-symbols-outlined text-on-surface-variant">qr_code_2</span>
+              </div>
+              @if ($payment_method === 'qris')
+                <div class="pl-7 mt-3 flex justify-center">
+                  <div
+                    class="w-32 h-32 bg-surface-container-high rounded border border-outline-variant flex items-center justify-center">
+                    <span class="material-symbols-outlined text-[48px] text-on-surface-variant">qr_code_2</span>
+                  </div>
+                </div>
+              @endif
+            </label>
+          </div>
+
+          @if ($payment_status === 'awaiting')
+            <button wire:click="simulatePayment" wire:loading.attr="disabled"
+              class="mt-6 w-full py-3 px-6 bg-navy text-white hover:bg-navy-dark font-body text-sm font-semibold rounded-lg shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 relative overflow-hidden group">
+              <span class="relative z-10 flex items-center gap-2" wire:loading.remove wire:target="simulatePayment">
+                <span>Simulate Payment (Auto-Lunas)</span>
+                <span class="material-symbols-outlined text-[18px]">bolt</span>
+              </span>
+              <span class="relative z-10 flex items-center gap-2" wire:loading wire:target="simulatePayment">
+                <span class="material-symbols-outlined text-[18px] animate-spin">sync</span>
+                <span>Processing...</span>
+              </span>
+              <div
+                class="absolute inset-0 bg-white/10 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out z-0">
+              </div>
+            </button>
+          @else
+            <div
+              class="mt-6 w-full py-3 px-6 bg-green-100 text-green-800 font-body text-sm font-semibold rounded-lg flex items-center justify-center gap-2">
+              <span class="material-symbols-outlined text-[18px]">check_circle</span>
+              <span>{{ __('Payment Confirmed') }}</span>
+            </div>
+          @endif
+        </div>
+      @endif
 
       @if ($currentStep === 2)
         {{-- Required Documents Card (Preview in Step 2) --}}
@@ -1017,7 +1259,8 @@ new #[Title('My Application')] class extends Component {
             <span class="material-symbols-outlined text-on-surface-variant">help</span>
           </h3>
           <p class="font-body text-sm text-on-surface-variant mb-6">
-            {{ __('You will need to upload these documents in the next step. Max 5MB per file (PDF, JPG, PNG).') }}</p>
+            {{ __('You will need to upload these documents in the next step. Max 5MB per file (PDF, JPG, PNG).') }}
+          </p>
 
           <div class="space-y-3">
             {{-- Akta Kelahiran --}}
@@ -1093,11 +1336,13 @@ new #[Title('My Application')] class extends Component {
               </div>
             </flux:button>
           @elseif ($currentStep === 3)
-            <flux:button wire:click.prevent="saveAndContinue" variant="primary" class="w-full" wire:loading.attr="disabled">
+            <flux:button wire:click.prevent="saveAndContinue" variant="primary" class="w-full"
+              wire:loading.attr="disabled">
               <div class="flex items-center justify-center gap-2 w-full">
                 <span wire:loading.remove wire:target="saveAndContinue">{{ __('Confirm Documents') }}</span>
                 <span wire:loading wire:target="saveAndContinue">{{ __('Uploading...') }}</span>
-                <span class="material-symbols-outlined text-[20px] pt-0.5" wire:loading.remove wire:target="saveAndContinue">arrow_forward</span>
+                <span class="material-symbols-outlined text-[20px] pt-0.5" wire:loading.remove
+                  wire:target="saveAndContinue">arrow_forward</span>
               </div>
             </flux:button>
           @endif
