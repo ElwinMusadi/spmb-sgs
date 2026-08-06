@@ -79,7 +79,6 @@ new #[Title('My Application')] class extends Component {
     // Payment State
     public string $payment_method = 'bca';
     public string $payment_status = 'awaiting';
-
     // Internal
     public ?int $applicationId = null;
 
@@ -93,6 +92,8 @@ new #[Title('My Application')] class extends Component {
         if ($application) {
             $this->applicationId = $application->id;
             $this->currentStep = max(2, $application->current_step);
+            $this->payment_status = $application->payment_status;
+            $this->payment_method = $application->payment_method ?? 'bca';
             $this->fillFromApplication($application);
             $this->loadExistingDocuments($application);
         }
@@ -219,6 +220,15 @@ new #[Title('My Application')] class extends Component {
         // Simulate a delay
         sleep(1);
         $this->payment_status = 'paid';
+
+        if ($this->applicationId) {
+            $application = Auth::user()->applications()->findOrFail($this->applicationId);
+            $application->update([
+                'payment_status' => 'paid',
+                'payment_method' => $this->payment_method,
+                'paid_at' => now(),
+            ]);
+        }
     }
 
     /**
@@ -1031,11 +1041,13 @@ new #[Title('My Application')] class extends Component {
                 {{ __('Review and manage your registration fees.') }}</p>
             </div>
             <div class="flex items-center gap-3">
-              <button
-                class="px-4 py-2 flex items-center gap-2 rounded-lg bg-surface-container text-on-surface hover:bg-surface-container-high transition-colors font-body text-sm font-semibold">
-                <span class="material-symbols-outlined text-[20px]">download</span>
-                {{ __('Download Invoice (PDF)') }}
-              </button>
+              @if ($applicationId)
+                <a href="{{ route('application.invoice.download', $applicationId) }}"
+                  class="px-4 py-2 flex items-center gap-2 rounded-lg bg-surface-container text-on-surface hover:bg-surface-container-high transition-colors font-body text-sm font-semibold">
+                  <span class="material-symbols-outlined text-[20px]">download</span>
+                  {{ __('Download Invoice (PDF)') }}
+                </a>
+              @endif
             </div>
           </header>
 

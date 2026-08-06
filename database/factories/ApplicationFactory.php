@@ -65,4 +65,18 @@ class ApplicationFactory extends Factory
             ],
         );
     }
+
+    /**
+     * Set the application as paid.
+     */
+    public function paid(): static
+    {
+        return $this->state(
+            fn (array $attributes) => [
+                'payment_status' => 'paid',
+                'payment_method' => 'bca',
+                'paid_at' => now(),
+            ],
+        );
+    }
 }

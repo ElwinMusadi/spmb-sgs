@@ -18,6 +18,9 @@ use Illuminate\Support\Carbon;
  * @property string|null $grade_level
  * @property string $status
  * @property int $current_step
+ * @property string $payment_status
+ * @property string|null $payment_method
+ * @property Carbon|null $paid_at
  * @property string|null $student_full_name
  * @property string|null $student_nik
  * @property string|null $student_nisn
@@ -55,6 +58,9 @@ use Illuminate\Support\Carbon;
         'grade_level',
         'status',
         'current_step',
+        'payment_status',
+        'payment_method',
+        'paid_at',
         'student_full_name',
         'student_nik',
         'student_nisn',
@@ -98,6 +104,7 @@ class Application extends Model
         return [
             'student_birth_date' => 'date',
             'submitted_at' => 'datetime',
+            'paid_at' => 'datetime',
             'current_step' => 'integer',
         ];
     }
@@ -148,5 +155,13 @@ class Application extends Model
     public function isSubmitted(): bool
     {
         return $this->status === 'submitted';
+    }
+
+    /**
+     * Check if the registration payment has been settled.
+     */
+    public function isPaid(): bool
+    {
+        return $this->payment_status === 'paid';
     }
 }

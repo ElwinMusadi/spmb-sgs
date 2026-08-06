@@ -128,4 +128,55 @@ class ApplicationTest extends TestCase
 
         $this->assertDatabaseCount('application_documents', 4);
     }
+
+    public function test_invoice_pdf_can_be_downloaded_by_owner(): void
+    {
+        $user = User::factory()->create();
+        $application = Application::factory()->create([
+            'user_id' => $user->id,
+            'current_step' => 4,
+        ]);
+
+        $response = $this->actingAs($user)
+            ->get(route('application.invoice.download', $application));
+
+        $response->assertOk();
+        $response->assertHeader('content-type', 'application/pdf');
+    }
+
+    public function test_invoice_pdf_cannot_be_downloaded_by_other_user(): void
+    {
+        $owner = User::factory()->create();
+        $otherUser = User::factory()->create();
+        $application = Application::factory()->create([
+            'user_id' => $owner->id,
+            'current_step' => 4,
+        ]);
+
+        $response = $this->actingAs($otherUser)
+            ->get(route('application.invoice.download', $application));
+
+        $response->assertForbidden();
+    }
+
+    public function test_simulate_payment_persists_paid_status(): void
+    {
+        $user = User::factory()->create();
+        $application = Application::factory()->create([
+            'user_id' => $user->id,
+            'current_step' => 4,
+        ]);
+
+        Livewire::actingAs($user)
+            ->test('pages::application.my-application')
+            ->set('payment_method', 'mandiri')
+            ->call('simulatePayment')
+            ->assertSet('payment_status', 'paid');
+
+        $this->assertDatabaseHas('applications', [
+            'id' => $application->id,
+            'payment_status' => 'paid',
+            'payment_method' => 'mandiri',
+        ]);
+    }
 }
