@@ -17,6 +17,9 @@ new #[Title('My Application')] class extends Component {
     // Wizard State
     public int $currentStep = 2;
 
+    // Furthest step the user has reached (controls stepper navigation).
+    public int $maxStep = 2;
+
     // Academic Selection
     public ?int $school_level_id = null;
     public ?int $academic_year_id = null;
@@ -92,6 +95,7 @@ new #[Title('My Application')] class extends Component {
         if ($application) {
             $this->applicationId = $application->id;
             $this->currentStep = max(2, $application->current_step);
+            $this->maxStep = $this->currentStep;
             $this->payment_status = $application->payment_status;
             $this->payment_method = $application->payment_method ?? 'bca';
             $this->fillFromApplication($application);
@@ -309,6 +313,16 @@ new #[Title('My Application')] class extends Component {
     }
 
     /**
+     * Jump directly to a step the user has already reached.
+     */
+    public function goToStep(int $step): void
+    {
+        if ($step >= 2 && $step <= $this->maxStep) {
+            $this->currentStep = $step;
+        }
+    }
+
+    /**
      * Save and continue to the next step.
      */
     public function saveAndContinue(): void
@@ -335,6 +349,7 @@ new #[Title('My Application')] class extends Component {
 
             $this->saveApplicationData(3);
             $this->currentStep = 3;
+            $this->maxStep = max($this->maxStep, 3);
             Flux::toast(variant: 'success', text: __('Form saved! Please upload required documents.'));
         } elseif ($this->currentStep === 3) {
             $this->validate(
@@ -380,6 +395,7 @@ new #[Title('My Application')] class extends Component {
             $this->loadExistingDocuments($application);
             $this->saveApplicationData(4);
             $this->currentStep = 4;
+            $this->maxStep = max($this->maxStep, 4);
             Flux::toast(variant: 'success', text: __('Documents confirmed! Please proceed to payment.'));
         }
     }
@@ -495,7 +511,8 @@ new #[Title('My Application')] class extends Component {
         </div>
 
         {{-- Step 2: Form --}}
-        <div class="flex flex-col items-center gap-2.5 w-20 md:w-24 group cursor-default">
+        <button type="button" wire:click="goToStep(2)" @disabled($maxStep < 2)
+          class="flex flex-col items-center gap-2.5 w-20 md:w-24 group {{ $maxStep >= 2 ? 'cursor-pointer' : 'cursor-default' }}">
           @if ($currentStep > 2)
             <div
               class="w-11 h-11 md:w-12 md:h-12 rounded-full bg-navy flex items-center justify-center text-white shadow-md ring-4 ring-white transition-transform group-hover:scale-105">
@@ -519,10 +536,11 @@ new #[Title('My Application')] class extends Component {
             <span
               class="font-body text-[11px] md:text-xs font-medium text-on-surface-variant text-center uppercase tracking-wider">{{ __('Form') }}</span>
           @endif
-        </div>
+        </button>
 
         {{-- Step 3: Documents --}}
-        <div class="flex flex-col items-center gap-2.5 w-20 md:w-24 group cursor-default">
+        <button type="button" wire:click="goToStep(3)" @disabled($maxStep < 3)
+          class="flex flex-col items-center gap-2.5 w-20 md:w-24 group {{ $maxStep >= 3 ? 'cursor-pointer' : 'cursor-default' }}">
           @if ($currentStep > 3)
             <div
               class="w-11 h-11 md:w-12 md:h-12 rounded-full bg-navy flex items-center justify-center text-white shadow-md ring-4 ring-white transition-transform group-hover:scale-105">
@@ -546,10 +564,11 @@ new #[Title('My Application')] class extends Component {
             <span
               class="font-body text-[11px] md:text-xs font-medium text-on-surface-variant text-center uppercase tracking-wider">{{ __('Documents') }}</span>
           @endif
-        </div>
+        </button>
 
         {{-- Step 4: Payment --}}
-        <div class="flex flex-col items-center gap-2.5 w-20 md:w-24 group cursor-default">
+        <button type="button" wire:click="goToStep(4)" @disabled($maxStep < 4)
+          class="flex flex-col items-center gap-2.5 w-20 md:w-24 group {{ $maxStep >= 4 ? 'cursor-pointer' : 'cursor-default' }}">
           @if ($currentStep > 4)
             <div
               class="w-11 h-11 md:w-12 md:h-12 rounded-full bg-navy flex items-center justify-center text-white shadow-md ring-4 ring-white transition-transform group-hover:scale-105">
@@ -573,7 +592,7 @@ new #[Title('My Application')] class extends Component {
             <span
               class="font-body text-[11px] md:text-xs font-medium text-on-surface-variant text-center uppercase tracking-wider">{{ __('Payment') }}</span>
           @endif
-        </div>
+        </button>
       </div>
     </div>
   </div>
@@ -1078,52 +1097,72 @@ new #[Title('My Application')] class extends Component {
                 @endif
               </div>
               <div class="p-6">
-                <table class="w-full text-left border-collapse">
-                  <thead>
-                    <tr class="border-b border-outline-variant/30">
-                      <th class="py-3 font-body text-sm font-semibold text-on-surface-variant w-3/5">
-                        {{ __('Description') }}</th>
-                      <th class="py-3 font-body text-sm font-semibold text-on-surface-variant text-right">
-                        {{ __('Amount (IDR)') }}</th>
-                    </tr>
-                  </thead>
-                  <tbody class="font-body text-base text-on-surface">
-                    <tr class="border-b border-outline-variant/10">
-                      <td class="py-4">
-                        <div class="font-medium">{{ __('Registration Fee - Academic Year') }}
-                          {{ date('Y') }}/{{ date('Y') + 1 }}</div>
-                        <div class="text-sm text-on-surface-variant mt-1">{{ __('Grade') }}
-                          {{ $grade_level ?? '-' }}</div>
-                      </td>
-                      <td class="py-4 text-right">500,000</td>
-                    </tr>
-                    <tr class="border-b border-outline-variant/10">
-                      <td class="py-4">
-                        <div class="font-medium">{{ __('Entrance Assessment Test') }}</div>
-                        <div class="text-sm text-on-surface-variant mt-1">
-                          {{ __('Computer-based cognitive assessment') }}</div>
-                      </td>
-                      <td class="py-4 text-right">250,000</td>
-                    </tr>
-                  </tbody>
-                  <tfoot>
-                    <tr>
-                      <td class="py-4 font-body text-sm font-semibold text-on-surface-variant text-right pr-6">
-                        {{ __('Subtotal') }}</td>
-                      <td class="py-4 font-body text-base text-on-surface text-right">750,000</td>
-                    </tr>
-                    <tr>
-                      <td class="py-2 font-body text-sm font-semibold text-on-surface-variant text-right pr-6">
-                        {{ __('Admin Fee (Virtual Account)') }}</td>
-                      <td class="py-2 font-body text-base text-on-surface text-right">4,500</td>
-                    </tr>
-                    <tr class="border-t border-outline-variant mt-3">
-                      <td class="pt-6 font-heading text-xl font-semibold text-on-surface text-right pr-6">
-                        {{ __('Total Due') }}</td>
-                      <td class="pt-6 font-heading text-xl font-semibold text-navy text-right">754,500</td>
-                    </tr>
-                  </tfoot>
-                </table>
+                {{-- Line Items --}}
+                <div class="overflow-hidden rounded-xl border border-outline-variant/40">
+                  <table class="w-full text-left border-collapse">
+                    <thead>
+                      <tr class="bg-surface-container-lowest">
+                        <th
+                          class="py-3 px-4 font-body text-xs font-semibold text-on-surface-variant uppercase tracking-wider">
+                          {{ __('Description') }}</th>
+                        <th
+                          class="py-3 px-4 font-body text-xs font-semibold text-on-surface-variant uppercase tracking-wider text-right whitespace-nowrap">
+                          {{ __('Amount (IDR)') }}</th>
+                      </tr>
+                    </thead>
+                    <tbody class="font-body text-base text-on-surface divide-y divide-outline-variant/20">
+                      <tr>
+                        <td class="py-4 px-4">
+                          <div class="flex items-center gap-3">
+                            <span
+                              class="material-symbols-outlined text-navy text-[22px] shrink-0">app_registration</span>
+                            <div>
+                              <div class="font-medium leading-tight">
+                                {{ __('Registration Fee - Academic Year') }}
+                                {{ date('Y') }}/{{ date('Y') + 1 }}</div>
+                              <div class="text-xs text-on-surface-variant mt-0.5">{{ __('Grade') }}
+                                {{ $grade_level ?? '-' }}</div>
+                            </div>
+                          </div>
+                        </td>
+                        <td class="py-4 px-4 text-right font-medium tabular-nums whitespace-nowrap">500.000</td>
+                      </tr>
+                      <tr>
+                        <td class="py-4 px-4">
+                          <div class="flex items-center gap-3">
+                            <span class="material-symbols-outlined text-navy text-[22px] shrink-0">quiz</span>
+                            <div>
+                              <div class="font-medium leading-tight">{{ __('Entrance Assessment Test') }}</div>
+                              <div class="text-xs text-on-surface-variant mt-0.5">
+                                {{ __('Computer-based cognitive assessment') }}</div>
+                            </div>
+                          </div>
+                        </td>
+                        <td class="py-4 px-4 text-right font-medium tabular-nums whitespace-nowrap">250.000</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+
+                {{-- Totals Summary --}}
+                <div class="mt-6 flex justify-end">
+                  <div class="w-full md:w-2/3 lg:w-1/2 flex flex-col gap-2.5">
+                    <div class="flex items-center justify-between font-body font-bold text-lg">
+                      <span class="text-on-surface-variant">{{ __('Subtotal') }}</span>
+                      <span class="text-on-surface tabular-nums">Rp 750.000</span>
+                    </div>
+                    <div class="flex items-center justify-between font-body font-bold text-lg">
+                      <span class="text-on-surface-variant">{{ __('Admin Fee (Virtual Account)') }}</span>
+                      <span class="text-on-surface tabular-nums">Rp 4.500</span>
+                    </div>
+                    <div
+                      class="mt-2 flex items-center justify-between rounded-xl bg-navy px-5 py-4 shadow-sm shadow-navy/20">
+                      <span class="font-heading text-sm font-semibold text-white/80 uppercase tracking-wider">
+                        {{ __('Total Due') }}</span>
+                      <span class="font-heading text-2xl font-bold text-white tabular-nums">Rp 754.500</span>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
             <div class="bg-surface-container rounded-xl p-6 flex items-start gap-4">

@@ -1,0 +1,239 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta content="width=device-width, initial-scale=1.0" name="viewport"><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={theme:{extend:{"colors":{"primary-fixed":"#dee0ff","on-secondary-container":"#001f91","secondary-fixed":"#dee0ff","on-secondary":"#ffffff","on-tertiary-fixed":"#251a00","surface-bright":"#f8f9fa","error-container":"#ffdad6","primary-fixed-dim":"#bac3ff","on-tertiary-fixed-variant":"#5a4300","secondary":"#4054c0","on-surface":"#191c1d","background":"#f8f9fa","surface-container-low":"#f3f4f5","surface-container-lowest":"#ffffff","inverse-primary":"#bac3ff","on-error-container":"#93000a","on-error":"#ffffff","surface-variant":"#e1e3e4","tertiary":"#2b1f00","error":"#ba1a1a","on-background":"#191c1d","surface-container-highest":"#e1e3e4","surface-tint":"#4e5a9c","on-tertiary-container":"#bc9b4e","outline-variant":"#c6c5d2","on-secondary-fixed-variant":"#253aa7","tertiary-fixed-dim":"#e6c271","secondary-container":"#7d90ff","on-primary-fixed":"#041255","tertiary-fixed":"#ffdf9a","surface-container":"#edeeef","on-surface-variant":"#454650","surface-dim":"#d9dadb","on-primary-fixed-variant":"#364282","surface-container-high":"#e7e8e9","secondary-fixed-dim":"#bac3ff","outline":"#767681","on-primary":"#ffffff","surface":"#f8f9fa","primary-container":"#243070","primary":"#0b195a","on-tertiary":"#ffffff","inverse-surface":"#2e3132","inverse-on-surface":"#f0f1f2","tertiary-container":"#463300","on-primary-container":"#8f9ae1","on-secondary-fixed":"#00105b"},"borderRadius":{"DEFAULT":"0.25rem","lg":"0.5rem","xl":"0.75rem","full":"9999px"},"spacing":{"gutter":"24px","xl":"80px","lg":"48px","md":"24px","container-max":"1280px","sm":"12px","xs":"4px","base":"8px"},"fontFamily":{"headline-md":["Poppins"],"body-lg":["Inter"],"label-sm":["Inter"],"headline-sm":["Poppins"],"headline-lg-mobile":["Poppins"],"body-md":["Inter"],"label-md":["Inter"],"display-lg":["Poppins"],"body-sm":["Inter"],"headline-lg":["Poppins"]},"fontSize":{"headline-md":["24px",{"lineHeight":"1.4","fontWeight":"600"}],"body-lg":["18px",{"lineHeight":"1.6","fontWeight":"400"}],"label-sm":["12px",{"lineHeight":"1","fontWeight":"500"}],"headline-sm":["20px",{"lineHeight":"1.4","fontWeight":"600"}],"headline-lg-mobile":["28px",{"lineHeight":"1.3","fontWeight":"600"}],"body-md":["16px",{"lineHeight":"1.6","fontWeight":"400"}],"label-md":["14px",{"lineHeight":"1","letterSpacing":"0.05em","fontWeight":"600"}],"display-lg":["48px",{"lineHeight":"1.2","letterSpacing":"-0.02em","fontWeight":"700"}],"body-sm":["14px",{"lineHeight":"1.5","fontWeight":"400"}],"headline-lg":["32px",{"lineHeight":"1.3","fontWeight":"600"}]}}}}</script><link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"></head><body class="bg-background font-body-md text-on-background"><aside class="fixed left-0 top-0 h-full w-72 bg-surface-container-lowest z-50 flex flex-col shadow-[1px_0_10px_rgba(0,0,0,0.02)]"><div class="p-md flex items-center gap-sm mb-lg"><img alt="Logo Stella Gracia School Kupang.png" class="h-10 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AP1WRLswZkvaoIeLaRLr6wc1WrmOmozmjCMmynnGq61IVLZCIXLQsERLbvTXwwgl7fq4jORrgjab5MsqwuJ-qpxJA4z5LkZ3RnTAajserI38jEriGywplhbsF_yW6w_L5n9yBwpH0z_mLsocfqwY8BlOGRDY52CkcnR5OzqSkwrHswztI61vEEhdeXcth9awEPXcB4Igy_Dg1JO1PDN7dpiNL15iBGSMJHwVM-GVMnxJGTa7Mpp3p5-dhNvKlHNQFdF9l0xk_iqZEIxC5g"><span class="font-headline-sm text-primary uppercase">SPMB</span></div><nav class="flex-1 px-md space-y-xs" data-active-classes="bg-primary-container text-on-primary-container font-bold"><div class="text-label-sm text-on-surface-variant/60 uppercase px-md mb-base mt-lg">Applicant Portal</div><a class="flex items-center px-md py-sm rounded-lg transition-all bg-primary-container text-on-primary-container font-bold" data-path="applicant-dashboard" href="#" aria-current="page"><span class="material-symbols-outlined mr-sm">dashboard</span>Dashboard</a><a class="flex items-center px-md py-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-all" data-path="my-application" href="#"><span class="material-symbols-outlined mr-sm">edit_document</span>My Application</a><a class="flex items-center px-md py-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-all" data-path="documents" href="#"><span class="material-symbols-outlined mr-sm">folder_shared</span>Documents</a><a class="flex items-center px-md py-sm rounded-lg transition-all text-on-surface-variant hover:bg-surface-container-high" data-path="payments" href="#"><span class="material-symbols-outlined mr-sm">payments</span>Payments</a><div class="text-label-sm text-on-surface-variant/60 uppercase px-md mb-base mt-lg">Administrator</div><a class="flex items-center px-md py-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-all" data-path="admin-overview" href="#"><span class="material-symbols-outlined mr-sm">monitoring</span>Overview</a><a class="flex items-center px-md py-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-all" data-path="applicants-list" href="#"><span class="material-symbols-outlined mr-sm">group</span>Applicants</a><a class="flex items-center px-md py-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-all" data-path="finance" href="#"><span class="material-symbols-outlined mr-sm">account_balance</span>Finance</a><a class="flex items-center px-md py-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-all" data-path="admissions" href="#"><span class="material-symbols-outlined mr-sm">check_circle</span>Admissions</a></nav><div class="p-md bg-surface-container-low mx-md mb-md rounded-xl"><div class="flex items-center gap-sm"><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div><div><p class="text-label-md text-on-surface">Admission Staff</p><p class="text-label-sm text-on-surface-variant">SGS Kupang</p></div></div></div></aside><div class="pl-72"><header class="fixed top-0 left-72 right-0 h-16 bg-surface/80 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)] z-40 flex items-center justify-between px-lg"><div class="text-headline-sm text-primary">Application System</div><div class="flex items-center gap-md"><button class="text-on-surface-variant hover:text-primary transition-colors"><span class="material-symbols-outlined">search</span></button><button class="text-on-surface-variant hover:text-primary transition-colors relative"><span class="material-symbols-outlined">notifications</span><span class="absolute top-0 right-0 w-2 h-2 bg-error rounded-full"></span></button><div class="w-px h-6 bg-outline-variant"></div><button class="text-on-surface-variant hover:text-primary transition-colors"><span class="material-symbols-outlined">logout</span></button></div></header><main class="relative pt-16 min-h-screen bg-background p-lg"><div class="flex flex-col w-full gap-lg">
+<!-- Dashboard Header -->
+<section class="relative bg-primary-container rounded-2xl overflow-hidden p-lg flex flex-col md:flex-row items-center justify-between gap-lg">
+<div class="absolute top-0 right-0 w-64 h-64 bg-primary-fixed-dim rounded-full blur-3xl opacity-20 -mr-16 -mt-16"></div>
+<div class="absolute bottom-0 left-32 w-48 h-48 bg-secondary-fixed-dim rounded-full blur-3xl opacity-10 -mb-16"></div>
+<div class="relative z-10 flex-1">
+<h1 class="font-headline-lg text-on-primary-container mb-xs">Welcome, <span class="font-bold">Jonathan Doe</span>!</h1>
+<p class="font-body-lg text-on-primary-container/80 max-w-2xl">
+                We're excited to have you start your journey with Stella Gracia School. Your application is currently in progress. Please review your pending tasks below to complete your submission.
+            </p>
+</div>
+<!-- Overall Status Widget -->
+<div class="relative z-10 bg-surface-container-lowest/10 backdrop-blur-md rounded-xl p-md min-w-[280px]">
+<div class="flex justify-between items-center mb-sm">
+<span class="font-label-md text-on-primary-container uppercase tracking-wider">Overall Progress</span>
+<span class="font-headline-sm text-on-primary-container">45%</span>
+</div>
+<div class="w-full h-2 bg-on-primary-container/20 rounded-full overflow-hidden mb-xs">
+<div class="h-full bg-primary-fixed rounded-full" style="width: 45%;"></div>
+</div>
+<p class="font-label-sm text-on-primary-container/70 text-right">3 of 7 tasks completed</p>
+</div>
+</section>
+<!-- Main Content Grid -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-lg">
+<!-- Left Column: Actions & Timeline -->
+<div class="lg:col-span-8 flex flex-col gap-lg">
+<!-- Quick Actions Grid (Bento style) -->
+<div>
+<h2 class="font-headline-md text-on-background mb-md flex items-center gap-sm">
+<span class="material-symbols-outlined text-primary">bolt</span> Action Required
+                </h2>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-md">
+<!-- Action Card 1: Form -->
+<a class="group relative bg-surface-container-lowest p-md rounded-xl shadow-sm hover:shadow-md transition-all duration-300 flex flex-col overflow-hidden" href="#">
+<div class="absolute top-0 right-0 w-24 h-24 bg-error-container rounded-full blur-2xl opacity-20 group-hover:scale-150 transition-transform duration-500"></div>
+<div class="w-12 h-12 rounded-lg bg-surface-container-low flex items-center justify-center mb-md group-hover:bg-primary-fixed transition-colors">
+<span class="material-symbols-outlined text-primary text-[28px]">edit_document</span>
+</div>
+<h3 class="font-headline-sm text-on-surface mb-xs group-hover:text-primary transition-colors">Complete Application Form</h3>
+<p class="font-body-sm text-on-surface-variant flex-1 mb-md">Fill out personal, academic, and family details.</p>
+<div class="flex items-center justify-between mt-auto">
+<span class="inline-flex items-center gap-xs px-sm py-xs rounded-full bg-error-container text-on-error-container font-label-sm">
+<span class="w-2 h-2 rounded-full bg-error"></span> Incomplete
+                            </span>
+<span class="material-symbols-outlined text-primary group-hover:translate-x-1 transition-transform">arrow_forward</span>
+</div>
+</a>
+<!-- Action Card 2: Documents -->
+<a class="group relative bg-surface-container-lowest p-md rounded-xl shadow-sm hover:shadow-md transition-all duration-300 flex flex-col overflow-hidden" href="#">
+<div class="w-12 h-12 rounded-lg bg-surface-container-low flex items-center justify-center mb-md group-hover:bg-primary-fixed transition-colors">
+<span class="material-symbols-outlined text-primary text-[28px]">folder_shared</span>
+</div>
+<h3 class="font-headline-sm text-on-surface mb-xs group-hover:text-primary transition-colors">Upload Documents</h3>
+<p class="font-body-sm text-on-surface-variant flex-1 mb-md">Submit birth certificate, previous reports, and ID.</p>
+<div class="flex items-center justify-between mt-auto">
+<span class="inline-flex items-center gap-xs px-sm py-xs rounded-full bg-tertiary-fixed-dim text-on-tertiary-fixed-variant font-label-sm">
+<span class="w-2 h-2 rounded-full bg-tertiary"></span> Action Needed
+                            </span>
+<span class="material-symbols-outlined text-primary group-hover:translate-x-1 transition-transform">arrow_forward</span>
+</div>
+</a>
+<!-- Action Card 3: Payments -->
+<a class="group relative bg-surface-container-lowest p-md rounded-xl shadow-sm hover:shadow-md transition-all duration-300 flex flex-col overflow-hidden" href="#">
+<div class="w-12 h-12 rounded-lg bg-surface-container-low flex items-center justify-center mb-md group-hover:bg-primary-fixed transition-colors">
+<span class="material-symbols-outlined text-primary text-[28px]">payments</span>
+</div>
+<h3 class="font-headline-sm text-on-surface mb-xs group-hover:text-primary transition-colors">Registration Fee</h3>
+<p class="font-body-sm text-on-surface-variant flex-1 mb-md">Pay the initial registration fee to secure your slot.</p>
+<div class="flex items-center justify-between mt-auto">
+<span class="inline-flex items-center gap-xs px-sm py-xs rounded-full bg-surface-container-high text-on-surface-variant font-label-sm">
+<span class="w-2 h-2 rounded-full bg-outline"></span> Pending Step 1
+                            </span>
+<span class="material-symbols-outlined text-outline">lock</span>
+</div>
+</a>
+<!-- Action Card 4: Guide -->
+<div class="relative bg-surface p-md rounded-xl shadow-sm flex flex-col overflow-hidden">
+<div class="absolute inset-0 bg-cover bg-center opacity-10" data-alt="A subtle, abstract geometric pattern representing academic growth, utilizing the brand's primary deep blue and tertiary gold colors, blurred gently to serve as a background for an information card." style="background-image: url(&quot;https://lh3.googleusercontent.com/aida-public/AB6AXuAEVWsDI4oCfX4pAShDbRO3AVrkWuIfFkvBG0GtTbX9xUWW5QtwXc5mvZNHezmQtgGQXj1gF9zD8OV5zFwba-coED-ZPj2Dk4ypvNBijVhMWt2JyUNfjrDmODiyd91eOphzzENdB_aOnsB0DsZk8jWjR2ZmbqBkbvvhmwvrck_zZfsX8-rqCoUlf5mVPOvTlG6k6zSCWFdQ_uSYdJWQ9MLXmg1zvAcaYigUxioa9y_Df_2mBmZJS3N4&quot;);"></div>
+<div class="relative z-10">
+<div class="w-12 h-12 rounded-lg bg-surface-container-lowest shadow-sm flex items-center justify-center mb-md">
+<span class="material-symbols-outlined text-tertiary-container text-[28px]">menu_book</span>
+</div>
+<h3 class="font-headline-sm text-on-surface mb-xs">Admission Guide 2024</h3>
+<p class="font-body-sm text-on-surface-variant mb-md">Everything you need to know about the process.</p>
+<button class="text-primary font-label-md hover:text-primary-container transition-colors flex items-center gap-xs mt-auto">
+<span class="material-symbols-outlined text-[18px]">download</span> Download PDF
+                            </button>
+</div>
+</div>
+</div>
+</div>
+<!-- Admission Timeline -->
+<div class="bg-surface-container-lowest rounded-2xl p-lg shadow-sm mt-md">
+<h2 class="font-headline-md text-on-background mb-lg flex items-center gap-sm">
+<span class="material-symbols-outlined text-primary">route</span> Admission Timeline
+                </h2>
+<div class="relative">
+<!-- Connecting Line -->
+<div class="absolute left-6 top-8 bottom-8 w-0.5 bg-surface-container-high"></div>
+<div class="absolute left-6 top-8 h-1/3 w-0.5 bg-primary"></div>
+<div class="space-y-lg relative z-10">
+<!-- Step 1 (Completed) -->
+<div class="flex gap-md group">
+<div class="w-12 h-12 rounded-full bg-primary flex items-center justify-center shadow-md relative z-10 shrink-0">
+<span class="material-symbols-outlined text-on-primary">check</span>
+</div>
+<div class="pt-2 flex-1">
+<h4 class="font-headline-sm text-on-surface">Account Created</h4>
+<p class="font-body-sm text-on-surface-variant">Your application portal account was successfully registered.</p>
+<span class="font-label-sm text-outline mt-xs block">Oct 12, 2023</span>
+</div>
+</div>
+<!-- Step 2 (Current) -->
+<div class="flex gap-md group">
+<div class="w-12 h-12 rounded-full bg-surface-container-lowest shadow-[0_0_0_2px_#0b195a_inset] flex items-center justify-center relative z-10 shrink-0">
+<span class="w-4 h-4 rounded-full bg-primary animate-pulse"></span>
+</div>
+<div class="pt-2 flex-1">
+<h4 class="font-headline-sm text-primary">Application Submission</h4>
+<p class="font-body-sm text-on-surface-variant">Complete forms and upload all required documents.</p>
+<div class="mt-sm p-sm bg-surface-container-low rounded-lg inline-block">
+<span class="font-label-sm text-on-surface flex items-center gap-xs">
+<span class="material-symbols-outlined text-[16px] text-error">event</span> Deadline: Nov 15, 2023
+                                    </span>
+</div>
+</div>
+</div>
+<!-- Step 3 (Upcoming) -->
+<div class="flex gap-md group opacity-60">
+<div class="w-12 h-12 rounded-full bg-surface-container-high flex items-center justify-center relative z-10 shrink-0">
+<span class="font-label-md text-on-surface-variant">3</span>
+</div>
+<div class="pt-2 flex-1">
+<h4 class="font-headline-sm text-on-surface">Interview &amp; Assessment</h4>
+<p class="font-body-sm text-on-surface-variant">Schedule an online or offline interview with our academic team.</p>
+</div>
+</div>
+<!-- Step 4 (Upcoming) -->
+<div class="flex gap-md group opacity-60">
+<div class="w-12 h-12 rounded-full bg-surface-container-high flex items-center justify-center relative z-10 shrink-0">
+<span class="font-label-md text-on-surface-variant">4</span>
+</div>
+<div class="pt-2 flex-1">
+<h4 class="font-headline-sm text-on-surface">Final Result</h4>
+<p class="font-body-sm text-on-surface-variant">Admission decision and enrollment instructions.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Column: Documents & Support -->
+<div class="lg:col-span-4 flex flex-col gap-lg">
+<!-- Documents Checklist -->
+<div class="bg-surface-container-lowest rounded-2xl p-md shadow-sm">
+<div class="flex items-center justify-between mb-md">
+<h2 class="font-headline-sm text-on-surface">Documents</h2>
+<a class="text-primary font-label-md hover:underline" href="#">View All</a>
+</div>
+<div class="space-y-sm">
+<!-- Doc Item: Verified -->
+<div class="flex items-center gap-sm p-sm rounded-lg hover:bg-surface-container-low transition-colors">
+<div class="w-10 h-10 rounded-full bg-primary-fixed flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-on-primary-fixed">check_circle</span>
+</div>
+<div class="flex-1 min-w-0">
+<p class="font-label-md text-on-surface truncate">Student Photo</p>
+<p class="font-label-sm text-primary">Verified</p>
+</div>
+</div>
+<!-- Doc Item: Pending Review -->
+<div class="flex items-center gap-sm p-sm rounded-lg hover:bg-surface-container-low transition-colors">
+<div class="w-10 h-10 rounded-full bg-tertiary-fixed-dim flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-on-tertiary-fixed-variant">hourglass_empty</span>
+</div>
+<div class="flex-1 min-w-0">
+<p class="font-label-md text-on-surface truncate">Birth Certificate</p>
+<p class="font-label-sm text-on-tertiary-fixed-variant">Under Review</p>
+</div>
+</div>
+<!-- Doc Item: Not Uploaded -->
+<div class="flex items-center gap-sm p-sm rounded-lg bg-error-container/30 hover:bg-error-container/50 transition-colors">
+<div class="w-10 h-10 rounded-full bg-error-container flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-on-error-container">upload_file</span>
+</div>
+<div class="flex-1 min-w-0">
+<p class="font-label-md text-on-surface truncate">Previous Report Card</p>
+<p class="font-label-sm text-error">Missing</p>
+</div>
+<button class="w-8 h-8 rounded-full bg-surface-container-lowest shadow-sm flex items-center justify-center text-primary hover:bg-primary hover:text-on-primary transition-colors">
+<span class="material-symbols-outlined text-[18px]">add</span>
+</button>
+</div>
+</div>
+<!-- Circular Progress Chart for Docs -->
+<div class="mt-lg pt-md flex items-center justify-center gap-md">
+<div class="relative w-20 h-20">
+<svg class="w-full h-full -rotate-90" viewBox="0 0 36 36">
+<path class="text-surface-container-high" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-width="3"></path>
+<path class="text-primary" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-dasharray="33, 100" stroke-width="3"></path>
+</svg>
+<div class="absolute inset-0 flex items-center justify-center">
+<span class="font-headline-sm text-on-surface">1/3</span>
+</div>
+</div>
+<div>
+<p class="font-label-md text-on-surface">Document Status</p>
+<p class="font-body-sm text-on-surface-variant">2 documents remaining</p>
+</div>
+</div>
+</div>
+<!-- Support Card -->
+<div class="relative bg-surface-container-lowest rounded-2xl p-md shadow-sm overflow-hidden">
+<div class="absolute top-0 right-0 w-32 h-32 bg-cover bg-center opacity-20 [mask-image:linear-gradient(to_left,black,transparent)]" data-alt="A clean, brightly lit modern school reception desk with a friendly staff member slightly out of focus in the background, communicating helpfulness and academic professionalism." style="background-image: url(&quot;https://lh3.googleusercontent.com/aida-public/AB6AXuCqESpaJCGCqURRy3k6DVmGe45da7Zv-gVIW9Ld2opCjDd-CDZrAAixiiE3z9UPRif9tL1qReFMlwidJ113YldfAUW9CBphs7CVTjde9g8NB-X-pUnTQv9mSL-FlWmfimDJh9oYhk6l7IArClFf_JfDGhXwUgnuPQZZH6tMWQyFlUB8ydZYHjyy4e2TCw1OGDgi_9b5az7MtJ6VRoI6uPH5WfwfRhlRqVcv3sdTXowhb3cnIb6vaUyV&quot;);"></div>
+<div class="relative z-10">
+<div class="w-10 h-10 rounded-full bg-tertiary-container flex items-center justify-center mb-md">
+<span class="material-symbols-outlined text-on-tertiary-container">support_agent</span>
+</div>
+<h3 class="font-headline-sm text-on-surface mb-xs">Need Assistance?</h3>
+<p class="font-body-sm text-on-surface-variant mb-md">Our admission team is here to help you through the process.</p>
+<div class="space-y-xs">
+<a class="flex items-center gap-sm p-xs rounded-lg hover:bg-surface-container-low transition-colors" href="mailto:admissions@sgs.edu">
+<span class="material-symbols-outlined text-[18px] text-outline">mail</span>
+<span class="font-label-md text-on-surface">admissions@sgs.edu</span>
+</a>
+<a class="flex items-center gap-sm p-xs rounded-lg hover:bg-surface-container-low transition-colors" href="tel:+628112345678">
+<span class="material-symbols-outlined text-[18px] text-outline">call</span>
+<span class="font-label-md text-on-surface">+62 811 2345 678</span>
+</a>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div></main></div>
+
+</body></html>

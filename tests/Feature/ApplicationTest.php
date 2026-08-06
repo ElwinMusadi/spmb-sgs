@@ -179,4 +179,34 @@ class ApplicationTest extends TestCase
             'payment_method' => 'mandiri',
         ]);
     }
+
+    public function test_user_can_jump_to_a_reached_step_via_stepper(): void
+    {
+        $user = User::factory()->create();
+        Application::factory()->create([
+            'user_id' => $user->id,
+            'current_step' => 4,
+        ]);
+
+        Livewire::actingAs($user)
+            ->test('pages::application.my-application')
+            ->assertSet('currentStep', 4)
+            ->assertSet('maxStep', 4)
+            ->call('goToStep', 2)
+            ->assertSet('currentStep', 2);
+    }
+
+    public function test_user_cannot_jump_to_a_step_beyond_reached(): void
+    {
+        $user = User::factory()->create();
+        Application::factory()->create([
+            'user_id' => $user->id,
+            'current_step' => 2,
+        ]);
+
+        Livewire::actingAs($user)
+            ->test('pages::application.my-application')
+            ->call('goToStep', 4)
+            ->assertSet('currentStep', 2);
+    }
 }

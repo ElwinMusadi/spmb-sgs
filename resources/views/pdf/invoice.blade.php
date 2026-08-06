@@ -34,9 +34,15 @@
     }
 
     .brand {
-      font-size: 22px;
+      font-size: 20px;
       font-weight: bold;
       color: #19376d;
+    }
+
+    .brand-logo {
+      width: 46px;
+      height: 46px;
+      vertical-align: middle;
     }
 
     .brand-sub {
@@ -187,9 +193,20 @@
     <table class="header">
       <tr>
         <td>
-          <div class="brand">SGS</div>
-          <div class="brand-sub">Sekolah Global Sejahtera</div>
-          <div class="brand-sub">Student Admission Registration</div>
+          <table>
+            <tr>
+              @if ($logoData)
+                <td style="padding-right: 12px;">
+                  <img src="{{ $logoData }}" alt="Logo Stella Gracia School" class="brand-logo">
+                </td>
+              @endif
+              <td>
+                <div class="brand">Stella Gracia School</div>
+                <div class="brand-sub">Stella Gracia School Kupang</div>
+                <div class="brand-sub">Sistem Penerimaan Murid Baru</div>
+              </td>
+            </tr>
+          </table>
         </td>
         <td>
           <div class="invoice-title">Invoice</div>

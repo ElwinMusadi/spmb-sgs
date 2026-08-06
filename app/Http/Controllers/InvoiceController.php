@@ -56,8 +56,23 @@ class InvoiceController extends Controller
             'total' => $total,
             'issuedAt' => $application->created_at ?? now(),
             'dueAt' => ($application->created_at ?? now())->copy()->addDays(7),
+            'logoData' => $this->brandLogoData(),
         ])->setPaper('a4');
 
         return $pdf->download($invoiceNumber.'.pdf');
+    }
+
+    /**
+     * Get the brand logo as a base64 data URI for embedding in the PDF.
+     */
+    private function brandLogoData(): ?string
+    {
+        $path = public_path('images/logo-stella-gracia.png');
+
+        if (! is_file($path)) {
+            return null;
+        }
+
+        return 'data:image/png;base64,'.base64_encode((string) file_get_contents($path));
     }
 }
