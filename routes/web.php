@@ -15,6 +15,10 @@ Route::get('/', function () {
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::livewire('dashboard', 'pages::dashboard')->name('dashboard');
 
+    Route::livewire('admin/dashboard', 'pages::admin.dashboard')->name('admin.dashboard');
+
+    Route::livewire('admin/users', 'pages::admin.users')->name('admin.users');
+
     Route::livewire('application', 'pages::application.my-application')->name(
         'application',
     );

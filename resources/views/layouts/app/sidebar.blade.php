@@ -24,6 +24,19 @@
           {{ __('My Application') }}
         </flux:sidebar.item>
       </flux:sidebar.group>
+
+      @if (auth()->user()->isSuperAdmin())
+        <flux:sidebar.group :heading="__('Administrator')" class="grid">
+          <flux:sidebar.item icon="chart-bar" :href="route('admin.dashboard')"
+            :current="request()->routeIs('admin.dashboard')" wire:navigate>
+            {{ __('Admin Overview') }}
+          </flux:sidebar.item>
+          <flux:sidebar.item icon="users" :href="route('admin.users')" :current="request()->routeIs('admin.users')"
+            wire:navigate>
+            {{ __('User Management') }}
+          </flux:sidebar.item>
+        </flux:sidebar.group>
+      @endif
     </flux:sidebar.nav>
 
     <flux:spacer />

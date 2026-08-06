@@ -8,6 +8,18 @@ use Livewire\Component;
 
 new #[Title('Dashboard')] class extends Component {
     /**
+     * Redirect super administrators to their own dashboard.
+     */
+    public function mount(): mixed
+    {
+        if (Auth::user()->isSuperAdmin()) {
+            return $this->redirectRoute('admin.dashboard', navigate: true);
+        }
+
+        return null;
+    }
+
+    /**
      * Required document types and their display labels.
      *
      * @var array<string, string>
