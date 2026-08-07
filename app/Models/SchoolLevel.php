@@ -40,4 +40,9 @@ class SchoolLevel extends Model
     {
         return $this->hasMany(Application::class);
     }
+
+    public function grades(): HasMany
+    {
+        return $this->hasMany(Grade::class)->orderBy('sort_order');
+    }
 }

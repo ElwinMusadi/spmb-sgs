@@ -30,6 +30,7 @@ class DatabaseSeeder extends Seeder
             PermissionSeeder::class,
             PaymentAccountSeeder::class,
             PaymentFeeSeeder::class,
+            AcademicSelectionSeeder::class,
         ]);
     }
 }

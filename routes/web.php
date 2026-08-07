@@ -25,6 +25,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::livewire('admin/finance', 'pages::admin.finance')->name('admin.finance');
 
+    Route::livewire('admin/academic-selection', 'pages::admin.academic-selection')->name('admin.academic-selection');
+
     Route::livewire('application', 'pages::application.my-application')->name(
         'application',
     );

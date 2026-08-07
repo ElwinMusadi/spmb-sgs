@@ -32,7 +32,7 @@ new #[Title('Applicants')] class extends Component {
      */
     public function mount(): mixed
     {
-        if (! Auth::user()->can('applicants.view')) {
+        if (!Auth::user()->can('applicants.view')) {
             return $this->redirectRoute('dashboard', navigate: true);
         }
 
@@ -76,11 +76,11 @@ new #[Title('Applicants')] class extends Component {
                 $query->where(function ($sub): void {
                     $sub->where('student_full_name', 'like', "%{$this->search}%")
                         ->orWhere('student_nisn', 'like', "%{$this->search}%")
-                        ->orWhereHas('user', fn ($u) => $u->where('email', 'like', "%{$this->search}%"));
+                        ->orWhereHas('user', fn($u) => $u->where('email', 'like', "%{$this->search}%"));
                 });
             })
-            ->when($this->statusFilter !== '', fn ($query) => $query->where('status', $this->statusFilter))
-            ->when($this->levelFilter !== '', fn ($query) => $query->where('school_level_id', $this->levelFilter))
+            ->when($this->statusFilter !== '', fn($query) => $query->where('status', $this->statusFilter))
+            ->when($this->levelFilter !== '', fn($query) => $query->where('school_level_id', $this->levelFilter))
             ->latest('updated_at')
             ->paginate(10);
     }
@@ -93,9 +93,7 @@ new #[Title('Applicants')] class extends Component {
     #[Computed]
     public function statusCounts(): array
     {
-        $counts = Application::selectRaw('status, COUNT(*) as aggregate')
-            ->groupBy('status')
-            ->pluck('aggregate', 'status');
+        $counts = Application::selectRaw('status, COUNT(*) as aggregate')->groupBy('status')->pluck('aggregate', 'status');
 
         return [
             'all' => Application::count(),
@@ -112,12 +110,11 @@ new #[Title('Applicants')] class extends Component {
     #[Computed]
     public function selectedApplication(): ?Application
     {
-        if (! $this->selectedId) {
+        if (!$this->selectedId) {
             return null;
         }
 
-        return Application::with(['schoolLevel', 'academicYear', 'user', 'documents'])
-            ->find($this->selectedId);
+        return Application::with(['schoolLevel', 'academicYear', 'user', 'documents'])->find($this->selectedId);
     }
 
     /**
@@ -393,7 +390,7 @@ new #[Title('Applicants')] class extends Component {
   </div>
 
   {{-- Detail Drawer --}}
-  <flux:modal wire:model="showDetail" variant="flyout" class="min-w-[32rem]">
+  <flux:modal wire:model="showDetail" variant="flyout" class="min-w-lg">
     @if ($this->selectedApplication)
       @php($app = $this->selectedApplication)
       @php($badge = $this->statusBadge($app->status))
@@ -474,7 +471,8 @@ new #[Title('Applicants')] class extends Component {
                 <span class="material-symbols-outlined text-navy text-[20px]">draft</span>
                 <div class="flex-1 min-w-0">
                   <p class="font-body text-sm text-on-surface truncate">{{ $doc->file_name }}</p>
-                  <p class="font-body text-xs text-on-surface-variant uppercase">{{ str_replace('_', ' ', $doc->document_type) }}</p>
+                  <p class="font-body text-xs text-on-surface-variant uppercase">
+                    {{ str_replace('_', ' ', $doc->document_type) }}</p>
                 </div>
                 <span class="material-symbols-outlined text-on-surface-variant text-[18px]">open_in_new</span>
               </a>
@@ -496,9 +494,11 @@ new #[Title('Applicants')] class extends Component {
           @if ($this->canReview)
             @if ($app->status === 'submitted')
               <div class="flex gap-3">
-                <flux:button wire:click="admit({{ $app->id }})" variant="primary" icon="check" class="flex-1">
+                <flux:button wire:click="admit({{ $app->id }})" variant="primary" icon="check"
+                  class="flex-1">
                   {{ __('Admit') }}</flux:button>
-                <flux:button wire:click="reject({{ $app->id }})" variant="danger" icon="x-mark" class="flex-1">
+                <flux:button wire:click="reject({{ $app->id }})" variant="danger" icon="x-mark"
+                  class="flex-1">
                   {{ __('Reject') }}</flux:button>
               </div>
             @elseif (in_array($app->status, ['admitted', 'rejected']))

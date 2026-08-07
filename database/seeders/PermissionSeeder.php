@@ -36,6 +36,9 @@ class PermissionSeeder extends Seeder
             ['name' => 'users.manage', 'label' => 'Add, edit, and remove users'],
             ['name' => 'roles.manage', 'label' => 'Configure roles and permissions'],
         ],
+        'Academic Selection' => [
+            ['name' => 'academic_selection.manage', 'label' => 'Manage academic years, levels, grades, and required documents'],
+        ],
     ];
 
     /**
@@ -53,6 +56,7 @@ class PermissionSeeder extends Seeder
             'applicants.review',
             'documents.view',
             'documents.verify',
+            'academic_selection.manage',
         ],
         'Finance' => [
             'dashboard.view',

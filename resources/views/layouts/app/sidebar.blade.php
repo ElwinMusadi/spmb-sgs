@@ -47,6 +47,12 @@
               {{ __('Finance') }}
             </flux:sidebar.item>
           @endcan
+          @can('academic_selection.manage')
+            <flux:sidebar.item icon="adjustments-horizontal" :href="route('admin.academic-selection')"
+              :current="request()->routeIs('admin.academic-selection')" wire:navigate>
+              {{ __('Academic Selection') }}
+            </flux:sidebar.item>
+          @endcan
           @can('users.manage')
             <flux:sidebar.item icon="user-group" :href="route('admin.users')"
               :current="request()->routeIs('admin.users')" wire:navigate>

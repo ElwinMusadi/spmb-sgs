@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\AcademicYear;
 use App\Models\Application;
+use App\Models\RequiredDocument;
 use App\Models\SchoolLevel;
 use App\Models\User;
 use Database\Seeders\PaymentFeeSeeder;
@@ -27,6 +28,17 @@ class ApplicationTest extends TestCase
         }
 
         $this->seed(PaymentFeeSeeder::class);
+
+        foreach (['akta_kelahiran', 'kartu_keluarga', 'ijazah', 'pas_foto'] as $sort => $type) {
+            RequiredDocument::create([
+                'document_type' => $type,
+                'name' => ucwords(str_replace('_', ' ', $type)),
+                'allowed_extensions' => $type === 'pas_foto' ? ['jpg', 'jpeg', 'png'] : ['pdf', 'jpg', 'jpeg', 'png'],
+                'is_required' => true,
+                'is_active' => true,
+                'sort_order' => $sort + 1,
+            ]);
+        }
     }
 
     /**

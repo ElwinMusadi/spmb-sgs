@@ -3,6 +3,8 @@
 use App\Models\AcademicYear;
 use App\Models\Application;
 use App\Models\SchoolLevel;
+use App\Models\Grade;
+use App\Models\RequiredDocument;
 use App\Services\PaymentFeeService;
 use Flux\Flux;
 use Illuminate\Support\Facades\Auth;
@@ -429,17 +431,16 @@ new #[Title('My Application')] class extends Component {
             $this->maxStep = max($this->maxStep, 3);
             Flux::toast(variant: 'success', text: __('Form saved! Please upload required documents.'));
         } elseif ($this->currentStep === 3) {
-            $this->validate(
-                [
-                    'doc_akta_kelahiran' => [$this->has_akta_kelahiran ? 'nullable' : 'required', 'file', 'mimes:pdf,jpg,jpeg,png', 'max:5120'],
-                    'doc_kartu_keluarga' => [$this->has_kartu_keluarga ? 'nullable' : 'required', 'file', 'mimes:pdf,jpg,jpeg,png', 'max:5120'],
-                    'doc_ijazah' => [$this->has_ijazah ? 'nullable' : 'required', 'file', 'mimes:pdf,jpg,jpeg,png', 'max:5120'],
-                    'doc_pas_foto' => [$this->has_pas_foto ? 'nullable' : 'required', 'file', 'mimes:jpg,jpeg,png', 'max:5120'],
-                ],
-                [
-                    'doc_pas_foto.mimes' => __('Pas Foto must be an image (JPEG, JPG, PNG).'),
-                ],
-            );
+            $documentRules = [];
+            foreach (['akta_kelahiran', 'kartu_keluarga', 'ijazah', 'pas_foto'] as $type) {
+                $document = $this->requiredDocuments->firstWhere('document_type', $type);
+                $hasDocument = $this->{'has_'.$type};
+                $extensions = $document?->allowed_extensions ?? ['pdf', 'jpg', 'jpeg', 'png'];
+                $required = ($document?->is_required ?? true) && ! $hasDocument ? ['required'] : ['nullable'];
+                $documentRules['doc_'.$type] = [...$required, 'file', 'mimes:'.implode(',', $extensions), 'max:5120'];
+            }
+
+            $this->validate($documentRules);
 
             $application = Auth::user()->applications()->findOrFail($this->applicationId);
             $year = date('Y');
@@ -501,6 +502,44 @@ new #[Title('My Application')] class extends Component {
     public function schoolLevels()
     {
         return SchoolLevel::where('is_active', true)->get();
+    }
+
+    #[Computed]
+    public function grades()
+    {
+        return Grade::where('is_active', true)
+            ->when($this->school_level_id, fn ($query) => $query->where('school_level_id', $this->school_level_id))
+            ->orderBy('sort_order')
+            ->get();
+    }
+
+    #[Computed]
+    public function requiredDocuments()
+    {
+        return RequiredDocument::where('is_active', true)->orderBy('sort_order')->get();
+    }
+
+    public function documentExtensions(string $type): string
+    {
+        return collect($this->requiredDocuments->firstWhere('document_type', $type)?->allowed_extensions ?? [])
+            ->map(fn (string $extension): string => '.'.$extension)
+            ->implode(',');
+    }
+
+    public function documentLabel(string $type): string
+    {
+        return $this->requiredDocuments->firstWhere('document_type', $type)?->name ?? str_replace('_', ' ', ucfirst($type));
+    }
+
+    public function documentIsRequired(string $type): bool
+    {
+        return (bool) ($this->requiredDocuments->firstWhere('document_type', $type)?->is_required ?? true);
+    }
+
+    public function documentValidationExtensions(string $type): string
+    {
+        return collect($this->requiredDocuments->firstWhere('document_type', $type)?->allowed_extensions ?? [])
+            ->implode(',');
     }
 
     /**
@@ -719,12 +758,9 @@ new #[Title('My Application')] class extends Component {
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div class="flex flex-col gap-1.5">
               <flux:select wire:model="grade_level" :label="__('Grade Level')" :placeholder="__('Select Grade')">
-                <flux:select.option value="Grade 1">Grade 1</flux:select.option>
-                <flux:select.option value="Grade 2">Grade 2</flux:select.option>
-                <flux:select.option value="Grade 3">Grade 3</flux:select.option>
-                <flux:select.option value="Grade 4">Grade 4</flux:select.option>
-                <flux:select.option value="Grade 5">Grade 5</flux:select.option>
-                <flux:select.option value="Grade 6">Grade 6</flux:select.option>
+                @foreach ($this->grades as $grade)
+                  <flux:select.option value="{{ $grade->name }}">{{ $grade->name }}</flux:select.option>
+                @endforeach
               </flux:select>
             </div>
             <div class="flex flex-col gap-1.5">
@@ -903,8 +939,8 @@ new #[Title('My Application')] class extends Component {
                   <span class="material-symbols-outlined">description</span>
                 </div>
                 <div>
-                  <h4 class="font-semibold text-on-surface text-sm">{{ __('Akta Kelahiran') }}</h4>
-                  <p class="text-xs text-on-surface-variant">{{ __('PDF, JPG, PNG') }}</p>
+                  <h4 class="font-semibold text-on-surface text-sm">{{ $this->documentLabel('akta_kelahiran') }}</h4>
+                  <p class="text-xs text-on-surface-variant">{{ strtoupper($this->documentExtensions('akta_kelahiran')) }}</p>
                   @if ($has_akta_kelahiran)
                     <span class="inline-flex items-center gap-1 text-xs font-semibold text-green-600 mt-1">
                       <span class="material-symbols-outlined text-[14px]">check_circle</span>
@@ -936,7 +972,7 @@ new #[Title('My Application')] class extends Component {
                   </div>
                 </div>
               @else
-                <flux:input type="file" wire:model="doc_akta_kelahiran" accept=".pdf,.jpg,.jpeg,.png" />
+                <flux:input type="file" wire:model="doc_akta_kelahiran" accept="{{ $this->documentExtensions('akta_kelahiran') }}" />
                 <div wire:loading wire:target="doc_akta_kelahiran"
                   class="text-sm text-navy mt-1 font-semibold flex items-center gap-1">
                   <span class="material-symbols-outlined text-[16px] animate-spin">progress_activity</span>
@@ -955,8 +991,8 @@ new #[Title('My Application')] class extends Component {
                   <span class="material-symbols-outlined">group</span>
                 </div>
                 <div>
-                  <h4 class="font-semibold text-on-surface text-sm">{{ __('Kartu Keluarga') }}</h4>
-                  <p class="text-xs text-on-surface-variant">{{ __('PDF, JPG, PNG') }}</p>
+                  <h4 class="font-semibold text-on-surface text-sm">{{ $this->documentLabel('kartu_keluarga') }}</h4>
+                  <p class="text-xs text-on-surface-variant">{{ strtoupper($this->documentExtensions('kartu_keluarga')) }}</p>
                   @if ($has_kartu_keluarga)
                     <span class="inline-flex items-center gap-1 text-xs font-semibold text-green-600 mt-1">
                       <span class="material-symbols-outlined text-[14px]">check_circle</span>
@@ -988,7 +1024,7 @@ new #[Title('My Application')] class extends Component {
                   </div>
                 </div>
               @else
-                <flux:input type="file" wire:model="doc_kartu_keluarga" accept=".pdf,.jpg,.jpeg,.png" />
+                <flux:input type="file" wire:model="doc_kartu_keluarga" accept="{{ $this->documentExtensions('kartu_keluarga') }}" />
                 <div wire:loading wire:target="doc_kartu_keluarga"
                   class="text-sm text-navy mt-1 font-semibold flex items-center gap-1">
                   <span class="material-symbols-outlined text-[16px] animate-spin">progress_activity</span>
@@ -1007,8 +1043,8 @@ new #[Title('My Application')] class extends Component {
                   <span class="material-symbols-outlined">school</span>
                 </div>
                 <div>
-                  <h4 class="font-semibold text-on-surface text-sm">{{ __('Ijazah & Transkrip Nilai') }}</h4>
-                  <p class="text-xs text-on-surface-variant">{{ __('PDF, JPG, PNG') }}</p>
+                  <h4 class="font-semibold text-on-surface text-sm">{{ $this->documentLabel('ijazah') }}</h4>
+                  <p class="text-xs text-on-surface-variant">{{ strtoupper($this->documentExtensions('ijazah')) }}</p>
                   @if ($has_ijazah)
                     <span class="inline-flex items-center gap-1 text-xs font-semibold text-green-600 mt-1">
                       <span class="material-symbols-outlined text-[14px]">check_circle</span>
@@ -1040,7 +1076,7 @@ new #[Title('My Application')] class extends Component {
                   </div>
                 </div>
               @else
-                <flux:input type="file" wire:model="doc_ijazah" accept=".pdf,.jpg,.jpeg,.png" />
+                <flux:input type="file" wire:model="doc_ijazah" accept="{{ $this->documentExtensions('ijazah') }}" />
                 <div wire:loading wire:target="doc_ijazah"
                   class="text-sm text-navy mt-1 font-semibold flex items-center gap-1">
                   <span class="material-symbols-outlined text-[16px] animate-spin">progress_activity</span>
@@ -1059,8 +1095,8 @@ new #[Title('My Application')] class extends Component {
                   <span class="material-symbols-outlined">portrait</span>
                 </div>
                 <div>
-                  <h4 class="font-semibold text-on-surface text-sm">{{ __('Pas Foto 4x6') }}</h4>
-                  <p class="text-xs text-on-surface-variant">{{ __('JPG, PNG Only') }}</p>
+                  <h4 class="font-semibold text-on-surface text-sm">{{ $this->documentLabel('pas_foto') }}</h4>
+                  <p class="text-xs text-on-surface-variant">{{ strtoupper($this->documentExtensions('pas_foto')) }}</p>
                   @if ($has_pas_foto)
                     <span class="inline-flex items-center gap-1 text-xs font-semibold text-green-600 mt-1">
                       <span class="material-symbols-outlined text-[14px]">check_circle</span>
@@ -1092,7 +1128,7 @@ new #[Title('My Application')] class extends Component {
                   </div>
                 </div>
               @else
-                <flux:input type="file" wire:model="doc_pas_foto" accept=".jpg,.jpeg,.png" />
+                <flux:input type="file" wire:model="doc_pas_foto" accept="{{ $this->documentExtensions('pas_foto') }}" />
                 <div wire:loading wire:target="doc_pas_foto"
                   class="text-sm text-navy mt-1 font-semibold flex items-center gap-1">
                   <span class="material-symbols-outlined text-[16px] animate-spin">progress_activity</span>
