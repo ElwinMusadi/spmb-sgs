@@ -6,19 +6,43 @@ use App\Models\AcademicYear;
 use App\Models\Application;
 use App\Models\SchoolLevel;
 use App\Models\User;
+use Database\Seeders\PaymentFeeSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Livewire;
+use Spatie\Permission\Models\Role;
 use Tests\TestCase;
 
 class ApplicationTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_my_application_page_is_displayed(): void
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        foreach (['Administrator', 'Student', 'Finance', 'Admission Staff'] as $role) {
+            Role::findOrCreate($role, 'web');
+        }
+
+        $this->seed(PaymentFeeSeeder::class);
+    }
+
+    /**
+     * Create a user with the Student role.
+     */
+    private function student(): User
     {
         $user = User::factory()->create();
+        $user->assignRole('Student');
+
+        return $user;
+    }
+
+    public function test_my_application_page_is_displayed(): void
+    {
+        $user = $this->student();
 
         $response = $this->actingAs($user)->get('/application');
 
@@ -28,7 +52,7 @@ class ApplicationTest extends TestCase
 
     public function test_application_can_be_saved_as_draft(): void
     {
-        $user = User::factory()->create();
+        $user = $this->student();
         $schoolLevel = SchoolLevel::factory()->create();
         $academicYear = AcademicYear::factory()->create();
 
@@ -51,7 +75,7 @@ class ApplicationTest extends TestCase
 
     public function test_application_can_be_saved_and_continued(): void
     {
-        $user = User::factory()->create();
+        $user = $this->student();
         $schoolLevel = SchoolLevel::factory()->create();
         $academicYear = AcademicYear::factory()->create();
 
@@ -86,7 +110,7 @@ class ApplicationTest extends TestCase
 
     public function test_existing_draft_is_loaded_on_mount(): void
     {
-        $user = User::factory()->create();
+        $user = $this->student();
         $application = Application::factory()->create([
             'user_id' => $user->id,
             'student_full_name' => 'Existing Student',
@@ -102,7 +126,7 @@ class ApplicationTest extends TestCase
     {
         Storage::fake('public');
 
-        $user = User::factory()->create();
+        $user = $this->student();
         $application = Application::factory()->create([
             'user_id' => $user->id,
             'current_step' => 3,
@@ -131,7 +155,7 @@ class ApplicationTest extends TestCase
 
     public function test_invoice_pdf_can_be_downloaded_by_owner(): void
     {
-        $user = User::factory()->create();
+        $user = $this->student();
         $application = Application::factory()->create([
             'user_id' => $user->id,
             'current_step' => 4,
@@ -161,7 +185,7 @@ class ApplicationTest extends TestCase
 
     public function test_simulate_payment_persists_paid_status(): void
     {
-        $user = User::factory()->create();
+        $user = $this->student();
         $application = Application::factory()->create([
             'user_id' => $user->id,
             'current_step' => 4,
@@ -182,7 +206,7 @@ class ApplicationTest extends TestCase
 
     public function test_user_can_jump_to_a_reached_step_via_stepper(): void
     {
-        $user = User::factory()->create();
+        $user = $this->student();
         Application::factory()->create([
             'user_id' => $user->id,
             'current_step' => 4,
@@ -198,7 +222,7 @@ class ApplicationTest extends TestCase
 
     public function test_user_cannot_jump_to_a_step_beyond_reached(): void
     {
-        $user = User::factory()->create();
+        $user = $this->student();
         Application::factory()->create([
             'user_id' => $user->id,
             'current_step' => 2,

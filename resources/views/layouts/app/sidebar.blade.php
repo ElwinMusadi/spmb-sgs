@@ -14,31 +14,51 @@
     </flux:sidebar.header>
 
     <flux:sidebar.nav>
-      <flux:sidebar.group :heading="__('Platform')" class="grid">
-        <flux:sidebar.item icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard')"
-          wire:navigate>
-          {{ __('Dashboard') }}
-        </flux:sidebar.item>
-        <flux:sidebar.item icon="document-text" :href="route('application')" :current="request()->routeIs('application')"
-          wire:navigate>
-          {{ __('My Application') }}
-        </flux:sidebar.item>
-      </flux:sidebar.group>
-
-      @if (auth()->user()->isSuperAdmin())
-        <flux:sidebar.group :heading="__('Administrator')" class="grid">
-          <flux:sidebar.item icon="chart-bar" :href="route('admin.dashboard')"
-            :current="request()->routeIs('admin.dashboard')" wire:navigate>
-            {{ __('Admin Overview') }}
-          </flux:sidebar.item>
-          <flux:sidebar.item icon="users" :href="route('admin.users')" :current="request()->routeIs('admin.users')"
+      @if (auth()->user()->isStudent())
+        <flux:sidebar.group :heading="__('Applicant Portal')" class="grid">
+          <flux:sidebar.item icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard')"
             wire:navigate>
-            {{ __('User Management') }}
+            {{ __('Dashboard') }}
           </flux:sidebar.item>
-          <flux:sidebar.item icon="shield-check" :href="route('admin.roles')"
-            :current="request()->routeIs('admin.roles')" wire:navigate>
-            {{ __('Roles & Permissions') }}
+          <flux:sidebar.item icon="document-text" :href="route('application')"
+            :current="request()->routeIs('application')" wire:navigate>
+            {{ __('My Application') }}
           </flux:sidebar.item>
+        </flux:sidebar.group>
+      @endif
+
+      @if (auth()->user()->can('dashboard.view') || auth()->user()->can('applicants.view') || auth()->user()->can('payments.view') || auth()->user()->can('users.manage') || auth()->user()->can('roles.manage'))
+        <flux:sidebar.group :heading="__('Administrator')" class="grid">
+          @can('dashboard.view')
+            <flux:sidebar.item icon="chart-bar" :href="route('admin.dashboard')"
+              :current="request()->routeIs('admin.dashboard')" wire:navigate>
+              {{ __('Admin Overview') }}
+            </flux:sidebar.item>
+          @endcan
+          @can('applicants.view')
+            <flux:sidebar.item icon="users" :href="route('admin.applicants')"
+              :current="request()->routeIs('admin.applicants')" wire:navigate>
+              {{ __('Applicants') }}
+            </flux:sidebar.item>
+          @endcan
+          @can('payments.view')
+            <flux:sidebar.item icon="banknotes" :href="route('admin.finance')"
+              :current="request()->routeIs('admin.finance')" wire:navigate>
+              {{ __('Finance') }}
+            </flux:sidebar.item>
+          @endcan
+          @can('users.manage')
+            <flux:sidebar.item icon="user-group" :href="route('admin.users')"
+              :current="request()->routeIs('admin.users')" wire:navigate>
+              {{ __('User Management') }}
+            </flux:sidebar.item>
+          @endcan
+          @can('roles.manage')
+            <flux:sidebar.item icon="shield-check" :href="route('admin.roles')"
+              :current="request()->routeIs('admin.roles')" wire:navigate>
+              {{ __('Roles & Permissions') }}
+            </flux:sidebar.item>
+          @endcan
         </flux:sidebar.group>
       @endif
     </flux:sidebar.nav>

@@ -1,341 +1,243 @@
 <html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={theme:{extend:{"colors":{"on-tertiary":"#ffffff","on-primary-container":"#8f9ae1","inverse-primary":"#bac3ff","on-secondary-fixed":"#00105b","on-primary-fixed":"#041255","surface-tint":"#4e5a9c","secondary":"#4054c0","secondary-container":"#7d90ff","outline-variant":"#c6c5d2","on-secondary":"#ffffff","tertiary-container":"#463300","on-primary":"#ffffff","primary-container":"#243070","surface-container-lowest":"#ffffff","surface-container-highest":"#e1e3e4","surface-dim":"#d9dadb","tertiary":"#2b1f00","error-container":"#ffdad6","on-surface":"#191c1d","secondary-fixed":"#dee0ff","on-surface-variant":"#454650","primary-fixed-dim":"#bac3ff","surface-bright":"#f8f9fa","surface-variant":"#e1e3e4","on-error-container":"#93000a","error":"#ba1a1a","surface-container":"#edeeef","surface":"#f8f9fa","surface-container-high":"#e7e8e9","background":"#f8f9fa","on-secondary-container":"#001f91","outline":"#767681","tertiary-fixed-dim":"#e6c271","on-tertiary-fixed":"#251a00","on-background":"#191c1d","on-secondary-fixed-variant":"#253aa7","on-error":"#ffffff","inverse-on-surface":"#f0f1f2","surface-container-low":"#f3f4f5","on-primary-fixed-variant":"#364282","primary-fixed":"#dee0ff","inverse-surface":"#2e3132","tertiary-fixed":"#ffdf9a","primary":"#0b195a","on-tertiary-fixed-variant":"#5a4300","secondary-fixed-dim":"#bac3ff","on-tertiary-container":"#bc9b4e"},"borderRadius":{"DEFAULT":"0.25rem","lg":"0.5rem","xl":"0.75rem","full":"9999px"},"spacing":{"xl":"80px","xs":"4px","gutter":"24px","md":"24px","lg":"48px","base":"8px","container-max":"1280px","sm":"12px"},"fontFamily":{"headline-lg":["Poppins"],"body-sm":["Inter"],"headline-lg-mobile":["Poppins"],"label-sm":["Inter"],"display-lg":["Poppins"],"body-md":["Inter"],"headline-md":["Poppins"],"headline-sm":["Poppins"],"body-lg":["Inter"],"label-md":["Inter"]},"fontSize":{"headline-lg":["32px",{"lineHeight":"1.3","fontWeight":"600"}],"body-sm":["14px",{"lineHeight":"1.5","fontWeight":"400"}],"headline-lg-mobile":["28px",{"lineHeight":"1.3","fontWeight":"600"}],"label-sm":["12px",{"lineHeight":"1","fontWeight":"500"}],"display-lg":["48px",{"lineHeight":"1.2","letterSpacing":"-0.02em","fontWeight":"700"}],"body-md":["16px",{"lineHeight":"1.6","fontWeight":"400"}],"headline-md":["24px",{"lineHeight":"1.4","fontWeight":"600"}],"headline-sm":["20px",{"lineHeight":"1.4","fontWeight":"600"}],"body-lg":["18px",{"lineHeight":"1.6","fontWeight":"400"}],"label-md":["14px",{"lineHeight":"1","letterSpacing":"0.05em","fontWeight":"600"}]}}}}</script><link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/></head><body class="bg-background font-body-md text-on-background"><aside class="fixed left-0 top-0 h-full w-72 bg-surface-container-lowest z-50 flex flex-col shadow-[1px_0_10px_rgba(0,0,0,0.02)]"><div class="p-md flex items-center gap-sm mb-lg"><img alt="Logo Stella Gracia School Kupang.png" class="h-10 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AP1WRLswZkvaoIeLaRLr6wc1WrmOmozmjCMmynnGq61IVLZCIXLQsERLbvTXwwgl7fq4jORrgjab5MsqwuJ-qpxJA4z5LkZ3RnTAajserI38jEriGywplhbsF_yW6w_L5n9yBwpH0z_mLsocfqwY8BlOGRDY52CkcnR5OzqSkwrHswztI61vEEhdeXcth9awEPXcB4Igy_Dg1JO1PDN7dpiNL15iBGSMJHwVM-GVMnxJGTa7Mpp3p5-dhNvKlHNQFdF9l0xk_iqZEIxC5g"/><span class="font-headline-sm text-primary uppercase">SPMB</span></div><nav class="flex-1 px-md space-y-xs" data-active-classes="bg-primary-container text-on-primary-container font-bold"><div class="text-label-sm text-on-surface-variant/60 uppercase px-md mb-base mt-lg">Applicant Portal</div><a class="flex items-center px-md py-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-all" data-path="applicant-dashboard" href="#">Dashboard</a><a class="flex items-center px-md py-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-all" data-path="my-application" href="#">My Application</a><a class="flex items-center px-md py-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-all" data-path="documents" href="#">Documents</a><a class="flex items-center px-md py-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-all" data-path="payments" href="#">Payments</a><div class="text-label-sm text-on-surface-variant/60 uppercase px-md mb-base mt-lg">Administrator</div><a class="flex items-center px-md py-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-all" data-path="admin-overview" href="#">Overview</a><a class="flex items-center px-md py-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-all" data-path="applicants-list" href="#">Applicants</a><a class="flex items-center px-md py-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-all" data-path="finance" href="#">Finance</a><a class="flex items-center px-md py-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-all" data-path="admissions" href="#">Admissions</a><a aria-current="page" class="flex items-center px-md py-sm rounded-lg transition-all bg-primary-container text-on-primary-container font-bold" data-path="user-management" href="#">User Management</a></nav><div class="p-md bg-surface-container-low mx-md mb-md rounded-xl"><div class="flex items-center gap-sm"><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div><div><p class="text-label-md text-on-surface">Admission Staff</p><p class="text-label-sm text-on-surface-variant">SGS Kupang</p></div></div></div></aside><div class="pl-72"><header class="fixed top-0 left-72 right-0 h-16 bg-surface/80 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)] z-40 flex items-center justify-between px-lg"><div class="text-headline-sm text-primary">Application System</div><div class="flex items-center gap-md"><button class="text-on-surface-variant hover:text-primary transition-colors"><span class="material-symbols-outlined">search</span></button><button class="text-on-surface-variant hover:text-primary transition-colors relative"><span class="material-symbols-outlined">notifications</span><span class="absolute top-0 right-0 w-2 h-2 bg-error rounded-full"></span></button><div class="w-px h-6 bg-outline-variant"></div><button class="text-on-surface-variant hover:text-primary transition-colors"><span class="material-symbols-outlined">logout</span></button></div></header><main class="relative pt-16 min-h-screen bg-background p-lg"><div class="flex flex-col w-full gap-lg max-w-container-max mx-auto pb-xl">
-<!-- Header Section -->
-<div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-md">
-<div class="flex flex-col gap-xs relative">
-<!-- Decorative Accent -->
-<div class="absolute -left-lg top-0 bottom-0 w-2 bg-on-tertiary-container rounded-r-full hidden lg:block"></div>
-<h1 class="font-display-lg text-primary relative z-10">Manajemen User</h1>
-<p class="font-body-lg text-on-surface-variant max-w-2xl">
-        Kelola akses dan izin pengguna untuk sistem penerimaan siswa baru Stella Gracia School.
-      </p>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/></head><body class="bg-background font-body-md text-on-background"><aside class="fixed left-0 top-0 h-full w-72 bg-surface-container-lowest z-50 flex flex-col shadow-[1px_0_10px_rgba(0,0,0,0.02)]"><div class="p-md flex items-center gap-sm mb-lg"><img alt="Logo Stella Gracia School Kupang.png" class="h-10 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AP1WRLswZkvaoIeLaRLr6wc1WrmOmozmjCMmynnGq61IVLZCIXLQsERLbvTXwwgl7fq4jORrgjab5MsqwuJ-qpxJA4z5LkZ3RnTAajserI38jEriGywplhbsF_yW6w_L5n9yBwpH0z_mLsocfqwY8BlOGRDY52CkcnR5OzqSkwrHswztI61vEEhdeXcth9awEPXcB4Igy_Dg1JO1PDN7dpiNL15iBGSMJHwVM-GVMnxJGTa7Mpp3p5-dhNvKlHNQFdF9l0xk_iqZEIxC5g"/><span class="font-headline-sm text-primary uppercase">SPMB</span></div><nav class="flex-1 px-md space-y-xs" data-active-classes="bg-primary-container text-on-primary-container font-bold"><div class="text-label-sm text-on-surface-variant/60 uppercase px-md mb-base mt-lg">Applicant Portal</div><a class="flex items-center px-md py-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-all" data-path="applicant-dashboard" href="#">Dashboard</a><a class="flex items-center px-md py-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-all" data-path="my-application" href="#">My Application</a><a class="flex items-center px-md py-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-all" data-path="documents" href="#">Documents</a><a class="flex items-center px-md py-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-all" data-path="payments" href="#">Payments</a><div class="text-label-sm text-on-surface-variant/60 uppercase px-md mb-base mt-lg">Administrator</div><a class="flex items-center px-md py-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-all" data-path="admin-overview" href="#">Overview</a><a class="flex items-center px-md py-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-all" data-path="applicants-list" href="#">Applicants</a><a class="flex items-center px-md py-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-all" data-path="finance" href="#">Finance</a><a class="flex items-center px-md py-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-all" data-path="admissions" href="#">Admissions</a><a aria-current="page" class="flex items-center px-md py-sm rounded-lg transition-all bg-primary-container text-on-primary-container font-bold" data-path="user-management" href="#">User Management</a></nav><div class="p-md bg-surface-container-low mx-md mb-md rounded-xl"><div class="flex items-center gap-sm"><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div><div><p class="text-label-md text-on-surface">Admission Staff</p><p class="text-label-sm text-on-surface-variant">SGS Kupang</p></div></div></div></aside><div class="pl-72"><header class="fixed top-0 left-72 right-0 h-16 bg-surface/80 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)] z-40 flex items-center justify-between px-lg"><div class="text-headline-sm text-primary">Application System</div><div class="flex items-center gap-md"><button class="text-on-surface-variant hover:text-primary transition-colors"><span class="material-symbols-outlined">search</span></button><button class="text-on-surface-variant hover:text-primary transition-colors relative"><span class="material-symbols-outlined">notifications</span><span class="absolute top-0 right-0 w-2 h-2 bg-error rounded-full"></span></button><div class="w-px h-6 bg-outline-variant"></div><button class="text-on-surface-variant hover:text-primary transition-colors"><span class="material-symbols-outlined">logout</span></button></div></header><main class="relative pt-16 min-h-screen bg-background p-lg"><div class="flex flex-col w-full gap-lg">
+<div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-md">
+<div>
+<h1 class="font-headline-lg text-on-background">Finance Management</h1>
+<p class="font-body-md text-on-surface-variant mt-xs">Overview and management of application payments</p>
 </div>
-<div class="flex items-center gap-sm shrink-0">
-<button class="bg-primary-container text-on-primary-container font-label-md px-md py-sm rounded-lg hover:bg-primary-fixed-dim transition-colors flex items-center gap-sm shadow-md">
-<span class="material-symbols-outlined text-[20px]">person_add</span>
-        Tambah User Baru
+<div class="flex flex-wrap items-center gap-sm">
+<div class="flex items-center gap-sm bg-surface-container-low p-xs rounded-lg">
+<select class="bg-transparent text-label-md text-on-surface outline-none border-none pl-sm pr-md py-sm rounded cursor-pointer appearance-none">
+<option>Academic Year 2024/2025</option>
+<option>Academic Year 2023/2024</option>
+</select>
+<span class="material-symbols-outlined text-on-surface-variant pointer-events-none -ml-8 mr-xs">expand_more</span>
+</div>
+<button class="h-10 px-md rounded-lg bg-surface-container-high text-on-surface font-label-md hover:bg-surface-container-highest transition-colors flex items-center gap-xs">
+<span class="material-symbols-outlined text-[20px]">download</span>
+        Export Report
       </button>
 </div>
 </div>
-<!-- Main Content Grid -->
-<div class="grid grid-cols-1 xl:grid-cols-12 gap-lg relative z-10">
-<!-- User Table Section (Left Side - 8 Cols) -->
-<div class="xl:col-span-8 flex flex-col gap-md">
-<!-- Filters and Search -->
-<div class="bg-surface-container-lowest p-md rounded-xl shadow-sm flex flex-col sm:flex-row justify-between items-center gap-md relative overflow-hidden">
-<!-- Subtle background blur -->
-<div class="absolute -right-10 -top-10 w-40 h-40 bg-secondary-container/10 rounded-full blur-3xl pointer-events-none"></div>
-<div class="flex items-center gap-sm w-full sm:w-auto relative z-10">
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-md">
+<div class="bg-primary text-on-primary rounded-xl p-md shadow-sm relative overflow-hidden group hover:shadow-md transition-shadow">
+<div class="absolute -right-4 -top-4 w-24 h-24 bg-on-primary/10 rounded-full blur-xl group-hover:bg-on-primary/20 transition-colors"></div>
+<div class="flex items-center justify-between mb-sm relative z-10">
+<span class="font-label-md opacity-80">Total Revenue</span>
+<span class="material-symbols-outlined opacity-80">account_balance_wallet</span>
+</div>
+<div class="font-headline-lg relative z-10">Rp 4.250B</div>
+<div class="font-label-sm mt-md relative z-10 flex items-center gap-xs opacity-80">
+<span class="material-symbols-outlined text-[16px]">trending_up</span>
+        +12% from last year
+      </div>
+</div>
+<div class="bg-surface-container-lowest rounded-xl p-md shadow-sm relative overflow-hidden group hover:shadow-md transition-shadow">
+<div class="absolute top-0 left-0 w-1 h-full bg-[#3c50bc]"></div>
+<div class="flex items-center justify-between mb-sm relative z-10">
+<span class="font-label-md text-on-surface-variant">Confirmed Payments</span>
+<div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary text-[18px]">check_circle</span>
+</div>
+</div>
+<div class="font-headline-lg text-on-surface relative z-10">184</div>
+<div class="font-label-sm mt-md relative z-10 text-on-surface-variant flex items-center justify-between">
+<span>Rp 3.120B collected</span>
+<span class="text-primary font-bold">78%</span>
+</div>
+<div class="w-full bg-surface-variant h-1.5 rounded-full mt-xs overflow-hidden">
+<div class="bg-primary h-full rounded-full" style="width: 78%"></div>
+</div>
+</div>
+<div class="bg-surface-container-lowest rounded-xl p-md shadow-sm relative overflow-hidden group hover:shadow-md transition-shadow">
+<div class="absolute top-0 left-0 w-1 h-full bg-[#bd9c4f]"></div>
+<div class="flex items-center justify-between mb-sm relative z-10">
+<span class="font-label-md text-on-surface-variant">Awaiting Verification</span>
+<div class="w-8 h-8 rounded-full bg-[#bd9c4f]/10 flex items-center justify-center">
+<span class="material-symbols-outlined text-[#bd9c4f] text-[18px]">pending_actions</span>
+</div>
+</div>
+<div class="font-headline-lg text-on-surface relative z-10">24</div>
+<div class="font-label-sm mt-md relative z-10 text-on-surface-variant">
+        Requires manual check
+      </div>
+</div>
+<div class="bg-surface-container-lowest rounded-xl p-md shadow-sm relative overflow-hidden group hover:shadow-md transition-shadow">
+<div class="absolute top-0 left-0 w-1 h-full bg-error"></div>
+<div class="flex items-center justify-between mb-sm relative z-10">
+<span class="font-label-md text-on-surface-variant">Pending / Overdue</span>
+<div class="w-8 h-8 rounded-full bg-error/10 flex items-center justify-center">
+<span class="material-symbols-outlined text-error text-[18px]">warning</span>
+</div>
+</div>
+<div class="font-headline-lg text-on-surface relative z-10">42</div>
+<div class="font-label-sm mt-md relative z-10 text-on-surface-variant flex items-center gap-xs">
+<span class="w-2 h-2 rounded-full bg-error"></span>
+        15 overdue
+      </div>
+</div>
+</div>
+<div class="bg-surface-container-lowest rounded-xl shadow-sm overflow-hidden flex flex-col">
+<div class="p-md flex flex-col lg:flex-row items-start lg:items-center justify-between gap-md border-b border-surface-variant">
+<div>
+<h2 class="font-headline-sm text-on-surface">Payment Status</h2>
+<p class="font-body-sm text-on-surface-variant">Manage and verify applicant payments</p>
+</div>
+<div class="flex flex-col sm:flex-row items-center gap-sm w-full lg:w-auto">
 <div class="relative w-full sm:w-64">
-<span class="material-symbols-outlined absolute left-sm top-1/2 -translate-y-1/2 text-outline">search</span>
-<input class="w-full bg-surface-container-low font-body-sm text-on-surface pl-10 pr-sm py-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-container transition-all" placeholder="Cari nama atau email..." type="text"/>
+<span class="material-symbols-outlined absolute left-sm top-1/2 -translate-y-1/2 text-on-surface-variant text-[20px]">search</span>
+<input class="w-full pl-10 pr-sm py-2 rounded-lg bg-surface font-body-sm text-on-surface outline-none border border-outline-variant focus:border-primary transition-colors" placeholder="Search applicant, invoice..." type="text"/>
 </div>
-<div class="relative hidden sm:block">
-<select class="appearance-none bg-surface-container-low font-label-sm text-on-surface-variant pl-sm pr-8 py-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-container transition-all cursor-pointer">
-<option value="">Semua Role</option>
-<option value="admin">Administrator</option>
-<option value="staff">Admissions Staff</option>
-<option value="finance">Finance</option>
-</select>
-<span class="material-symbols-outlined absolute right-sm top-1/2 -translate-y-1/2 text-outline pointer-events-none text-[18px]">expand_more</span>
+<div class="flex items-center gap-xs bg-surface-container p-1 rounded-lg">
+<button class="px-sm py-1 rounded bg-surface shadow-sm font-label-sm text-on-surface">All</button>
+<button class="px-sm py-1 rounded font-label-sm text-on-surface-variant hover:bg-surface-container-high transition-colors">Paid</button>
+<button class="px-sm py-1 rounded font-label-sm text-on-surface-variant hover:bg-surface-container-high transition-colors">Verify</button>
+<button class="px-sm py-1 rounded font-label-sm text-on-surface-variant hover:bg-surface-container-high transition-colors">Overdue</button>
 </div>
 </div>
-<div class="text-label-sm text-on-surface-variant font-medium relative z-10">
-          Menampilkan 1-10 dari 45 User
-        </div>
 </div>
-<!-- Table Card -->
-<div class="bg-surface-container-lowest rounded-xl shadow-sm overflow-hidden flex flex-col relative">
-<!-- Table Background decorative element -->
-<div class="absolute right-0 bottom-0 w-64 h-64 bg-primary-container/5 rounded-tl-full blur-3xl pointer-events-none"></div>
-<div class="overflow-x-auto relative z-10">
-<table class="w-full text-left border-collapse">
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse min-w-[800px]">
 <thead>
-<tr class="bg-surface-container-low text-label-sm text-on-surface-variant uppercase tracking-wider">
-<th class="py-md px-md font-medium">Pengguna</th>
-<th class="py-md px-md font-medium">Role</th>
-<th class="py-md px-md font-medium">Status</th>
-<th class="py-md px-md font-medium text-right">Aksi</th>
+<tr class="bg-surface">
+<th class="p-md font-label-md text-on-surface-variant">Applicant &amp; Invoice</th>
+<th class="p-md font-label-md text-on-surface-variant">Grade</th>
+<th class="p-md font-label-md text-on-surface-variant">Amount</th>
+<th class="p-md font-label-md text-on-surface-variant">Method &amp; Date</th>
+<th class="p-md font-label-md text-on-surface-variant">Status</th>
+<th class="p-md font-label-md text-on-surface-variant text-right">Actions</th>
 </tr>
 </thead>
-<tbody class="font-body-sm text-on-surface">
-<!-- Row 1 -->
-<tr class="hover:bg-surface-container/50 transition-colors group">
-<td class="py-sm px-md">
-<div class="flex items-center gap-sm">
-<div class="w-10 h-10 rounded-full bg-primary-container text-on-primary flex items-center justify-center font-headline-sm shadow-sm">
-                      AW
-                    </div>
-<div class="flex flex-col min-w-0">
-<span class="font-label-md truncate">Anita Wijaya</span>
-<span class="text-on-surface-variant text-label-sm truncate">anita.w@stellagracia.sch.id</span>
-</div>
-</div>
+<tbody class="divide-y divide-surface-variant">
+<tr class="hover:bg-surface-container-low transition-colors group">
+<td class="p-md">
+<div class="font-label-md text-on-surface">Sarah Wijaya</div>
+<div class="font-body-sm text-on-surface-variant font-mono text-xs mt-0.5">INV-2024-0891</div>
 </td>
-<td class="py-sm px-md">
-<span class="inline-flex items-center gap-xs px-2 py-1 rounded-md bg-secondary-container/20 text-on-secondary-fixed font-label-sm">
-<span class="material-symbols-outlined text-[14px]">shield_person</span> Administrator
-                  </span>
+<td class="p-md font-body-sm text-on-surface">Grade 10</td>
+<td class="p-md font-label-md text-on-surface">Rp 15.000.000</td>
+<td class="p-md">
+<div class="font-body-sm text-on-surface">BCA Virtual Account</div>
+<div class="font-body-sm text-on-surface-variant text-xs mt-0.5">12 Aug 2024</div>
 </td>
-<td class="py-sm px-md">
-<span class="inline-flex items-center gap-1.5 text-label-sm">
-<span class="w-2 h-2 rounded-full bg-primary-container"></span> Aktif
-                  </span>
+<td class="p-md">
+<span class="inline-flex items-center gap-1.5 px-2 py-1 rounded-md bg-[#e6f4ea] text-[#137333] font-label-sm">
+<span class="w-1.5 h-1.5 rounded-full bg-[#137333]"></span>
+                Paid
+              </span>
 </td>
-<td class="py-sm px-md text-right">
-<div class="flex items-center justify-end gap-xs opacity-0 group-hover:opacity-100 transition-opacity">
-<button class="w-8 h-8 rounded-full hover:bg-surface-container-high flex items-center justify-center text-on-surface-variant hover:text-primary transition-colors" title="Edit User">
-<span class="material-symbols-outlined text-[18px]">edit</span>
+<td class="p-md text-right">
+<button class="text-on-surface-variant hover:text-primary transition-colors p-1" title="View Details">
+<span class="material-symbols-outlined text-[20px]">visibility</span>
 </button>
-<button class="w-8 h-8 rounded-full hover:bg-error-container flex items-center justify-center text-on-surface-variant hover:text-error transition-colors" title="Manage Permissions">
-<span class="material-symbols-outlined text-[18px]">admin_panel_settings</span>
-</button>
-<button class="w-8 h-8 rounded-full hover:bg-error-container flex items-center justify-center text-on-surface-variant hover:text-error transition-colors" title="Delete User">
-<span class="material-symbols-outlined text-[18px]">delete</span>
-</button>
-</div>
 </td>
 </tr>
-<!-- Row 2 -->
-<tr class="hover:bg-surface-container/50 transition-colors group">
-<td class="py-sm px-md">
-<div class="flex items-center gap-sm">
-<img class="w-10 h-10 rounded-full object-cover shadow-sm" data-alt="Professional headshot portrait of an Indonesian man in his 30s wearing a smart casual light blue shirt, blurred office background, soft natural lighting, high resolution, modern corporate style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAL0TF2B7Wc5rhuyh-yUyUmJkryJZ5v9-C5LuYIG3oidMAzjx45fqTcUPhtO3utC7gTw5HQBUYlVCzm2xAQSpirgHRAs2X8Eij0T5-ulPePiNMRSUnXtIK7WOt65Mx6_qu_PbUn0TjlencD_3Vgu6D4BLQ1215TpTnjtKw-Fq0UISO3w6cWpvgA51VNNKPuIkkNGLx8s3FWIuFNy6gRkmeOY7rRKG7k0dGO5-rd3IfyfDXZhvuP67-4"/>
-<div class="flex flex-col min-w-0">
-<span class="font-label-md truncate">Budi Santoso</span>
-<span class="text-on-surface-variant text-label-sm truncate">b.santoso@stellagracia.sch.id</span>
-</div>
-</div>
+<tr class="hover:bg-surface-container-low transition-colors group bg-surface-container-low/50">
+<td class="p-md">
+<div class="font-label-md text-on-surface">Kevin Setiawan</div>
+<div class="font-body-sm text-on-surface-variant font-mono text-xs mt-0.5">INV-2024-0902</div>
 </td>
-<td class="py-sm px-md">
-<span class="inline-flex items-center gap-xs px-2 py-1 rounded-md bg-tertiary-container/10 text-on-tertiary-container font-label-sm">
-<span class="material-symbols-outlined text-[14px]">school</span> Admissions Staff
-                  </span>
+<td class="p-md font-body-sm text-on-surface">Grade 7</td>
+<td class="p-md font-label-md text-on-surface">Rp 12.500.000</td>
+<td class="p-md">
+<div class="font-body-sm text-on-surface">Manual Transfer (Mandiri)</div>
+<div class="font-body-sm text-on-surface-variant text-xs mt-0.5">14 Aug 2024</div>
 </td>
-<td class="py-sm px-md">
-<span class="inline-flex items-center gap-1.5 text-label-sm">
-<span class="w-2 h-2 rounded-full bg-primary-container"></span> Aktif
-                  </span>
+<td class="p-md">
+<span class="inline-flex items-center gap-1.5 px-2 py-1 rounded-md bg-[#fef7e0] text-[#bd9c4f] font-label-sm">
+<span class="w-1.5 h-1.5 rounded-full bg-[#bd9c4f]"></span>
+                Verify
+              </span>
 </td>
-<td class="py-sm px-md text-right">
-<div class="flex items-center justify-end gap-xs opacity-0 group-hover:opacity-100 transition-opacity">
-<button class="w-8 h-8 rounded-full hover:bg-surface-container-high flex items-center justify-center text-on-surface-variant hover:text-primary transition-colors" title="Edit User">
-<span class="material-symbols-outlined text-[18px]">edit</span>
-</button>
-<button class="w-8 h-8 rounded-full hover:bg-error-container flex items-center justify-center text-on-surface-variant hover:text-error transition-colors" title="Manage Permissions">
-<span class="material-symbols-outlined text-[18px]">admin_panel_settings</span>
-</button>
-<button class="w-8 h-8 rounded-full hover:bg-error-container flex items-center justify-center text-on-surface-variant hover:text-error transition-colors" title="Delete User">
-<span class="material-symbols-outlined text-[18px]">delete</span>
-</button>
-</div>
+<td class="p-md text-right">
+<button class="text-primary hover:text-primary-container font-label-md transition-colors mr-sm">Review</button>
 </td>
 </tr>
-<!-- Row 3 -->
-<tr class="hover:bg-surface-container/50 transition-colors group opacity-60">
-<td class="py-sm px-md">
-<div class="flex items-center gap-sm">
-<div class="w-10 h-10 rounded-full bg-surface-container-high text-on-surface-variant flex items-center justify-center font-headline-sm shadow-sm">
-                      CK
-                    </div>
-<div class="flex flex-col min-w-0">
-<span class="font-label-md truncate line-through">Cindy Kusuma</span>
-<span class="text-on-surface-variant text-label-sm truncate">cindy.k@stellagracia.sch.id</span>
-</div>
-</div>
+<tr class="hover:bg-surface-container-low transition-colors group">
+<td class="p-md">
+<div class="font-label-md text-on-surface">Amanda Pratama</div>
+<div class="font-body-sm text-on-surface-variant font-mono text-xs mt-0.5">INV-2024-0915</div>
 </td>
-<td class="py-sm px-md">
-<span class="inline-flex items-center gap-xs px-2 py-1 rounded-md bg-surface-variant text-on-surface-variant font-label-sm">
-<span class="material-symbols-outlined text-[14px]">account_balance</span> Finance
-                  </span>
+<td class="p-md font-body-sm text-on-surface">Grade 1</td>
+<td class="p-md font-label-md text-on-surface">Rp 10.000.000</td>
+<td class="p-md">
+<div class="font-body-sm text-on-surface">Credit Card</div>
+<div class="font-body-sm text-on-surface-variant text-xs mt-0.5">-</div>
 </td>
-<td class="py-sm px-md">
-<span class="inline-flex items-center gap-1.5 text-label-sm text-error">
-<span class="w-2 h-2 rounded-full bg-error"></span> Tidak Aktif
-                  </span>
+<td class="p-md">
+<span class="inline-flex items-center gap-1.5 px-2 py-1 rounded-md bg-error-container text-on-error-container font-label-sm">
+<span class="w-1.5 h-1.5 rounded-full bg-error"></span>
+                Overdue
+              </span>
 </td>
-<td class="py-sm px-md text-right">
-<div class="flex items-center justify-end gap-xs opacity-0 group-hover:opacity-100 transition-opacity">
-<button class="w-8 h-8 rounded-full hover:bg-surface-container-high flex items-center justify-center text-on-surface-variant hover:text-primary transition-colors" title="Edit User">
-<span class="material-symbols-outlined text-[18px]">edit</span>
+<td class="p-md text-right">
+<button class="text-on-surface-variant hover:text-primary transition-colors p-1" title="Send Reminder">
+<span class="material-symbols-outlined text-[20px]">notifications_active</span>
 </button>
-<button class="w-8 h-8 rounded-full hover:bg-error-container flex items-center justify-center text-on-surface-variant hover:text-error transition-colors" title="Manage Permissions">
-<span class="material-symbols-outlined text-[18px]">admin_panel_settings</span>
-</button>
-</div>
-</td>
-</tr>
-<!-- Row 4 -->
-<tr class="hover:bg-surface-container/50 transition-colors group">
-<td class="py-sm px-md">
-<div class="flex items-center gap-sm">
-<img class="w-10 h-10 rounded-full object-cover shadow-sm" data-alt="Professional headshot portrait of an Indonesian woman in her late 20s wearing a white blouse and dark blazer, smiling warmly, brightly lit modern office setting, high resolution, corporate style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDPahbW-4Ky0FayIFm51JVeO0_wlsTQGoy3wpkB8Z-x1OltIpWzf-dW4xVDN48pgXra4yAwDNHECWJhRV2Q-Ph3hOcg930a7DOUkiAvAk0A4PyJgfNDfiHIzLxgUoowugUcz50A2iWSyLJJ9CyA8LNbe8kXxQEq7WmewjEZGQU2h3Vpp4mp3mLpfiJd3g_oUu4AW_rZ_FVY0LSL0lPhomQEpipgV8c6-wYjbj6hFphayqiqhdsgf_Vy"/>
-<div class="flex flex-col min-w-0">
-<span class="font-label-md truncate">Diana Putri</span>
-<span class="text-on-surface-variant text-label-sm truncate">d.putri@stellagracia.sch.id</span>
-</div>
-</div>
-</td>
-<td class="py-sm px-md">
-<span class="inline-flex items-center gap-xs px-2 py-1 rounded-md bg-tertiary-container/10 text-on-tertiary-container font-label-sm">
-<span class="material-symbols-outlined text-[14px]">school</span> Admissions Staff
-                  </span>
-</td>
-<td class="py-sm px-md">
-<span class="inline-flex items-center gap-1.5 text-label-sm">
-<span class="w-2 h-2 rounded-full bg-primary-container"></span> Aktif
-                  </span>
-</td>
-<td class="py-sm px-md text-right">
-<div class="flex items-center justify-end gap-xs opacity-0 group-hover:opacity-100 transition-opacity">
-<button class="w-8 h-8 rounded-full hover:bg-surface-container-high flex items-center justify-center text-on-surface-variant hover:text-primary transition-colors" title="Edit User">
-<span class="material-symbols-outlined text-[18px]">edit</span>
-</button>
-<button class="w-8 h-8 rounded-full hover:bg-error-container flex items-center justify-center text-on-surface-variant hover:text-error transition-colors" title="Manage Permissions">
-<span class="material-symbols-outlined text-[18px]">admin_panel_settings</span>
-</button>
-<button class="w-8 h-8 rounded-full hover:bg-error-container flex items-center justify-center text-on-surface-variant hover:text-error transition-colors" title="Delete User">
-<span class="material-symbols-outlined text-[18px]">delete</span>
-</button>
-</div>
 </td>
 </tr>
 </tbody>
 </table>
 </div>
-<!-- Pagination -->
-<div class="p-md bg-surface-container-lowest flex items-center justify-between border-t border-surface-container relative z-10">
-<button class="text-label-sm font-medium text-on-surface-variant flex items-center gap-xs hover:text-primary transition-colors disabled:opacity-50 disabled:cursor-not-allowed" disabled="">
-<span class="material-symbols-outlined text-[18px]">chevron_left</span> Sebelumnya
-          </button>
-<div class="flex items-center gap-xs">
-<button class="w-8 h-8 rounded-md bg-primary-container text-on-primary font-label-sm flex items-center justify-center shadow-sm">1</button>
-<button class="w-8 h-8 rounded-md hover:bg-surface-container-high text-on-surface-variant font-label-sm flex items-center justify-center transition-colors">2</button>
-<button class="w-8 h-8 rounded-md hover:bg-surface-container-high text-on-surface-variant font-label-sm flex items-center justify-center transition-colors">3</button>
-<span class="text-on-surface-variant">...</span>
-<button class="w-8 h-8 rounded-md hover:bg-surface-container-high text-on-surface-variant font-label-sm flex items-center justify-center transition-colors">5</button>
-</div>
-<button class="text-label-sm font-medium text-primary flex items-center gap-xs hover:text-primary-container transition-colors">
-            Selanjutnya <span class="material-symbols-outlined text-[18px]">chevron_right</span>
-</button>
+<div class="p-sm flex items-center justify-between border-t border-surface-variant bg-surface">
+<span class="font-body-sm text-on-surface-variant pl-sm">Showing 1-10 of 250</span>
+<div class="flex items-center gap-1">
+<button class="p-1 rounded text-on-surface-variant hover:bg-surface-container transition-colors disabled:opacity-50"><span class="material-symbols-outlined text-[20px]">chevron_left</span></button>
+<button class="w-8 h-8 rounded bg-primary text-on-primary font-label-sm flex items-center justify-center">1</button>
+<button class="w-8 h-8 rounded text-on-surface-variant hover:bg-surface-container font-label-sm flex items-center justify-center transition-colors">2</button>
+<button class="w-8 h-8 rounded text-on-surface-variant hover:bg-surface-container font-label-sm flex items-center justify-center transition-colors">3</button>
+<span class="text-on-surface-variant px-1">...</span>
+<button class="p-1 rounded text-on-surface-variant hover:bg-surface-container transition-colors"><span class="material-symbols-outlined text-[20px]">chevron_right</span></button>
 </div>
 </div>
 </div>
-<!-- Roles & Permissions Matrix (Right Side - 4 Cols) -->
-<div class="xl:col-span-4 flex flex-col gap-md">
-<!-- Role Settings Card -->
-<div class="bg-surface-container-lowest rounded-xl shadow-md overflow-hidden flex flex-col relative z-20 group hover:-translate-y-1 transition-transform duration-300">
-<!-- Accent Header -->
-<div class="h-2 w-full bg-gradient-to-r from-primary-container to-secondary-container"></div>
-<div class="p-md flex flex-col gap-md relative">
-<div class="absolute right-0 top-0 w-32 h-32 bg-tertiary-container/5 rounded-bl-full blur-2xl pointer-events-none"></div>
-<div class="flex items-center justify-between relative z-10">
-<h2 class="font-headline-sm text-primary">Role Settings</h2>
-<button class="text-secondary hover:text-primary transition-colors">
-<span class="material-symbols-outlined">edit_note</span>
-</button>
-</div>
-<!-- Role Selector -->
-<div class="relative z-10">
-<label class="block text-label-sm text-on-surface-variant mb-xs">Pilih Role untuk dikonfigurasi</label>
-<select class="w-full appearance-none bg-surface-container-low font-label-md text-on-surface px-sm py-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-container transition-all cursor-pointer">
-<option selected="" value="admin">Administrator</option>
-<option value="staff">Admissions Staff</option>
-<option value="finance">Finance</option>
-</select>
-<span class="material-symbols-outlined absolute right-sm top-[26px] text-outline pointer-events-none text-[20px]">arrow_drop_down</span>
-</div>
-<!-- Permission Matrix -->
-<div class="flex flex-col gap-sm mt-sm relative z-10">
-<h3 class="font-label-md text-on-surface uppercase tracking-wider text-xs mb-xs">Hak Akses Modul (Admin)</h3>
-<!-- Matrix Item -->
-<div class="flex items-center justify-between p-sm rounded-lg hover:bg-surface-container-low transition-colors">
-<div class="flex items-center gap-sm">
-<div class="w-8 h-8 rounded-md bg-primary-container/10 flex items-center justify-center text-primary-container">
-<span class="material-symbols-outlined text-[18px]">dashboard</span>
-</div>
+<div class="bg-surface-container-lowest rounded-xl shadow-sm p-md">
+<div class="flex items-center justify-between mb-lg">
 <div>
-<div class="font-label-sm text-on-surface">Dashboard Analytics</div>
-<div class="text-[10px] text-on-surface-variant">View overall statistics</div>
+<h2 class="font-headline-sm text-on-surface">Payment Methods</h2>
+<p class="font-body-sm text-on-surface-variant mt-xs">Manage destination bank accounts for manual transfers</p>
+</div>
+<button class="h-10 px-md rounded-lg bg-primary text-on-primary font-label-md hover:bg-primary-container transition-colors flex items-center gap-xs shadow-sm">
+<span class="material-symbols-outlined text-[20px]">add</span>
+        Add Account
+      </button>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-md">
+<div class="bg-surface rounded-xl p-md border border-outline-variant hover:border-primary transition-colors group relative overflow-hidden">
+<div class="absolute right-0 top-0 w-24 h-24 bg-primary/5 rounded-bl-full -z-10 group-hover:bg-primary/10 transition-colors"></div>
+<div class="flex items-start justify-between mb-md">
+<div class="w-12 h-12 rounded-lg bg-surface-container-high flex items-center justify-center font-headline-md text-primary">
+            B
+          </div>
+<div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="p-1.5 rounded-md text-on-surface-variant hover:bg-surface-container hover:text-primary transition-colors"><span class="material-symbols-outlined text-[18px]">edit</span></button>
+<button class="p-1.5 rounded-md text-on-surface-variant hover:bg-error-container hover:text-error transition-colors"><span class="material-symbols-outlined text-[18px]">delete</span></button>
 </div>
 </div>
-<label class="relative inline-flex items-center cursor-pointer">
-<input checked="" class="sr-only peer" disabled="" type="checkbox" value=""/>
-<div class="w-9 h-5 bg-surface-variant peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary-container opacity-70"></div>
-</label>
-</div>
-<!-- Matrix Item -->
-<div class="flex items-center justify-between p-sm rounded-lg hover:bg-surface-container-low transition-colors">
-<div class="flex items-center gap-sm">
-<div class="w-8 h-8 rounded-md bg-tertiary-container/10 flex items-center justify-center text-tertiary-container">
-<span class="material-symbols-outlined text-[18px]">group</span>
-</div>
-<div>
-<div class="font-label-sm text-on-surface">Applicants Data</div>
-<div class="text-[10px] text-on-surface-variant">Read, Edit, Delete</div>
+<h3 class="font-label-md text-on-surface uppercase mb-xs">Bank Central Asia (BCA)</h3>
+<p class="font-headline-sm text-on-surface font-mono tracking-wider mb-sm">123 456 7890</p>
+<div class="font-body-sm text-on-surface-variant">
+<p>A/N: Yayasan Pendidikan Stella Gracia</p>
+<p class="text-xs mt-1">Branch: Kupang Utama</p>
 </div>
 </div>
-<label class="relative inline-flex items-center cursor-pointer">
-<input checked="" class="sr-only peer" type="checkbox" value=""/>
-<div class="w-9 h-5 bg-surface-variant peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary-container"></div>
-</label>
-</div>
-<!-- Matrix Item -->
-<div class="flex items-center justify-between p-sm rounded-lg hover:bg-surface-container-low transition-colors">
-<div class="flex items-center gap-sm">
-<div class="w-8 h-8 rounded-md bg-secondary-container/10 flex items-center justify-center text-secondary-container">
-<span class="material-symbols-outlined text-[18px]">payments</span>
-</div>
-<div>
-<div class="font-label-sm text-on-surface">Finance &amp; Payments</div>
-<div class="text-[10px] text-on-surface-variant">View invoices, verify payments</div>
+<div class="bg-surface rounded-xl p-md border border-outline-variant hover:border-primary transition-colors group relative overflow-hidden">
+<div class="absolute right-0 top-0 w-24 h-24 bg-primary/5 rounded-bl-full -z-10 group-hover:bg-primary/10 transition-colors"></div>
+<div class="flex items-start justify-between mb-md">
+<div class="w-12 h-12 rounded-lg bg-surface-container-high flex items-center justify-center font-headline-md text-primary">
+            M
+          </div>
+<div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="p-1.5 rounded-md text-on-surface-variant hover:bg-surface-container hover:text-primary transition-colors"><span class="material-symbols-outlined text-[18px]">edit</span></button>
+<button class="p-1.5 rounded-md text-on-surface-variant hover:bg-error-container hover:text-error transition-colors"><span class="material-symbols-outlined text-[18px]">delete</span></button>
 </div>
 </div>
-<label class="relative inline-flex items-center cursor-pointer">
-<input checked="" class="sr-only peer" type="checkbox" value=""/>
-<div class="w-9 h-5 bg-surface-variant peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary-container"></div>
-</label>
+<h3 class="font-label-md text-on-surface uppercase mb-xs">Bank Mandiri</h3>
+<p class="font-headline-sm text-on-surface font-mono tracking-wider mb-sm">098 765 4321</p>
+<div class="font-body-sm text-on-surface-variant">
+<p>A/N: Yayasan Pendidikan Stella Gracia</p>
+<p class="text-xs mt-1">Branch: Kupang Merdeka</p>
 </div>
-<!-- Matrix Item -->
-<div class="flex items-center justify-between p-sm rounded-lg hover:bg-surface-container-low transition-colors">
-<div class="flex items-center gap-sm">
-<div class="w-8 h-8 rounded-md bg-error-container/20 flex items-center justify-center text-error">
-<span class="material-symbols-outlined text-[18px]">manage_accounts</span>
-</div>
-<div>
-<div class="font-label-sm text-on-surface">User Management</div>
-<div class="text-[10px] text-on-surface-variant">Add/remove system users</div>
-</div>
-</div>
-<label class="relative inline-flex items-center cursor-pointer">
-<input checked="" class="sr-only peer" type="checkbox" value=""/>
-<div class="w-9 h-5 bg-surface-variant peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary-container"></div>
-</label>
-</div>
-</div>
-<button class="mt-sm w-full bg-surface-container-high text-on-surface font-label-md py-sm rounded-lg hover:bg-surface-variant transition-colors shadow-sm flex items-center justify-center gap-xs">
-<span class="material-symbols-outlined text-[18px]">save</span> Simpan Konfigurasi
-          </button>
-</div>
-</div>
-<!-- Visual Decorative Card (Activity sparkline concept) -->
-<div class="bg-surface-container-lowest p-md rounded-xl shadow-sm flex flex-col gap-sm mt-auto relative overflow-hidden">
-<div class="font-label-sm text-on-surface-variant uppercase tracking-widest text-xs flex items-center justify-between relative z-10">
-<span>System Activity</span>
-<span class="material-symbols-outlined text-[14px]">show_chart</span>
-</div>
-<div class="flex items-end gap-xs h-12 relative z-10" id="activity-chart">
-<!-- Simulated bar chart -->
-<div class="w-full bg-primary-container/20 rounded-t-sm" style="height: 30%"></div>
-<div class="w-full bg-primary-container/40 rounded-t-sm" style="height: 50%"></div>
-<div class="w-full bg-primary-container/20 rounded-t-sm" style="height: 20%"></div>
-<div class="w-full bg-primary-container/60 rounded-t-sm" style="height: 80%"></div>
-<div class="w-full bg-primary-container/30 rounded-t-sm" style="height: 40%"></div>
-<div class="w-full bg-primary-container/80 rounded-t-sm" style="height: 90%"></div>
-<div class="w-full bg-primary-container/40 rounded-t-sm" style="height: 60%"></div>
-<div class="w-full bg-primary-container rounded-t-sm" style="height: 100%"></div>
-</div>
-<div class="text-[10px] text-on-surface-variant text-right relative z-10">Last 7 days active users</div>
 </div>
 </div>
 </div>

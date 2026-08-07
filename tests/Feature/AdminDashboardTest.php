@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Models\Application;
 use App\Models\SchoolLevel;
 use App\Models\User;
+use Database\Seeders\PermissionSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Spatie\Permission\Models\Role;
 use Tests\TestCase;
@@ -13,10 +14,20 @@ class AdminDashboardTest extends TestCase
 {
     use RefreshDatabase;
 
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        foreach (['Administrator', 'Student', 'Finance', 'Admission Staff'] as $role) {
+            Role::findOrCreate($role, 'web');
+        }
+
+        $this->seed(PermissionSeeder::class);
+    }
+
     private function superAdmin(): User
     {
         $user = User::factory()->create();
-        Role::findOrCreate('Administrator', 'web');
         $user->assignRole('Administrator');
 
         return $user;
@@ -45,6 +56,7 @@ class AdminDashboardTest extends TestCase
     public function test_regular_user_is_redirected_from_admin_dashboard(): void
     {
         $user = User::factory()->create();
+        $user->assignRole('Student');
 
         $response = $this->actingAs($user)->get(route('admin.dashboard'));
 
@@ -54,6 +66,7 @@ class AdminDashboardTest extends TestCase
     public function test_regular_user_sees_applicant_dashboard(): void
     {
         $user = User::factory()->create();
+        $user->assignRole('Student');
 
         $response = $this->actingAs($user)->get(route('dashboard'));
 

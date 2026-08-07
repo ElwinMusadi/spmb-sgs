@@ -12,24 +12,42 @@
     <x-app-logo href="{{ route('home') }}" wire:navigate />
 
     <flux:navbar class="-mb-px max-lg:hidden">
-      <flux:navbar.item icon="layout-grid" :href="route('dashboard')" :current="request()->routeIs('dashboard')"
-        wire:navigate>
-        {{ __('Dashboard') }}
-      </flux:navbar.item>
-      @if (auth()->user()->isSuperAdmin())
+      @if (auth()->user()->isStudent())
+        <flux:navbar.item icon="layout-grid" :href="route('dashboard')" :current="request()->routeIs('dashboard')"
+          wire:navigate>
+          {{ __('Dashboard') }}
+        </flux:navbar.item>
+      @endif
+      @can('dashboard.view')
         <flux:navbar.item icon="chart-bar" :href="route('admin.dashboard')"
           :current="request()->routeIs('admin.dashboard')" wire:navigate>
           {{ __('Admin Overview') }}
         </flux:navbar.item>
-        <flux:navbar.item icon="users" :href="route('admin.users')" :current="request()->routeIs('admin.users')"
+      @endcan
+      @can('applicants.view')
+        <flux:navbar.item icon="users" :href="route('admin.applicants')"
+          :current="request()->routeIs('admin.applicants')" wire:navigate>
+          {{ __('Applicants') }}
+        </flux:navbar.item>
+      @endcan
+      @can('payments.view')
+        <flux:navbar.item icon="banknotes" :href="route('admin.finance')"
+          :current="request()->routeIs('admin.finance')" wire:navigate>
+          {{ __('Finance') }}
+        </flux:navbar.item>
+      @endcan
+      @can('users.manage')
+        <flux:navbar.item icon="user-group" :href="route('admin.users')" :current="request()->routeIs('admin.users')"
           wire:navigate>
           {{ __('Users') }}
         </flux:navbar.item>
+      @endcan
+      @can('roles.manage')
         <flux:navbar.item icon="shield-check" :href="route('admin.roles')"
           :current="request()->routeIs('admin.roles')" wire:navigate>
           {{ __('Roles') }}
         </flux:navbar.item>
-      @endif
+      @endcan
     </flux:navbar>
 
     <flux:spacer />

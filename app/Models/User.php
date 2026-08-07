@@ -86,4 +86,28 @@ class User extends Authenticatable implements PasskeyUser
     {
         return $this->hasRole('Administrator');
     }
+
+    /**
+     * Determine whether the user is an applicant (student).
+     */
+    public function isStudent(): bool
+    {
+        return $this->hasRole('Student');
+    }
+
+    /**
+     * Resolve the correct landing route for the user based on role/permissions.
+     */
+    public function homeRoute(): string
+    {
+        if ($this->isSuperAdmin() || $this->can('dashboard.view')) {
+            return 'admin.dashboard';
+        }
+
+        if ($this->can('payments.view')) {
+            return 'admin.finance';
+        }
+
+        return 'dashboard';
+    }
 }

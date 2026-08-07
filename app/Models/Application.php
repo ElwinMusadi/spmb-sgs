@@ -141,6 +141,16 @@ class Application extends Model
         return $this->hasMany(ApplicationDocument::class);
     }
 
+    public function fees(): HasMany
+    {
+        return $this->hasMany(ApplicationFee::class)->orderBy('sort_order');
+    }
+
+    public function hasFeeSnapshot(): bool
+    {
+        return $this->fees()->exists();
+    }
+
     /**
      * Check if the application is a draft.
      */

@@ -8,12 +8,12 @@ use Livewire\Component;
 
 new #[Title('Dashboard')] class extends Component {
     /**
-     * Redirect super administrators to their own dashboard.
+     * Only applicants (students) may access the applicant dashboard.
      */
     public function mount(): mixed
     {
-        if (Auth::user()->isSuperAdmin()) {
-            return $this->redirectRoute('admin.dashboard', navigate: true);
+        if (! Auth::user()->isStudent()) {
+            return $this->redirectRoute(Auth::user()->homeRoute(), navigate: true);
         }
 
         return null;

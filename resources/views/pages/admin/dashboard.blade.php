@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Application;
+use App\Models\ApplicationFee;
 use App\Models\SchoolLevel;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Computed;
@@ -9,16 +10,11 @@ use Livewire\Component;
 
 new #[Title('Admin Overview')] class extends Component {
     /**
-     * Estimated registration fee per admitted/paid applicant (IDR).
-     */
-    private const REGISTRATION_FEE = 754500;
-
-    /**
-     * Guard the admin dashboard against non-admin users.
+     * Guard the admin dashboard against users without access.
      */
     public function mount(): mixed
     {
-        if (! Auth::user()->isSuperAdmin()) {
+        if (! Auth::user()->isSuperAdmin() && ! Auth::user()->can('dashboard.view')) {
             return $this->redirectRoute('dashboard', navigate: true);
         }
 
@@ -76,7 +72,7 @@ new #[Title('Admin Overview')] class extends Component {
     #[Computed]
     public function estimatedRevenue(): int
     {
-        return $this->paidCount * self::REGISTRATION_FEE;
+        return (int) ApplicationFee::whereHas('application', fn ($query) => $query->where('payment_status', 'paid'))->sum('amount');
     }
 
     /**
@@ -440,7 +436,7 @@ new #[Title('Admin Overview')] class extends Component {
       <div class="bg-white rounded-xl p-5 shadow-sm border border-outline-variant/30 flex-1">
         <h3 class="font-heading text-base font-semibold text-navy mb-4">{{ __('Quick Actions') }}</h3>
         <div class="flex flex-col gap-2">
-          <a href="{{ route('application') }}"
+          <a href="{{ route('admin.applicants') }}"
             class="flex items-center justify-between p-2.5 rounded-lg hover:bg-surface-container-lowest transition-colors group">
             <div class="flex items-center gap-3">
               <div

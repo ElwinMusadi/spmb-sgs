@@ -3,6 +3,7 @@
 use App\Models\AcademicYear;
 use App\Models\Application;
 use App\Models\SchoolLevel;
+use App\Services\PaymentFeeService;
 use Flux\Flux;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -78,6 +79,7 @@ new #[Title('My Application')] class extends Component {
     public ?string $previewName = null;
     public ?string $previewType = null;
     public bool $showPreviewModal = false;
+    public ?string $paymentFeeError = null;
 
     // Payment State
     public string $payment_method = 'bca';
@@ -88,8 +90,12 @@ new #[Title('My Application')] class extends Component {
     /**
      * Mount the component.
      */
-    public function mount(): void
+    public function mount(): mixed
     {
+        if (! Auth::user()->isStudent()) {
+            return $this->redirectRoute(Auth::user()->homeRoute(), navigate: true);
+        }
+
         $application = Auth::user()->applications()->latest()->first();
 
         if ($application) {
@@ -100,7 +106,62 @@ new #[Title('My Application')] class extends Component {
             $this->payment_method = $application->payment_method ?? 'bca';
             $this->fillFromApplication($application);
             $this->loadExistingDocuments($application);
+
+            if ($this->currentStep >= 4) {
+                $this->snapshotPaymentFees($application);
+            }
         }
+
+        return null;
+    }
+
+    /**
+     * Create or load the immutable payment fee snapshot for an application.
+     */
+    private function snapshotPaymentFees(Application $application): bool
+    {
+        try {
+            app(PaymentFeeService::class)->ensureSnapshot($application);
+            $this->paymentFeeError = null;
+
+            return true;
+        } catch (\RuntimeException $exception) {
+            $this->paymentFeeError = $exception->getMessage();
+
+            return false;
+        }
+    }
+
+    /**
+     * Get the fee snapshot displayed in Step 4.
+     */
+    #[Computed]
+    public function paymentFees()
+    {
+        if (! $this->applicationId) {
+            return collect();
+        }
+
+        return Auth::user()->applications()->find($this->applicationId)?->fees()->get() ?? collect();
+    }
+
+    /**
+     * Calculate the Step 4 totals from the fee snapshot.
+     *
+     * @return array{subtotal: int, admin_fee: int, total: int}
+     */
+    #[Computed]
+    public function paymentTotals(): array
+    {
+        return app(PaymentFeeService::class)->totals($this->paymentFees);
+    }
+
+    /**
+     * Resolve an icon for a payment fee type.
+     */
+    public function paymentFeeIcon(string $feeType): string
+    {
+        return $feeType === 'assessment' ? 'quiz' : ($feeType === 'admin' ? 'account_balance' : 'app_registration');
     }
 
     /**
@@ -231,6 +292,22 @@ new #[Title('My Application')] class extends Component {
                 'payment_status' => 'paid',
                 'payment_method' => $this->payment_method,
                 'paid_at' => now(),
+            ]);
+        }
+    }
+
+    /**
+     * Cancel Payment.
+     */
+    public function cancelPayment(): void
+    {
+        $this->payment_status = 'awaiting';
+
+        if ($this->applicationId) {
+            $application = Auth::user()->applications()->findOrFail($this->applicationId);
+            $application->update([
+                'payment_status' => 'awaiting',
+                'paid_at' => null,
             ]);
         }
     }
@@ -393,6 +470,13 @@ new #[Title('My Application')] class extends Component {
             }
 
             $this->loadExistingDocuments($application);
+
+            if (! $this->snapshotPaymentFees($application)) {
+                Flux::toast(variant: 'danger', text: __('Payment fees are not configured for this application yet.'));
+
+                return;
+            }
+
             $this->saveApplicationData(4);
             $this->currentStep = 4;
             $this->maxStep = max($this->maxStep, 4);
@@ -1097,6 +1181,16 @@ new #[Title('My Application')] class extends Component {
                 @endif
               </div>
               <div class="p-6">
+                @if ($paymentFeeError)
+                  <div class="mb-5 rounded-xl border border-red-200 bg-red-50 p-4 flex items-start gap-3">
+                    <span class="material-symbols-outlined text-red-600">warning</span>
+                    <div>
+                      <p class="font-body text-sm font-semibold text-red-800">{{ __('Payment fees unavailable') }}</p>
+                      <p class="font-body text-sm text-red-700 mt-1">{{ __('Please contact the admission office before proceeding.') }}</p>
+                    </div>
+                  </div>
+                @endif
+
                 {{-- Line Items --}}
                 <div class="overflow-hidden rounded-xl border border-outline-variant/40">
                   <table class="w-full text-left border-collapse">
@@ -1111,35 +1205,27 @@ new #[Title('My Application')] class extends Component {
                       </tr>
                     </thead>
                     <tbody class="font-body text-base text-on-surface divide-y divide-outline-variant/20">
-                      <tr>
-                        <td class="py-4 px-4">
-                          <div class="flex items-center gap-3">
-                            <span
-                              class="material-symbols-outlined text-navy text-[22px] shrink-0">app_registration</span>
-                            <div>
-                              <div class="font-medium leading-tight">
-                                {{ __('Registration Fee - Academic Year') }}
-                                {{ date('Y') }}/{{ date('Y') + 1 }}</div>
-                              <div class="text-xs text-on-surface-variant mt-0.5">{{ __('Grade') }}
-                                {{ $grade_level ?? '-' }}</div>
+                      @forelse ($this->paymentFees as $fee)
+                        <tr wire:key="application-fee-{{ $fee->id }}">
+                          <td class="py-4 px-4">
+                            <div class="flex items-center gap-3">
+                              <span class="material-symbols-outlined text-navy text-[22px] shrink-0">{{ $this->paymentFeeIcon($fee->fee_type) }}</span>
+                              <div>
+                                <div class="font-medium leading-tight">{{ __($fee->name) }}</div>
+                                <div class="text-xs text-on-surface-variant mt-0.5">{{ __($fee->description ?? '') }}</div>
+                                @if ($fee->fee_type !== 'admin')
+                                  <div class="text-xs text-on-surface-variant mt-0.5">{{ __('Grade') }} {{ $grade_level ?? '-' }}</div>
+                                @endif
+                              </div>
                             </div>
-                          </div>
-                        </td>
-                        <td class="py-4 px-4 text-right font-medium tabular-nums whitespace-nowrap">500.000</td>
-                      </tr>
-                      <tr>
-                        <td class="py-4 px-4">
-                          <div class="flex items-center gap-3">
-                            <span class="material-symbols-outlined text-navy text-[22px] shrink-0">quiz</span>
-                            <div>
-                              <div class="font-medium leading-tight">{{ __('Entrance Assessment Test') }}</div>
-                              <div class="text-xs text-on-surface-variant mt-0.5">
-                                {{ __('Computer-based cognitive assessment') }}</div>
-                            </div>
-                          </div>
-                        </td>
-                        <td class="py-4 px-4 text-right font-medium tabular-nums whitespace-nowrap">250.000</td>
-                      </tr>
+                          </td>
+                          <td class="py-4 px-4 text-right font-medium tabular-nums whitespace-nowrap">Rp {{ number_format($fee->amount, 0, ',', '.') }}</td>
+                        </tr>
+                      @empty
+                        <tr>
+                          <td colspan="2" class="py-8 text-center text-sm text-on-surface-variant">{{ __('No payment fees configured.') }}</td>
+                        </tr>
+                      @endforelse
                     </tbody>
                   </table>
                 </div>
@@ -1149,17 +1235,17 @@ new #[Title('My Application')] class extends Component {
                   <div class="w-full md:w-2/3 lg:w-1/2 flex flex-col gap-2.5">
                     <div class="flex items-center justify-between font-body font-bold text-lg">
                       <span class="text-on-surface-variant">{{ __('Subtotal') }}</span>
-                      <span class="text-on-surface tabular-nums">Rp 750.000</span>
+                      <span class="text-on-surface tabular-nums">Rp {{ number_format($this->paymentTotals['subtotal'], 0, ',', '.') }}</span>
                     </div>
                     <div class="flex items-center justify-between font-body font-bold text-lg">
                       <span class="text-on-surface-variant">{{ __('Admin Fee (Virtual Account)') }}</span>
-                      <span class="text-on-surface tabular-nums">Rp 4.500</span>
+                      <span class="text-on-surface tabular-nums">Rp {{ number_format($this->paymentTotals['admin_fee'], 0, ',', '.') }}</span>
                     </div>
                     <div
                       class="mt-2 flex items-center justify-between rounded-xl bg-navy px-5 py-4 shadow-sm shadow-navy/20">
                       <span class="font-heading text-sm font-semibold text-white/80 uppercase tracking-wider">
                         {{ __('Total Due') }}</span>
-                      <span class="font-heading text-2xl font-bold text-white tabular-nums">Rp 754.500</span>
+                      <span class="font-heading text-2xl font-bold text-white tabular-nums">Rp {{ number_format($this->paymentTotals['total'], 0, ',', '.') }}</span>
                     </div>
                   </div>
                 </div>
@@ -1292,10 +1378,24 @@ new #[Title('My Application')] class extends Component {
               </div>
             </button>
           @else
-            <div
-              class="mt-6 w-full py-3 px-6 bg-green-100 text-green-800 font-body text-sm font-semibold rounded-lg flex items-center justify-center gap-2">
-              <span class="material-symbols-outlined text-[18px]">check_circle</span>
-              <span>{{ __('Payment Confirmed') }}</span>
+            <div class="flex flex-col gap-3 mt-6">
+              <div
+                class="w-full py-3 px-6 bg-green-100 text-green-800 font-body text-sm font-semibold rounded-lg flex items-center justify-center gap-2">
+                <span class="material-symbols-outlined text-[18px]">check_circle</span>
+                <span>{{ __('Payment Confirmed') }}</span>
+              </div>
+              
+              <button wire:click="cancelPayment" wire:loading.attr="disabled"
+                class="w-full py-2.5 px-6 bg-red-50 text-red-700 hover:bg-red-100 font-body text-sm font-semibold rounded-lg transition-all flex items-center justify-center gap-2 border border-red-200">
+                <span wire:loading.remove wire:target="cancelPayment" class="flex items-center gap-2">
+                  <span>{{ __('Cancel Payment') }}</span>
+                  <span class="material-symbols-outlined text-[18px]">cancel</span>
+                </span>
+                <span wire:loading wire:target="cancelPayment" class="flex items-center gap-2">
+                  <span class="material-symbols-outlined text-[18px] animate-spin">sync</span>
+                  <span>{{ __('Canceling...') }}</span>
+                </span>
+              </button>
             </div>
           @endif
         </div>
