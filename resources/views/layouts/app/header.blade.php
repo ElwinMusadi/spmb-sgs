@@ -16,6 +16,20 @@
         wire:navigate>
         {{ __('Dashboard') }}
       </flux:navbar.item>
+      @if (auth()->user()->isSuperAdmin())
+        <flux:navbar.item icon="chart-bar" :href="route('admin.dashboard')"
+          :current="request()->routeIs('admin.dashboard')" wire:navigate>
+          {{ __('Admin Overview') }}
+        </flux:navbar.item>
+        <flux:navbar.item icon="users" :href="route('admin.users')" :current="request()->routeIs('admin.users')"
+          wire:navigate>
+          {{ __('Users') }}
+        </flux:navbar.item>
+        <flux:navbar.item icon="shield-check" :href="route('admin.roles')"
+          :current="request()->routeIs('admin.roles')" wire:navigate>
+          {{ __('Roles') }}
+        </flux:navbar.item>
+      @endif
     </flux:navbar>
 
     <flux:spacer />

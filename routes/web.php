@@ -19,6 +19,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::livewire('admin/users', 'pages::admin.users')->name('admin.users');
 
+    Route::livewire('admin/roles', 'pages::admin.roles')->name('admin.roles');
+
     Route::livewire('application', 'pages::application.my-application')->name(
         'application',
     );

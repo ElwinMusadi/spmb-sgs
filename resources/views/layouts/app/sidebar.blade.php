@@ -35,6 +35,10 @@
             wire:navigate>
             {{ __('User Management') }}
           </flux:sidebar.item>
+          <flux:sidebar.item icon="shield-check" :href="route('admin.roles')"
+            :current="request()->routeIs('admin.roles')" wire:navigate>
+            {{ __('Roles & Permissions') }}
+          </flux:sidebar.item>
         </flux:sidebar.group>
       @endif
     </flux:sidebar.nav>

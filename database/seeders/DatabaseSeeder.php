@@ -27,6 +27,7 @@ class DatabaseSeeder extends Seeder
             AcademicYearSeeder::class,
             FaqSeeder::class,
             RoleSeeder::class,
+            PermissionSeeder::class,
         ]);
     }
 }
