@@ -57,6 +57,15 @@ class ApplicantManagementTest extends TestCase
         $staff = $this->userWithRole('Admission Staff');
         $application = Application::factory()->create(['status' => 'submitted']);
 
+        foreach (['akta_kelahiran', 'kartu_keluarga', 'ijazah', 'pas_foto'] as $type) {
+            $application->documents()->create([
+                'document_type' => $type,
+                'file_path' => "documents/{$type}.pdf",
+                'file_name' => "{$type}.pdf",
+                'file_size' => 100,
+            ]);
+        }
+
         Livewire::actingAs($staff)
             ->test('pages::admin.applicants')
             ->call('admit', $application->id);

@@ -176,7 +176,10 @@ new #[Title('Applicants')] class extends Component {
     protected function applyStatus(int $id, string $status, string $message): void
     {
         $application = Application::findOrFail($id);
-        $application->update(['status' => $status]);
+        $application->update([
+            'status' => $status,
+            'current_step' => $status === 'submitted' ? 3 : $application->current_step,
+        ]);
 
         unset($this->applicants);
         Flux::toast(variant: 'success', text: $message);

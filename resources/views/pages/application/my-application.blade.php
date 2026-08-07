@@ -102,14 +102,16 @@ new #[Title('My Application')] class extends Component {
 
         if ($application) {
             $this->applicationId = $application->id;
-            $this->currentStep = max(2, $application->current_step);
+            $this->currentStep = $application->status === 'admitted'
+                ? 4
+                : min(3, max(2, $application->current_step));
             $this->maxStep = $this->currentStep;
             $this->payment_status = $application->payment_status;
             $this->payment_method = $application->payment_method ?? 'bca';
             $this->fillFromApplication($application);
             $this->loadExistingDocuments($application);
 
-            if ($this->currentStep >= 4) {
+            if ($application->status === 'admitted') {
                 $this->snapshotPaymentFees($application);
             }
         }
@@ -284,6 +286,8 @@ new #[Title('My Application')] class extends Component {
      */
     public function simulatePayment(): void
     {
+        abort_unless($this->currentStep === 4 && $this->application?->status === 'admitted', 403);
+
         // Simulate a delay
         sleep(1);
         $this->payment_status = 'paid';
@@ -396,6 +400,10 @@ new #[Title('My Application')] class extends Component {
      */
     public function goToStep(int $step): void
     {
+        if ($step === 4 && $this->application?->status !== 'admitted') {
+            return;
+        }
+
         if ($step >= 2 && $step <= $this->maxStep) {
             $this->currentStep = $step;
         }
@@ -478,11 +486,38 @@ new #[Title('My Application')] class extends Component {
                 return;
             }
 
-            $this->saveApplicationData(4);
-            $this->currentStep = 4;
-            $this->maxStep = max($this->maxStep, 4);
-            Flux::toast(variant: 'success', text: __('Documents confirmed! Please proceed to payment.'));
+            $this->saveApplicationData(3);
+            $this->currentStep = 3;
+            $this->maxStep = max($this->maxStep, 3);
+            Flux::toast(variant: 'success', text: __('Documents saved. Submit your application for admission review.'));
         }
+    }
+
+    /**
+     * Submit a completed application for Admission Staff review.
+     */
+    public function submitApplication(): void
+    {
+        abort_unless($this->applicationId && $this->currentStep === 3, 403);
+
+        $application = Auth::user()->applications()->findOrFail($this->applicationId);
+        $this->loadExistingDocuments($application);
+
+        foreach (['akta_kelahiran', 'kartu_keluarga', 'ijazah', 'pas_foto'] as $type) {
+            if (! $this->{'has_'.$type}) {
+                Flux::toast(variant: 'danger', text: __('Please upload all required documents before submitting.'));
+
+                return;
+            }
+        }
+
+        $application->update([
+            'status' => 'submitted',
+            'current_step' => 3,
+            'submitted_at' => now(),
+        ]);
+
+        Flux::toast(variant: 'success', text: __('Application submitted for admission review.'));
     }
 
     /**
@@ -1523,13 +1558,13 @@ new #[Title('My Application')] class extends Component {
               </div>
             </flux:button>
           @elseif ($currentStep === 3)
-            <flux:button wire:click.prevent="saveAndContinue" variant="primary" class="w-full"
+            <flux:button wire:click.prevent="submitApplication" variant="primary" class="w-full"
               wire:loading.attr="disabled">
               <div class="flex items-center justify-center gap-2 w-full">
-                <span wire:loading.remove wire:target="saveAndContinue">{{ __('Confirm Documents') }}</span>
-                <span wire:loading wire:target="saveAndContinue">{{ __('Uploading...') }}</span>
+                <span wire:loading.remove wire:target="submitApplication">{{ __('Submit Application') }}</span>
+                <span wire:loading wire:target="submitApplication">{{ __('Submitting...') }}</span>
                 <span class="material-symbols-outlined text-[20px] pt-0.5" wire:loading.remove
-                  wire:target="saveAndContinue">arrow_forward</span>
+                  wire:target="submitApplication">send</span>
               </div>
             </flux:button>
           @endif

@@ -4,10 +4,11 @@ namespace Database\Seeders;
 
 use App\Models\AcademicYear;
 use App\Models\Application;
+use App\Models\ApplicationDocument;
 use App\Models\SchoolLevel;
 use App\Models\User;
-use Illuminate\Database\Seeder;
 use Faker\Factory as Faker;
+use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 
@@ -25,6 +26,7 @@ class DummyApplicantsSeeder extends Seeder
 
         if ($schoolLevels->isEmpty() || $academicYears->isEmpty()) {
             $this->command->warn('No active school levels or academic years found. Make sure they are seeded.');
+
             return;
         }
 
@@ -50,8 +52,8 @@ class DummyApplicantsSeeder extends Seeder
             // Step 1: Just Registered (No application record yet, or minimal draft)
             // Step 2: Form Filling (Draft)
             // Step 3: Document Upload (Draft)
-            // Step 4: Payment (Submitted, awaiting payment or paid)
-            
+            // Step 4: Payment (Admitted, awaiting payment or paid)
+
             $step = $faker->numberBetween(1, 4);
 
             if ($step === 1) {
@@ -62,16 +64,16 @@ class DummyApplicantsSeeder extends Seeder
 
             $schoolLevel = $schoolLevels->random();
             $academicYear = $academicYears->random();
-            
+
             // Basic data for step 2+
             $applicationData = [
                 'user_id' => $user->id,
                 'school_level_id' => $schoolLevel->id,
                 'academic_year_id' => $academicYear->id,
-                'grade_level' => 'Grade ' . $faker->numberBetween(1, 6),
+                'grade_level' => 'Grade '.$faker->numberBetween(1, 6),
                 'status' => 'draft',
                 'current_step' => $step,
-                
+
                 // Student Data
                 'student_full_name' => $studentName,
                 'student_nik' => $faker->nik(),
@@ -82,7 +84,7 @@ class DummyApplicantsSeeder extends Seeder
                 'student_religion' => $faker->randomElement(['Islam', 'Protestant', 'Catholic', 'Hindu', 'Buddhist', 'Confucian']),
                 'student_citizenship' => 'WNI',
                 'student_address' => $faker->address,
-                'student_previous_school' => 'SD ' . $faker->company,
+                'student_previous_school' => 'SD '.$faker->company,
 
                 // Father Data
                 'father_name' => $faker->name('male'),
@@ -100,23 +102,40 @@ class DummyApplicantsSeeder extends Seeder
             ];
 
             // Specific logic for step 4 (payment)
-            if ($step === 4) {
-                // If they reached step 4, the application is technically submitted and they need to pay.
-                $applicationData['status'] = 'submitted';
-                $applicationData['submitted_at'] = now();
-                
-                // Randomize payment status
-                $isPaid = $faker->boolean;
-                if ($isPaid) {
+            if ($step >= 3) {
+                $applicationData['status'] = $step === 4
+                    ? 'admitted'
+                    : ($faker->boolean ? 'submitted' : 'draft');
+                $applicationData['submitted_at'] = $applicationData['status'] === 'submitted' ? now() : null;
+
+                if ($step === 4 && $faker->boolean) {
                     $applicationData['payment_status'] = 'paid';
                     $applicationData['payment_method'] = $faker->randomElement(['bca', 'mandiri', 'bni', 'qris']);
                     $applicationData['paid_at'] = now();
-                } else {
-                    $applicationData['payment_status'] = 'awaiting';
                 }
+
+                $application = Application::create($applicationData);
+
+                foreach (['akta_kelahiran', 'kartu_keluarga', 'ijazah', 'pas_foto'] as $documentType) {
+                    ApplicationDocument::create([
+                        'application_id' => $application->id,
+                        'document_type' => $documentType,
+                        'file_path' => "dummy/{$application->id}/{$documentType}.pdf",
+                        'file_name' => "{$documentType}.pdf",
+                        'file_size' => 100000,
+                        'is_required' => true,
+                    ]);
+                }
+
+                if ($step !== 4) {
+                    continue;
+                }
+
             }
 
-            Application::create($applicationData);
+            if ($step < 3) {
+                Application::create($applicationData);
+            }
         }
     }
 }

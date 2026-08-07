@@ -159,7 +159,7 @@ class ApplicationTest extends TestCase
 
         $this->assertDatabaseHas('applications', [
             'id' => $application->id,
-            'current_step' => 4,
+            'current_step' => 3,
         ]);
 
         $this->assertDatabaseCount('application_documents', 4);
@@ -171,6 +171,7 @@ class ApplicationTest extends TestCase
         $application = Application::factory()->create([
             'user_id' => $user->id,
             'current_step' => 4,
+            'status' => 'admitted',
         ]);
 
         $response = $this->actingAs($user)
@@ -187,6 +188,7 @@ class ApplicationTest extends TestCase
         $application = Application::factory()->create([
             'user_id' => $owner->id,
             'current_step' => 4,
+            'status' => 'admitted',
         ]);
 
         $response = $this->actingAs($otherUser)
@@ -201,6 +203,7 @@ class ApplicationTest extends TestCase
         $application = Application::factory()->create([
             'user_id' => $user->id,
             'current_step' => 4,
+            'status' => 'admitted',
         ]);
 
         Livewire::actingAs($user)
@@ -216,12 +219,58 @@ class ApplicationTest extends TestCase
         ]);
     }
 
+    public function test_student_cannot_access_payment_before_admission(): void
+    {
+        $user = $this->student();
+        $application = Application::factory()->create([
+            'user_id' => $user->id,
+            'current_step' => 4,
+            'status' => 'submitted',
+        ]);
+
+        Livewire::actingAs($user)
+            ->test('pages::application.my-application')
+            ->assertSet('currentStep', 3)
+            ->call('goToStep', 4)
+            ->assertSet('currentStep', 3);
+    }
+
+    public function test_student_can_submit_after_documents_are_uploaded(): void
+    {
+        $user = $this->student();
+        $application = Application::factory()->create([
+            'user_id' => $user->id,
+            'current_step' => 3,
+            'status' => 'draft',
+        ]);
+
+        foreach (['akta_kelahiran', 'kartu_keluarga', 'ijazah', 'pas_foto'] as $type) {
+            $application->documents()->create([
+                'document_type' => $type,
+                'file_path' => "documents/{$type}.pdf",
+                'file_name' => "{$type}.pdf",
+                'file_size' => 100,
+            ]);
+        }
+
+        Livewire::actingAs($user)
+            ->test('pages::application.my-application')
+            ->call('submitApplication');
+
+        $this->assertDatabaseHas('applications', [
+            'id' => $application->id,
+            'status' => 'submitted',
+            'current_step' => 3,
+        ]);
+    }
+
     public function test_user_can_jump_to_a_reached_step_via_stepper(): void
     {
         $user = $this->student();
         Application::factory()->create([
             'user_id' => $user->id,
             'current_step' => 4,
+            'status' => 'admitted',
         ]);
 
         Livewire::actingAs($user)
