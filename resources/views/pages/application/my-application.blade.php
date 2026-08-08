@@ -814,7 +814,7 @@ new #[Title('My Application')] class extends Component {
       {{-- Active Line --}}
       <div
         class="absolute top-11.5 left-[12%] md:left-[10%] h-1.5 bg-navy rounded-full z-0 transition-all duration-700 ease-in-out shadow-[0_0_10px_rgba(25,55,109,0.3)]"
-        style="width: {{ $currentStep === 2 ? '25%' : ($currentStep === 3 ? '50%' : ($currentStep === 4 ? '75%' : '100%')) }};"></div>
+        style="width: {{ $currentStep === 2 ? '25%' : ($currentStep === 3 ? '50%' : ($currentStep === 4 ? '75%' : '85%')) }};"></div>
 
       <div class="flex justify-between relative z-10">
         {{-- Step 1: Account (Always completed) --}}
