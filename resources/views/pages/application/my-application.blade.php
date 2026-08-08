@@ -926,7 +926,7 @@ new #[Title('My Application')] class extends Component {
           <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
             @foreach ($this->schoolLevels as $level)
               <label class="cursor-pointer group">
-                <input wire:model="school_level_id" type="radio" name="school_level" value="{{ $level->id }}"
+                <input wire:model.live="school_level_id" type="radio" name="school_level" value="{{ $level->id }}"
                   class="peer sr-only" />
                 <div
                   class="px-4 py-3 rounded-lg border border-outline-variant text-center transition-all
