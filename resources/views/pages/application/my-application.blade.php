@@ -102,9 +102,11 @@ new #[Title('My Application')] class extends Component {
 
         if ($application) {
             $this->applicationId = $application->id;
-            $this->currentStep = $application->status === 'admitted'
-                ? 4
-                : min(3, max(2, $application->current_step));
+            $this->currentStep = match (true) {
+                $application->status === 'admitted' => 5,
+                $application->status === 'submitted' => 4,
+                default => min(4, max(2, $application->current_step)),
+            };
             $this->maxStep = $this->currentStep;
             $this->payment_status = $application->payment_status;
             $this->payment_method = $application->payment_method ?? 'bca';
@@ -113,7 +115,7 @@ new #[Title('My Application')] class extends Component {
 
             if ($application->status === 'admitted') {
                 $this->snapshotPaymentFees($application);
-                
+
                 if ($this->payment_status === 'awaiting') {
                     $this->checkPaymentStatus();
                 }
@@ -290,7 +292,7 @@ new #[Title('My Application')] class extends Component {
      */
     public function payWithDuitku()
     {
-        abort_unless($this->currentStep === 4 && $this->application?->status === 'admitted', 403);
+        abort_unless($this->currentStep === 5 && $this->application?->status === 'admitted', 403);
 
         $config = new \Duitku\Config(env('DUITKU_API_KEY'), env('DUITKU_CODE_MERCHANT'));
         $config->setSandboxMode(env('DUITKU_MODE') === 'sandbox');
@@ -344,7 +346,7 @@ new #[Title('My Application')] class extends Component {
      */
     public function checkPaymentStatus(): void
     {
-        if ($this->currentStep !== 4 || $this->application?->status !== 'admitted' || $this->payment_status !== 'awaiting') {
+        if ($this->currentStep !== 5 || $this->application?->status !== 'admitted' || $this->payment_status !== 'awaiting') {
             return;
         }
 
@@ -379,7 +381,7 @@ new #[Title('My Application')] class extends Component {
      */
     public function simulatePayment(): void
     {
-        abort_unless($this->currentStep === 4 && $this->application?->status === 'admitted', 403);
+        abort_unless($this->currentStep === 5 && $this->application?->status === 'admitted', 403);
 
         // Simulate a delay
         sleep(1);
@@ -493,7 +495,7 @@ new #[Title('My Application')] class extends Component {
      */
     public function goToStep(int $step): void
     {
-        if ($step === 4 && $this->application?->status !== 'admitted') {
+        if ($step === 5 && $this->application?->status !== 'admitted') {
             return;
         }
 
@@ -573,16 +575,10 @@ new #[Title('My Application')] class extends Component {
 
             $this->loadExistingDocuments($application);
 
-            if (! $this->snapshotPaymentFees($application)) {
-                Flux::toast(variant: 'danger', text: __('Payment fees are not configured for this application yet.'));
-
-                return;
-            }
-
-            $this->saveApplicationData(3);
-            $this->currentStep = 3;
-            $this->maxStep = max($this->maxStep, 3);
-            Flux::toast(variant: 'success', text: __('Documents saved. Submit your application for admission review.'));
+            $this->saveApplicationData(4);
+            $this->currentStep = 4;
+            $this->maxStep = max($this->maxStep, 4);
+            Flux::toast(variant: 'success', text: __('Documents saved. Review your application before submitting.'));
         }
     }
 
@@ -591,7 +587,7 @@ new #[Title('My Application')] class extends Component {
      */
     public function submitApplication(): void
     {
-        abort_unless($this->applicationId && $this->currentStep === 3, 403);
+        abort_unless($this->applicationId && $this->currentStep === 4, 403);
 
         $application = Auth::user()->applications()->findOrFail($this->applicationId);
         $this->loadExistingDocuments($application);
@@ -645,11 +641,17 @@ new #[Title('My Application')] class extends Component {
 
         $application->update([
             'status' => 'submitted',
-            'current_step' => 3,
+            'current_step' => 4,
             'submitted_at' => now(),
         ]);
 
         Flux::toast(variant: 'success', text: __('Application submitted for admission review.'));
+    }
+
+    #[Computed]
+    public function isSubmitted(): bool
+    {
+        return $this->application?->status === 'submitted' || $this->application?->status === 'admitted';
     }
 
     /**
@@ -780,6 +782,8 @@ new #[Title('My Application')] class extends Component {
           @elseif ($currentStep === 3)
             {{ __('Please upload all required documents to proceed.') }}
           @elseif ($currentStep === 4)
+            {{ __('Review your application before submitting for admission review.') }}
+          @elseif ($currentStep === 5)
             {{ __('Please complete the registration payment.') }}
           @endif
         </p>
@@ -792,6 +796,8 @@ new #[Title('My Application')] class extends Component {
           @elseif ($currentStep === 3)
             {{ __('Document Upload') }}
           @elseif ($currentStep === 4)
+            {{ __('Review') }}
+          @elseif ($currentStep === 5)
             {{ __('Payment') }}
           @endif
         </span>
@@ -808,7 +814,7 @@ new #[Title('My Application')] class extends Component {
       {{-- Active Line --}}
       <div
         class="absolute top-11.5 left-[12%] md:left-[10%] h-1.5 bg-navy rounded-full z-0 transition-all duration-700 ease-in-out shadow-[0_0_10px_rgba(25,55,109,0.3)]"
-        style="width: {{ $currentStep === 2 ? '30%' : ($currentStep === 3 ? '60%' : '80%') }};"></div>
+        style="width: {{ $currentStep === 2 ? '25%' : ($currentStep === 3 ? '50%' : ($currentStep === 4 ? '75%' : '100%')) }};"></div>
 
       <div class="flex justify-between relative z-10">
         {{-- Step 1: Account (Always completed) --}}
@@ -877,10 +883,38 @@ new #[Title('My Application')] class extends Component {
           @endif
         </button>
 
-        {{-- Step 4: Payment --}}
+        {{-- Step 4: Review --}}
         <button type="button" wire:click="goToStep(4)" @disabled($maxStep < 4)
           class="flex flex-col items-center gap-2.5 w-20 md:w-24 group {{ $maxStep >= 4 ? 'cursor-pointer' : 'cursor-default' }}">
-          @if ($currentStep > 4)
+          @if ($currentStep > 4 && $this->isSubmitted)
+            <div
+              class="w-11 h-11 md:w-12 md:h-12 rounded-full bg-navy flex items-center justify-center text-white shadow-md ring-4 ring-white transition-transform group-hover:scale-105">
+              <span class="material-symbols-outlined text-[20px]"
+                style="font-variation-settings: 'FILL' 1;">check</span>
+            </div>
+            <span
+              class="font-body text-[11px] md:text-xs font-bold text-navy text-center uppercase tracking-wider">{{ __('Review') }}</span>
+          @elseif ($currentStep === 4)
+            <div
+              class="w-11 h-11 md:w-12 md:h-12 rounded-full bg-white border-[3px] border-navy flex items-center justify-center text-navy shadow-[0_0_15px_rgba(25,55,109,0.2)] ring-4 ring-white transition-transform scale-110">
+              <span class="font-body text-base font-bold">4</span>
+            </div>
+            <span
+              class="font-body text-[11px] md:text-xs font-bold text-navy text-center uppercase tracking-wider">{{ __('Review') }}</span>
+          @else
+            <div
+              class="w-11 h-11 md:w-12 md:h-12 rounded-full bg-surface-container-high flex items-center justify-center text-on-surface-variant border-2 border-white ring-4 ring-white transition-colors">
+              <span class="font-body text-base font-semibold">4</span>
+            </div>
+            <span
+              class="font-body text-[11px] md:text-xs font-medium text-on-surface-variant text-center uppercase tracking-wider">{{ __('Review') }}</span>
+          @endif
+        </button>
+
+        {{-- Step 5: Payment --}}
+        <button type="button" wire:click="goToStep(5)" @disabled($maxStep < 5)
+          class="flex flex-col items-center gap-2.5 w-20 md:w-24 group {{ $maxStep >= 5 ? 'cursor-pointer' : 'cursor-default' }}">
+          @if ($currentStep > 5)
             <div
               class="w-11 h-11 md:w-12 md:h-12 rounded-full bg-navy flex items-center justify-center text-white shadow-md ring-4 ring-white transition-transform group-hover:scale-105">
               <span class="material-symbols-outlined text-[20px]"
@@ -888,17 +922,17 @@ new #[Title('My Application')] class extends Component {
             </div>
             <span
               class="font-body text-[11px] md:text-xs font-bold text-navy text-center uppercase tracking-wider">{{ __('Payment') }}</span>
-          @elseif ($currentStep === 4)
+          @elseif ($currentStep === 5)
             <div
               class="w-11 h-11 md:w-12 md:h-12 rounded-full bg-white border-[3px] border-navy flex items-center justify-center text-navy shadow-[0_0_15px_rgba(25,55,109,0.2)] ring-4 ring-white transition-transform scale-110">
-              <span class="font-body text-base font-bold">4</span>
+              <span class="font-body text-base font-bold">5</span>
             </div>
             <span
               class="font-body text-[11px] md:text-xs font-bold text-navy text-center uppercase tracking-wider">{{ __('Payment') }}</span>
           @else
             <div
               class="w-11 h-11 md:w-12 md:h-12 rounded-full bg-surface-container-high flex items-center justify-center text-on-surface-variant border-2 border-white ring-4 ring-white transition-colors">
-              <span class="font-body text-base font-semibold">4</span>
+              <span class="font-body text-base font-semibold">5</span>
             </div>
             <span
               class="font-body text-[11px] md:text-xs font-medium text-on-surface-variant text-center uppercase tracking-wider">{{ __('Payment') }}</span>
@@ -916,6 +950,15 @@ new #[Title('My Application')] class extends Component {
 
       @if ($currentStep === 2)
         {{-- STEP 2: FORM CONTENT --}}
+        @if ($this->isSubmitted)
+          <div class="mb-6 rounded-xl border border-amber-200 bg-amber-50 p-4 flex items-start gap-3">
+            <span class="material-symbols-outlined text-amber-600">lock</span>
+            <div>
+              <p class="font-body text-sm font-semibold text-amber-900">{{ __('Application Submitted') }}</p>
+              <p class="font-body text-sm text-amber-800 mt-1">{{ __('Your application has been submitted for review. You can no longer make changes. You can still navigate between steps to view your data.') }}</p>
+            </div>
+          </div>
+        @endif
 
         {{-- Academic Selection Card --}}
         <div class="bg-white rounded-xl shadow-sm p-8 border border-outline-variant/30">
@@ -1112,6 +1155,15 @@ new #[Title('My Application')] class extends Component {
         </div>
       @elseif ($currentStep === 3)
         {{-- STEP 3: DOCUMENTS CONTENT --}}
+        @if ($this->isSubmitted)
+          <div class="mb-6 rounded-xl border border-amber-200 bg-amber-50 p-4 flex items-start gap-3">
+            <span class="material-symbols-outlined text-amber-600">lock</span>
+            <div>
+              <p class="font-body text-sm font-semibold text-amber-900">{{ __('Application Submitted') }}</p>
+              <p class="font-body text-sm text-amber-800 mt-1">{{ __('Your application has been submitted for review. Documents can no longer be modified.') }}</p>
+            </div>
+          </div>
+        @endif
         <div class="bg-white rounded-xl shadow-sm p-8 border border-outline-variant/30">
           <div class="mb-6">
             <h3 class="font-heading text-lg font-semibold text-navy">{{ __('Upload Required Documents') }}</h3>
@@ -1385,8 +1437,165 @@ new #[Title('My Application')] class extends Component {
             </div>
           </flux:modal>
         </div>
-      @elseif ($currentStep === 4)
-        {{-- STEP 4: PAYMENT CONTENT --}}
+             @elseif ($currentStep === 4)
+        {{-- STEP 4: REVIEW CONTENT --}}
+        <div class="flex flex-col gap-6">
+          <header class="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-surface-container-high pb-6">
+            <div class="flex flex-col gap-1">
+              <h1 class="font-heading text-2xl font-semibold text-on-surface">{{ __('Review Your Application') }}</h1>
+              <p class="font-body text-base text-on-surface-variant">
+                {{ __('Review all your data before submitting for admission review.') }}</p>
+            </div>
+            @if ($this->isSubmitted)
+              <div class="px-4 py-2 bg-gold-pale/30 border border-gold/20 text-gold-dark rounded-lg font-body text-sm font-semibold flex items-center gap-1.5">
+                <span class="material-symbols-outlined text-[18px]">hourglass_empty</span>
+                {{ __('Under Review') }}
+              </div>
+            @endif
+          </header>
+
+          <div class="flex flex-col gap-6">
+            {{-- Academic Selection Summary --}}
+            <div class="bg-white rounded-xl shadow-sm border border-outline-variant/30 overflow-hidden">
+              <div class="px-5 py-4 bg-surface-container-lowest border-b border-outline-variant/30">
+                <h3 class="font-heading text-base font-semibold text-navy flex items-center gap-2">
+                  <span class="material-symbols-outlined text-[20px]">school</span>
+                  {{ __('Academic Selection') }}</h3>
+              </div>
+              <div class="p-5 grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div class="flex flex-col gap-1">
+                  <span class="font-body text-xs text-on-surface-variant">{{ __('School Level') }}</span>
+                  <span class="font-body text-sm font-semibold text-on-surface">{{ $school_level_id ? $this->schoolLevels->firstWhere('id', $school_level_id)?->name ?? '-' : '-' }}</span>
+                </div>
+                <div class="flex flex-col gap-1">
+                  <span class="font-body text-xs text-on-surface-variant">{{ __('Academic Year') }}</span>
+                  <span class="font-body text-sm font-semibold text-on-surface">{{ $academic_year_id ? $this->academicYears->firstWhere('id', $academic_year_id)?->name ?? '-' : '-' }}</span>
+                </div>
+                <div class="flex flex-col gap-1">
+                  <span class="font-body text-xs text-on-surface-variant">{{ __('Grade') }}</span>
+                  <span class="font-body text-sm font-semibold text-on-surface">{{ $grade_level ?? '-' }}</span>
+                </div>
+              </div>
+            </div>
+
+            {{-- Student Data Summary --}}
+            <div class="bg-white rounded-xl shadow-sm border border-outline-variant/30 overflow-hidden">
+              <div class="px-5 py-4 bg-surface-container-lowest border-b border-outline-variant/30">
+                <h3 class="font-heading text-base font-semibold text-navy flex items-center gap-2">
+                  <span class="material-symbols-outlined text-[20px]">person</span>
+                  {{ __('Student Data') }}</h3>
+              </div>
+              <div class="p-5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div><span class="text-xs text-on-surface-variant">{{ __('Full Name') }}</span><p class="text-sm font-semibold text-on-surface">{{ $student_full_name ?? '-' }}</p></div>
+                <div><span class="text-xs text-on-surface-variant">{{ __('NIK') }}</span><p class="text-sm font-semibold text-on-surface">{{ $student_nik ?? '-' }}</p></div>
+                <div><span class="text-xs text-on-surface-variant">{{ __('NISN') }}</span><p class="text-sm font-semibold text-on-surface">{{ $student_nisn ?? '-' }}</p></div>
+                <div><span class="text-xs text-on-surface-variant">{{ __('Birth Place / Date') }}</span><p class="text-sm font-semibold text-on-surface">{{ $student_birth_place ?? '-' }}, {{ $student_birth_date ?? '-' }}</p></div>
+                <div><span class="text-xs text-on-surface-variant">{{ __('Gender') }}</span><p class="text-sm font-semibold text-on-surface">{{ ucfirst($student_gender ?? '-') }}</p></div>
+                <div><span class="text-xs text-on-surface-variant">{{ __('Religion') }}</span><p class="text-sm font-semibold text-on-surface">{{ $student_religion ?? '-' }}</p></div>
+                <div><span class="text-xs text-on-surface-variant">{{ __('Citizenship') }}</span><p class="text-sm font-semibold text-on-surface">{{ $student_citizenship ?? '-' }}</p></div>
+                <div><span class="text-xs text-on-surface-variant">{{ __('Previous School') }}</span><p class="text-sm font-semibold text-on-surface">{{ $student_previous_school ?? '-' }}</p></div>
+                <div class="sm:col-span-2 lg:col-span-3"><span class="text-xs text-on-surface-variant">{{ __('Address') }}</span><p class="text-sm font-semibold text-on-surface">{{ $student_address ?? '-' }}</p></div>
+              </div>
+            </div>
+
+            {{-- Parent Data Summary --}}
+            <div class="bg-white rounded-xl shadow-sm border border-outline-variant/30 overflow-hidden">
+              <div class="px-5 py-4 bg-surface-container-lowest border-b border-outline-variant/30">
+                <h3 class="font-heading text-base font-semibold text-navy flex items-center gap-2">
+                  <span class="material-symbols-outlined text-[20px]">group</span>
+                  {{ __('Parent & Guardian Data') }}</h3>
+              </div>
+              <div class="p-5 grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="space-y-3">
+                  <h4 class="font-body text-sm font-semibold text-on-surface-variant uppercase tracking-wider">{{ __('Father') }}</h4>
+                  <div><span class="text-xs text-on-surface-variant">{{ __('Name') }}</span><p class="text-sm font-semibold text-on-surface">{{ $father_name ?? '-' }}</p></div>
+                  <div><span class="text-xs text-on-surface-variant">{{ __('Phone') }}</span><p class="text-sm font-semibold text-on-surface">{{ $father_phone ?? '-' }}</p></div>
+                  <div><span class="text-xs text-on-surface-variant">{{ __('Email') }}</span><p class="text-sm font-semibold text-on-surface">{{ $father_email ?? '-' }}</p></div>
+                  <div><span class="text-xs text-on-surface-variant">{{ __('Occupation') }}</span><p class="text-sm font-semibold text-on-surface">{{ $father_occupation ?? '-' }}</p></div>
+                </div>
+                <div class="space-y-3">
+                  <h4 class="font-body text-sm font-semibold text-on-surface-variant uppercase tracking-wider">{{ __('Mother') }}</h4>
+                  <div><span class="text-xs text-on-surface-variant">{{ __('Name') }}</span><p class="text-sm font-semibold text-on-surface">{{ $mother_name ?? '-' }}</p></div>
+                  <div><span class="text-xs text-on-surface-variant">{{ __('Phone') }}</span><p class="text-sm font-semibold text-on-surface">{{ $mother_phone ?? '-' }}</p></div>
+                  <div><span class="text-xs text-on-surface-variant">{{ __('Email') }}</span><p class="text-sm font-semibold text-on-surface">{{ $mother_email ?? '-' }}</p></div>
+                  <div><span class="text-xs text-on-surface-variant">{{ __('Occupation') }}</span><p class="text-sm font-semibold text-on-surface">{{ $mother_occupation ?? '-' }}</p></div>
+                </div>
+                @if ($guardian_name)
+                  <div class="md:col-span-2 pt-4 border-t border-outline-variant/30 space-y-3">
+                    <h4 class="font-body text-sm font-semibold text-on-surface-variant uppercase tracking-wider">{{ __('Guardian') }}</h4>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <div><span class="text-xs text-on-surface-variant">{{ __('Name') }}</span><p class="text-sm font-semibold text-on-surface">{{ $guardian_name }}</p></div>
+                      <div><span class="text-xs text-on-surface-variant">{{ __('Phone') }}</span><p class="text-sm font-semibold text-on-surface">{{ $guardian_phone ?? '-' }}</p></div>
+                      <div><span class="text-xs text-on-surface-variant">{{ __('Email') }}</span><p class="text-sm font-semibold text-on-surface">{{ $guardian_email ?? '-' }}</p></div>
+                      <div><span class="text-xs text-on-surface-variant">{{ __('Occupation') }}</span><p class="text-sm font-semibold text-on-surface">{{ $guardian_occupation ?? '-' }}</p></div>
+                    </div>
+                  </div>
+                @endif
+              </div>
+            </div>
+
+            {{-- Documents Summary --}}
+            <div class="bg-white rounded-xl shadow-sm border border-outline-variant/30 overflow-hidden">
+              <div class="px-5 py-4 bg-surface-container-lowest border-b border-outline-variant/30">
+                <h3 class="font-heading text-base font-semibold text-navy flex items-center gap-2">
+                  <span class="material-symbols-outlined text-[20px]">draft</span>
+                  {{ __('Uploaded Documents') }}</h3>
+              </div>
+              <div class="p-5 grid grid-cols-1 sm:grid-cols-2 gap-3">
+                @forelse ($documentChecklist = $this->documentChecklist() as $document)
+                  <div class="flex items-center gap-3 p-3 rounded-lg border border-outline-variant/40 {{ $document['ready'] ? 'bg-surface-container-lowest' : 'bg-red-50 border-red-200' }}">
+                    <div class="w-9 h-9 rounded-lg {{ $document['ready'] ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600' }} flex items-center justify-center shrink-0">
+                      <span class="material-symbols-outlined text-[18px]">{{ $document['ready'] ? 'check_circle' : 'cancel' }}</span>
+                    </div>
+                    <div>
+                      <p class="font-body text-sm font-medium text-on-surface">{{ $document['name'] }}</p>
+                      <p class="font-body text-xs text-on-surface-variant">{{ $document['ready'] ? __('Uploaded') : __('Not uploaded') }}</p>
+                    </div>
+                  </div>
+                @empty
+                  <p class="col-span-2 text-sm text-on-surface-variant italic">{{ __('No documents configured.') }}</p>
+                @endforelse
+              </div>
+            </div>
+
+            {{-- Payment Fees Preview --}}
+            <div class="bg-white rounded-xl shadow-sm border border-outline-variant/30 overflow-hidden">
+              <div class="px-5 py-4 bg-surface-container-lowest border-b border-outline-variant/30">
+                <h3 class="font-heading text-base font-semibold text-navy flex items-center gap-2">
+                  <span class="material-symbols-outlined text-[20px]">payments</span>
+                  {{ __('Registration Fees') }}</h3>
+              </div>
+              <div class="p-5">
+                <table class="w-full text-left">
+                  <thead>
+                    <tr class="text-xs text-on-surface-variant uppercase tracking-wider">
+                      <th class="pb-3 font-semibold">{{ __('Description') }}</th>
+                      <th class="pb-3 font-semibold text-right">{{ __('Amount') }}</th>
+                    </tr>
+                  </thead>
+                  <tbody class="divide-y divide-outline-variant/20 text-sm">
+                    @forelse ($this->paymentFees as $fee)
+                      <tr>
+                        <td class="py-3">{{ __($fee->name) }}</td>
+                        <td class="py-3 text-right font-medium tabular-nums">Rp {{ number_format($fee->amount, 0, ',', '.') }}</td>
+                      </tr>
+                    @empty
+                      <tr><td colspan="2" class="py-4 text-center text-on-surface-variant">{{ __('No fees configured.') }}</td></tr>
+                    @endforelse
+                  </tbody>
+                  <tfoot>
+                    <tr class="border-t-2 border-navy">
+                      <td class="pt-4 font-heading text-base font-semibold text-navy">{{ __('Total') }}</td>
+                      <td class="pt-4 text-right font-heading text-base font-bold text-navy tabular-nums">Rp {{ number_format($this->paymentTotals['total'], 0, ',', '.') }}</td>
+                    </tr>
+                  </tfoot>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      @elseif ($currentStep === 5)
+        {{-- STEP 5: PAYMENT CONTENT --}}
 
         <div class="flex flex-col gap-6">
           <header
@@ -1540,7 +1749,7 @@ new #[Title('My Application')] class extends Component {
     {{-- Right Column: Sidebar Actions --}}
     <div class="col-span-12 lg:col-span-4 flex flex-col gap-8">
 
-      @if ($currentStep === 4)
+      @if ($currentStep === 5)
         <div class="flex flex-col gap-5">
           <div class="bg-white rounded-xl shadow-sm border border-outline-variant/30 p-6">
             <h3 class="font-heading text-lg font-semibold text-navy mb-4">{{ __('Payment Actions') }}</h3>
@@ -1688,6 +1897,16 @@ new #[Title('My Application')] class extends Component {
               </div>
             </flux:button>
           @elseif ($currentStep === 3)
+            <flux:button wire:click.prevent="saveAndContinue" variant="primary" class="w-full"
+              wire:loading.attr="disabled">
+              <div class="flex items-center justify-center gap-2 w-full">
+                <span wire:loading.remove wire:target="saveAndContinue">{{ __('Save & Continue') }}</span>
+                <span wire:loading wire:target="saveAndContinue">{{ __('Uploading...') }}</span>
+                <span class="material-symbols-outlined text-[20px] pt-0.5" wire:loading.remove
+                  wire:target="saveAndContinue">arrow_forward</span>
+              </div>
+            </flux:button>
+          @elseif ($currentStep === 4 && ! $this->isSubmitted)
             <flux:button wire:click.prevent="submitApplication" variant="primary" class="w-full"
               wire:loading.attr="disabled">
               <div class="flex items-center justify-center gap-2 w-full">

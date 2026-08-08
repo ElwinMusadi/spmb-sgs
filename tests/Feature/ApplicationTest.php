@@ -159,7 +159,7 @@ class ApplicationTest extends TestCase
 
         $this->assertDatabaseHas('applications', [
             'id' => $application->id,
-            'current_step' => 3,
+            'current_step' => 4,
         ]);
 
         $this->assertDatabaseCount('application_documents', 4);
@@ -230,9 +230,9 @@ class ApplicationTest extends TestCase
 
         Livewire::actingAs($user)
             ->test('pages::application.my-application')
-            ->assertSet('currentStep', 3)
-            ->call('goToStep', 4)
-            ->assertSet('currentStep', 3);
+            ->assertSet('currentStep', 4)
+            ->call('goToStep', 5)
+            ->assertSet('currentStep', 4);
     }
 
     public function test_student_can_submit_after_documents_are_uploaded(): void
@@ -240,7 +240,7 @@ class ApplicationTest extends TestCase
         $user = $this->student();
         $application = Application::factory()->create([
             'user_id' => $user->id,
-            'current_step' => 3,
+            'current_step' => 4,
             'status' => 'draft',
         ]);
 
@@ -260,7 +260,7 @@ class ApplicationTest extends TestCase
         $this->assertDatabaseHas('applications', [
             'id' => $application->id,
             'status' => 'submitted',
-            'current_step' => 3,
+            'current_step' => 4,
         ]);
     }
 
@@ -269,7 +269,7 @@ class ApplicationTest extends TestCase
         $user = $this->student();
         $application = Application::factory()->create([
             'user_id' => $user->id,
-            'current_step' => 3,
+            'current_step' => 4,
             'status' => 'draft',
         ]);
 
@@ -291,7 +291,8 @@ class ApplicationTest extends TestCase
         $user = $this->student();
         Application::factory()->create([
             'user_id' => $user->id,
-            'current_step' => 3,
+            'current_step' => 4,
+            'status' => 'draft',
         ]);
         $file = UploadedFile::fake()->image('birth-certificate.jpg', 100, 100);
 
@@ -310,14 +311,14 @@ class ApplicationTest extends TestCase
         $user = $this->student();
         Application::factory()->create([
             'user_id' => $user->id,
-            'current_step' => 4,
+            'current_step' => 5,
             'status' => 'admitted',
         ]);
 
         Livewire::actingAs($user)
             ->test('pages::application.my-application')
-            ->assertSet('currentStep', 4)
-            ->assertSet('maxStep', 4)
+            ->assertSet('currentStep', 5)
+            ->assertSet('maxStep', 5)
             ->call('goToStep', 2)
             ->assertSet('currentStep', 2);
     }
