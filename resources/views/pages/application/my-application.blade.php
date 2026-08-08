@@ -113,6 +113,10 @@ new #[Title('My Application')] class extends Component {
 
             if ($application->status === 'admitted') {
                 $this->snapshotPaymentFees($application);
+                
+                if ($this->payment_status === 'awaiting') {
+                    $this->checkPaymentStatus();
+                }
             }
         }
 
@@ -242,10 +246,10 @@ new #[Title('My Application')] class extends Component {
             // Temporary uploaded file
             $file = $this->{"doc_$type"};
             try {
-                $this->previewUrl = $file->temporaryUrl();
+                $this->previewUrl = 'data:'.$file->getMimeType().';base64,'.base64_encode($file->get());
                 $this->previewName = $file->getClientOriginalName();
-            } catch (\Exception $e) {
-                Flux::toast(variant: 'danger', text: __('Preview not available for this file type until saved.'));
+            } catch (\Throwable $exception) {
+                Flux::toast(variant: 'danger', text: __('Preview could not be generated for this file.'));
                 return;
             }
         } else {
@@ -281,6 +285,95 @@ new #[Title('My Application')] class extends Component {
             $this->{"has_$type"} = false;
         }
     }
+    /**
+     * Pay with Duitku
+     */
+    public function payWithDuitku()
+    {
+        abort_unless($this->currentStep === 4 && $this->application?->status === 'admitted', 403);
+
+        $config = new \Duitku\Config(env('DUITKU_API_KEY'), env('DUITKU_CODE_MERCHANT'));
+        $config->setSandboxMode(env('DUITKU_MODE') === 'sandbox');
+
+        $year = $this->application->created_at ? $this->application->created_at->format('Y') : date('Y');
+        $invoiceId = 'INV-SGS-'.$year.'-'.str_pad($this->applicationId ?? 0, 4, '0', STR_PAD_LEFT);
+
+        $params = [
+            'paymentAmount'     => (int) $this->paymentTotals['total'],
+            'merchantOrderId'   => $invoiceId,
+            'productDetails'    => 'Pendaftaran SPMB Stella Gracia School',
+            'additionalParam'   => '',
+            'merchantUserInfo'  => '',
+            'customerVaName'    => $this->student_full_name ?? 'Student',
+            'email'             => Auth::user()->email,
+            'phoneNumber'       => $this->father_phone ?? '08123456789',
+            'itemDetails'       => [
+                [
+                    'name'      => 'Biaya Pendaftaran SPMB',
+                    'price'     => (int) $this->paymentTotals['total'],
+                    'quantity'  => 1
+                ]
+            ],
+            'customerDetail'    => [
+                'firstName'         => $this->student_full_name ?? 'Student',
+                'lastName'          => '',
+                'email'             => Auth::user()->email,
+                'phoneNumber'       => $this->father_phone ?? '08123456789',
+            ],
+            'callbackUrl'       => route('home'), // Webhook URL
+            'returnUrl'         => url()->previous(),
+            'expiryPeriod'      => 60 // 1 hour
+        ];
+
+        try {
+            $response = \Duitku\Pop::createInvoice($params, $config);
+            $result = json_decode($response);
+            
+            if (isset($result->paymentUrl)) {
+                return redirect()->away($result->paymentUrl);
+            }
+            
+            Flux::toast(variant: 'danger', text: __('Failed to get payment URL.'));
+        } catch (\Exception $e) {
+            Flux::toast(variant: 'danger', text: $e->getMessage());
+        }
+    }
+
+    /**
+     * Check Payment Status with Duitku
+     */
+    public function checkPaymentStatus(): void
+    {
+        if ($this->currentStep !== 4 || $this->application?->status !== 'admitted' || $this->payment_status !== 'awaiting') {
+            return;
+        }
+
+        $config = new \Duitku\Config(env('DUITKU_API_KEY'), env('DUITKU_CODE_MERCHANT'));
+        $config->setSandboxMode(env('DUITKU_MODE') === 'sandbox');
+
+        $year = $this->application->created_at ? $this->application->created_at->format('Y') : date('Y');
+        $invoiceId = 'INV-SGS-'.$year.'-'.str_pad($this->applicationId ?? 0, 4, '0', STR_PAD_LEFT);
+
+        try {
+            $response = \Duitku\Pop::transactionStatus($invoiceId, $config);
+            $result = json_decode($response);
+
+            if (isset($result->statusCode) && $result->statusCode === "00") {
+                // Success
+                $this->application->update([
+                    'payment_status' => 'paid',
+                    'paid_at' => now(),
+                    'payment_method' => 'duitku'
+                ]);
+                $this->payment_status = 'paid';
+                Flux::toast(variant: 'success', text: __('Payment successful!'));
+            }
+        } catch (\Exception $e) {
+            // Ignore silently on mount so it doesn't break the page layout, 
+            // the user can still use simulate payment or pay again
+        }
+    }
+
     /**
      * Simulate Payment.
      */
@@ -503,13 +596,52 @@ new #[Title('My Application')] class extends Component {
         $application = Auth::user()->applications()->findOrFail($this->applicationId);
         $this->loadExistingDocuments($application);
 
-        foreach (['akta_kelahiran', 'kartu_keluarga', 'ijazah', 'pas_foto'] as $type) {
-            if (! $this->{'has_'.$type}) {
-                Flux::toast(variant: 'danger', text: __('Please upload all required documents before submitting.'));
+        $temporaryRules = [];
 
-                return;
+        foreach (['akta_kelahiran', 'kartu_keluarga', 'ijazah', 'pas_foto'] as $type) {
+            $document = $this->requiredDocuments->firstWhere('document_type', $type);
+            $hasStoredDocument = $this->{'has_'.$type};
+            $temporaryFile = $this->{'doc_'.$type};
+
+            if (($document?->is_required ?? true) && ! $hasStoredDocument && ! $temporaryFile) {
+                $this->addError('doc_'.$type, __(':document has not been uploaded.', ['document' => $this->documentLabel($type)]));
+                continue;
+            }
+
+            if ($temporaryFile) {
+                $extensions = $document?->allowed_extensions ?? ['pdf', 'jpg', 'jpeg', 'png'];
+                $temporaryRules['doc_'.$type] = ['file', 'mimes:'.implode(',', $extensions), 'max:5120'];
             }
         }
+
+        if ($temporaryRules !== []) {
+            $this->validate($temporaryRules);
+        }
+
+        if ($this->getErrorBag()->isNotEmpty()) {
+            return;
+        }
+
+        $year = date('Y');
+        $identifier = $this->student_nisn ?: $this->applicationId;
+        $path = "documents/{$year}/{$identifier}";
+
+        foreach (['akta_kelahiran', 'kartu_keluarga', 'ijazah', 'pas_foto'] as $type) {
+            $file = $this->{'doc_'.$type};
+
+            if (! $file) {
+                continue;
+            }
+
+            $filename = $file->getClientOriginalName();
+            $storedPath = $file->storeAs($path, uniqid().'_'.$filename, 'public');
+            $application->documents()->updateOrCreate(
+                ['document_type' => $type],
+                ['file_path' => $storedPath, 'file_name' => $filename, 'file_size' => $file->getSize()],
+            );
+        }
+
+        $this->loadExistingDocuments($application);
 
         $application->update([
             'status' => 'submitted',
@@ -518,6 +650,27 @@ new #[Title('My Application')] class extends Component {
         ]);
 
         Flux::toast(variant: 'success', text: __('Application submitted for admission review.'));
+    }
+
+    /**
+     * Get the document completion summary for the Step 3 feedback panel.
+     *
+     * @return array<int, array{type: string, name: string, ready: bool, required: bool}>
+     */
+    public function documentChecklist(): array
+    {
+        return collect(['akta_kelahiran', 'kartu_keluarga', 'ijazah', 'pas_foto'])
+            ->map(function (string $type): array {
+                $document = $this->requiredDocuments->firstWhere('document_type', $type);
+
+                return [
+                    'type' => $type,
+                    'name' => $this->documentLabel($type),
+                    'ready' => (bool) ($this->{'has_'.$type} || $this->{'doc_'.$type}),
+                    'required' => (bool) ($document?->is_required ?? true),
+                ];
+            })
+            ->all();
     }
 
     /**
@@ -965,6 +1118,27 @@ new #[Title('My Application')] class extends Component {
             <p class="text-sm text-on-surface-variant">
               {{ __('Please upload all the required documents below. Maximum file size is 5MB per file.') }}</p>
           </div>
+
+          @php($documentChecklist = $this->documentChecklist())
+          @php($missingDocuments = collect($documentChecklist)->where('required', true)->where('ready', false))
+          @if ($missingDocuments->isNotEmpty() || $errors->any())
+            <div class="mb-6 rounded-xl border border-amber-200 bg-amber-50 p-4">
+              <div class="flex items-start gap-3">
+                <span class="material-symbols-outlined text-amber-600">warning</span>
+                <div class="flex-1">
+                  <p class="font-body text-sm font-semibold text-amber-900">{{ __('Documents need attention') }}</p>
+                  @if ($missingDocuments->isNotEmpty())
+                    <p class="font-body text-sm text-amber-800 mt-1">{{ __('Missing: :documents', ['documents' => $missingDocuments->pluck('name')->implode(', ')]) }}</p>
+                  @endif
+                  @foreach ($documentChecklist as $document)
+                    @error('doc_'.$document['type'])
+                      <p class="font-body text-sm text-red-700 mt-1"><strong>{{ $document['name'] }}:</strong> {{ $message }}</p>
+                    @enderror
+                  @endforeach
+                </div>
+              </div>
+            </div>
+          @endif
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             {{-- Akta Kelahiran --}}
@@ -1434,20 +1608,37 @@ new #[Title('My Application')] class extends Component {
           </div>
 
           @if ($payment_status === 'awaiting')
-            <button wire:click="simulatePayment" wire:loading.attr="disabled"
-              class="mt-6 w-full py-3 px-6 bg-navy text-white hover:bg-navy-dark font-body text-sm font-semibold rounded-lg shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 relative overflow-hidden group">
-              <span class="relative z-10 flex items-center gap-2" wire:loading.remove wire:target="simulatePayment">
-                <span>Simulate Payment (Auto-Lunas)</span>
-                <span class="material-symbols-outlined text-[18px]">bolt</span>
-              </span>
-              <span class="relative z-10 flex items-center gap-2" wire:loading wire:target="simulatePayment">
-                <span class="material-symbols-outlined text-[18px] animate-spin">sync</span>
-                <span>Processing...</span>
-              </span>
-              <div
-                class="absolute inset-0 bg-white/10 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out z-0">
-              </div>
-            </button>
+            <div class="flex flex-col gap-3 mt-6">
+              <button wire:click="payWithDuitku" wire:loading.attr="disabled"
+                class="w-full py-3 px-6 bg-gold-dark text-white hover:bg-gold-darker font-body text-sm font-semibold rounded-lg shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 relative overflow-hidden group">
+                <span class="relative z-10 flex items-center gap-2" wire:loading.remove wire:target="payWithDuitku">
+                  <span>{{ __('Bayar Sekarang') }}</span>
+                  <span class="material-symbols-outlined text-[18px]">payment</span>
+                </span>
+                <span class="relative z-10 flex items-center gap-2" wire:loading wire:target="payWithDuitku">
+                  <span class="material-symbols-outlined text-[18px] animate-spin">sync</span>
+                  <span>{{ __('Processing...') }}</span>
+                </span>
+                <div
+                  class="absolute inset-0 bg-white/10 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out z-0">
+                </div>
+              </button>
+
+              <button wire:click="simulatePayment" wire:loading.attr="disabled"
+                class="w-full py-3 px-6 bg-navy text-white hover:bg-navy-dark font-body text-sm font-semibold rounded-lg shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 relative overflow-hidden group">
+                <span class="relative z-10 flex items-center gap-2" wire:loading.remove wire:target="simulatePayment">
+                  <span>Simulate Payment (Auto-Lunas)</span>
+                  <span class="material-symbols-outlined text-[18px]">bolt</span>
+                </span>
+                <span class="relative z-10 flex items-center gap-2" wire:loading wire:target="simulatePayment">
+                  <span class="material-symbols-outlined text-[18px] animate-spin">sync</span>
+                  <span>Processing...</span>
+                </span>
+                <div
+                  class="absolute inset-0 bg-white/10 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out z-0">
+                </div>
+              </button>
+            </div>
           @else
             <div class="flex flex-col gap-3 mt-6">
               <div

@@ -264,6 +264,47 @@ class ApplicationTest extends TestCase
         ]);
     }
 
+    public function test_submit_reports_each_missing_document(): void
+    {
+        $user = $this->student();
+        $application = Application::factory()->create([
+            'user_id' => $user->id,
+            'current_step' => 3,
+            'status' => 'draft',
+        ]);
+
+        Livewire::actingAs($user)
+            ->test('pages::application.my-application')
+            ->call('submitApplication')
+            ->assertHasErrors([
+                'doc_akta_kelahiran',
+                'doc_kartu_keluarga',
+                'doc_ijazah',
+                'doc_pas_foto',
+            ]);
+
+        $this->assertSame('draft', $application->fresh()->status);
+    }
+
+    public function test_temporary_document_can_be_previewed_before_submit(): void
+    {
+        $user = $this->student();
+        Application::factory()->create([
+            'user_id' => $user->id,
+            'current_step' => 3,
+        ]);
+        $file = UploadedFile::fake()->image('birth-certificate.jpg', 100, 100);
+
+        Livewire::actingAs($user)
+            ->test('pages::application.my-application')
+            ->set('doc_akta_kelahiran', $file)
+            ->call('setPreview', 'akta_kelahiran')
+            ->assertSet('previewName', 'birth-certificate.jpg')
+            ->assertSet('previewType', 'image')
+            ->assertSet('showPreviewModal', true)
+            ->assertSet('previewUrl', fn (?string $url): bool => str_starts_with($url ?? '', 'data:image/'));
+    }
+
     public function test_user_can_jump_to_a_reached_step_via_stepper(): void
     {
         $user = $this->student();
