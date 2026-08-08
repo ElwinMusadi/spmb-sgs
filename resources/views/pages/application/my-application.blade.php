@@ -1160,7 +1160,7 @@ new #[Title('My Application')] class extends Component {
               </div>
 
               @if ($has_akta_kelahiran || $doc_akta_kelahiran)
-                <div class="mt-4 p-3 bg-surface rounded-lg flex flex-col gap-3 border border-outline-variant/30">
+                <div wire:key="preview-akta-{{ $this->applicationId ?? 'new' }}" class="mt-4 p-3 bg-surface rounded-lg flex flex-col gap-3 border border-outline-variant/30">
                   <div class="flex items-center gap-2 overflow-hidden">
                     <span class="material-symbols-outlined text-navy text-[20px] shrink-0">draft</span>
                     <span class="text-sm font-medium text-on-surface truncate">
@@ -1181,8 +1181,9 @@ new #[Title('My Application')] class extends Component {
                   </div>
                 </div>
               @else
-                <flux:input type="file" wire:model="doc_akta_kelahiran" accept="{{ $this->documentExtensions('akta_kelahiran') }}" />
-                <div wire:loading wire:target="doc_akta_kelahiran"
+                <div wire:key="upload-akta-{{ $this->applicationId ?? 'new' }}">
+                  <flux:input type="file" wire:model.live="doc_akta_kelahiran" accept="{{ $this->documentExtensions('akta_kelahiran') }}" />
+                  <div wire:loading wire:target="doc_akta_kelahiran"
                   class="text-sm text-navy mt-1 font-semibold flex items-center gap-1">
                   <span class="material-symbols-outlined text-[16px] animate-spin">progress_activity</span>
                   {{ __('Uploading...') }}
@@ -1190,6 +1191,7 @@ new #[Title('My Application')] class extends Component {
                 @error('doc_akta_kelahiran')
                   <p class="text-red-600 text-xs mt-1">{{ $message }}</p>
                 @enderror
+                </div>
               @endif
             </div>
 
@@ -1212,7 +1214,7 @@ new #[Title('My Application')] class extends Component {
               </div>
 
               @if ($has_kartu_keluarga || $doc_kartu_keluarga)
-                <div class="mt-4 p-3 bg-surface rounded-lg flex flex-col gap-3 border border-outline-variant/30">
+                <div wire:key="preview-kk-{{ $this->applicationId ?? 'new' }}" class="mt-4 p-3 bg-surface rounded-lg flex flex-col gap-3 border border-outline-variant/30">
                   <div class="flex items-center gap-2 overflow-hidden">
                     <span class="material-symbols-outlined text-navy text-[20px] shrink-0">draft</span>
                     <span class="text-sm font-medium text-on-surface truncate">
@@ -1233,8 +1235,9 @@ new #[Title('My Application')] class extends Component {
                   </div>
                 </div>
               @else
-                <flux:input type="file" wire:model="doc_kartu_keluarga" accept="{{ $this->documentExtensions('kartu_keluarga') }}" />
-                <div wire:loading wire:target="doc_kartu_keluarga"
+                <div wire:key="upload-kk-{{ $this->applicationId ?? 'new' }}">
+                  <flux:input type="file" wire:model.live="doc_kartu_keluarga" accept="{{ $this->documentExtensions('kartu_keluarga') }}" />
+                  <div wire:loading wire:target="doc_kartu_keluarga"
                   class="text-sm text-navy mt-1 font-semibold flex items-center gap-1">
                   <span class="material-symbols-outlined text-[16px] animate-spin">progress_activity</span>
                   {{ __('Uploading...') }}
@@ -1242,6 +1245,7 @@ new #[Title('My Application')] class extends Component {
                 @error('doc_kartu_keluarga')
                   <p class="text-red-600 text-xs mt-1">{{ $message }}</p>
                 @enderror
+                </div>
               @endif
             </div>
 
@@ -1264,7 +1268,7 @@ new #[Title('My Application')] class extends Component {
               </div>
 
               @if ($has_ijazah || $doc_ijazah)
-                <div class="mt-4 p-3 bg-surface rounded-lg flex flex-col gap-3 border border-outline-variant/30">
+                <div wire:key="preview-ijazah-{{ $this->applicationId ?? 'new' }}" class="mt-4 p-3 bg-surface rounded-lg flex flex-col gap-3 border border-outline-variant/30">
                   <div class="flex items-center gap-2 overflow-hidden">
                     <span class="material-symbols-outlined text-navy text-[20px] shrink-0">draft</span>
                     <span class="text-sm font-medium text-on-surface truncate">
@@ -1285,8 +1289,9 @@ new #[Title('My Application')] class extends Component {
                   </div>
                 </div>
               @else
-                <flux:input type="file" wire:model="doc_ijazah" accept="{{ $this->documentExtensions('ijazah') }}" />
-                <div wire:loading wire:target="doc_ijazah"
+                <div wire:key="upload-ijazah-{{ $this->applicationId ?? 'new' }}">
+                  <flux:input type="file" wire:model.live="doc_ijazah" accept="{{ $this->documentExtensions('ijazah') }}" />
+                  <div wire:loading wire:target="doc_ijazah"
                   class="text-sm text-navy mt-1 font-semibold flex items-center gap-1">
                   <span class="material-symbols-outlined text-[16px] animate-spin">progress_activity</span>
                   {{ __('Uploading...') }}
@@ -1294,6 +1299,7 @@ new #[Title('My Application')] class extends Component {
                 @error('doc_ijazah')
                   <p class="text-red-600 text-xs mt-1">{{ $message }}</p>
                 @enderror
+                </div>
               @endif
             </div>
 
@@ -1316,7 +1322,7 @@ new #[Title('My Application')] class extends Component {
               </div>
 
               @if ($has_pas_foto || $doc_pas_foto)
-                <div class="mt-4 p-3 bg-surface rounded-lg flex flex-col gap-3 border border-outline-variant/30">
+                <div wire:key="preview-pasfoto-{{ $this->applicationId ?? 'new' }}" class="mt-4 p-3 bg-surface rounded-lg flex flex-col gap-3 border border-outline-variant/30">
                   <div class="flex items-center gap-2 overflow-hidden">
                     <span class="material-symbols-outlined text-navy text-[20px] shrink-0">draft</span>
                     <span class="text-sm font-medium text-on-surface truncate">
@@ -1337,8 +1343,9 @@ new #[Title('My Application')] class extends Component {
                   </div>
                 </div>
               @else
-                <flux:input type="file" wire:model="doc_pas_foto" accept="{{ $this->documentExtensions('pas_foto') }}" />
-                <div wire:loading wire:target="doc_pas_foto"
+                <div wire:key="upload-pasfoto-{{ $this->applicationId ?? 'new' }}">
+                  <flux:input type="file" wire:model.live="doc_pas_foto" accept="{{ $this->documentExtensions('pas_foto') }}" />
+                  <div wire:loading wire:target="doc_pas_foto"
                   class="text-sm text-navy mt-1 font-semibold flex items-center gap-1">
                   <span class="material-symbols-outlined text-[16px] animate-spin">progress_activity</span>
                   {{ __('Uploading...') }}
@@ -1346,6 +1353,7 @@ new #[Title('My Application')] class extends Component {
                 @error('doc_pas_foto')
                   <p class="text-red-600 text-xs mt-1">{{ $message }}</p>
                 @enderror
+                </div>
               @endif
             </div>
           </div>
