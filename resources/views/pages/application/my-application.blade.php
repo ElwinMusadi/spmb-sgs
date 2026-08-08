@@ -1386,12 +1386,12 @@ new #[Title('My Application')] class extends Component {
             <div class="flex flex-col gap-1">
               <h1 class="font-heading text-2xl font-semibold text-on-surface">{{ __('Payment & Invoices') }}</h1>
               <p class="font-body text-base text-on-surface-variant">
-                {{ __('Review and manage your registration fees.') }}</p>
+                {{ __('Review your registration fees and complete payment.') }}</p>
             </div>
             <div class="flex items-center gap-3">
               @if ($applicationId)
                 <a href="{{ route('application.invoice.download', $applicationId) }}"
-                  class="px-4 py-2 flex items-center gap-2 rounded-lg bg-surface-container text-on-surface hover:bg-surface-container-high transition-colors font-body text-sm font-semibold">
+                  class="px-4 py-2 flex items-center gap-2 rounded-lg bg-navy text-white hover:bg-navy-dark transition-colors font-body text-sm font-semibold shadow-sm">
                   <span class="material-symbols-outlined text-[20px]">download</span>
                   {{ __('Download Invoice (PDF)') }}
                 </a>
@@ -1400,53 +1400,67 @@ new #[Title('My Application')] class extends Component {
           </header>
 
           <div class="flex flex-col gap-6">
+            @if ($paymentFeeError)
+              <div class="rounded-xl border border-red-200 bg-red-50 p-4 flex items-start gap-3">
+                <span class="material-symbols-outlined text-red-600">warning</span>
+                <div>
+                  <p class="font-body text-sm font-semibold text-red-800">{{ __('Payment fees unavailable') }}</p>
+                  <p class="font-body text-sm text-red-700 mt-1">{{ __('Please contact the admission office before proceeding.') }}</p>
+                </div>
+              </div>
+            @endif
+
+            {{-- Invoice Card --}}
             <div class="bg-white rounded-xl shadow-sm border border-outline-variant/30 overflow-hidden">
-              <div class="p-6 border-b border-outline-variant/30 flex justify-between items-start">
-                <div class="flex flex-col gap-1">
-                  <span
-                    class="font-body text-xs font-semibold text-on-surface-variant uppercase tracking-wider">{{ __('Invoice No.') }}</span>
-                  <span
-                    class="font-heading text-xl font-semibold text-navy">INV-SGS-{{ date('Y') }}-{{ str_pad($applicationId ?? 0, 4, '0', STR_PAD_LEFT) }}</span>
-                  <span class="font-body text-sm text-on-surface-variant mt-2">{{ __('Issued:') }}
-                    {{ now()->format('M d, Y') }} &bull; {{ __('Due:') }}
-                    {{ now()->addDays(7)->format('M d, Y') }}</span>
+              {{-- Card Header --}}
+              <div class="bg-navy p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div class="flex flex-col gap-0.5">
+                  <span class="font-body text-xs text-royal-dim uppercase tracking-wider">{{ __('Invoice No.') }}</span>
+                  <span class="font-heading text-xl font-semibold text-white">
+                    INV-SGS-{{ date('Y') }}-{{ str_pad($applicationId ?? 0, 4, '0', STR_PAD_LEFT) }}
+                  </span>
                 </div>
                 @if ($payment_status === 'paid')
-                  <div
-                    class="px-3 py-1.5 bg-green-100 text-green-800 rounded-full font-body text-sm font-semibold flex items-center gap-1.5">
-                    <span class="material-symbols-outlined text-[16px]">check_circle</span>
+                  <div class="self-start px-4 py-2 bg-green-500/20 border border-green-400/30 text-green-100 rounded-lg font-body text-sm font-semibold flex items-center gap-1.5">
+                    <span class="material-symbols-outlined text-[18px]">check_circle</span>
                     {{ __('Lunas / Paid') }}
                   </div>
                 @else
-                  <div
-                    class="px-3 py-1.5 bg-red-100 text-red-800 rounded-full font-body text-sm font-semibold flex items-center gap-1.5">
-                    <span class="material-symbols-outlined text-[16px]">pending_actions</span>
+                  <div class="self-start px-4 py-2 bg-amber-500/20 border border-amber-400/30 text-amber-100 rounded-lg font-body text-sm font-semibold flex items-center gap-1.5">
+                    <span class="material-symbols-outlined text-[18px]">pending_actions</span>
                     {{ __('Awaiting Payment') }}
                   </div>
                 @endif
               </div>
-              <div class="p-6">
-                @if ($paymentFeeError)
-                  <div class="mb-5 rounded-xl border border-red-200 bg-red-50 p-4 flex items-start gap-3">
-                    <span class="material-symbols-outlined text-red-600">warning</span>
-                    <div>
-                      <p class="font-body text-sm font-semibold text-red-800">{{ __('Payment fees unavailable') }}</p>
-                      <p class="font-body text-sm text-red-700 mt-1">{{ __('Please contact the admission office before proceeding.') }}</p>
-                    </div>
-                  </div>
-                @endif
 
-                {{-- Line Items --}}
+              {{-- Invoice Meta --}}
+              <div class="px-5 py-4 bg-surface-container-lowest border-b border-outline-variant/30 flex flex-wrap gap-x-8 gap-y-2">
+                <div class="flex flex-col">
+                  <span class="font-body text-xs text-on-surface-variant">{{ __('Issued') }}</span>
+                  <span class="font-body text-sm font-semibold text-on-surface">{{ now()->format('M d, Y') }}</span>
+                </div>
+                <div class="flex flex-col">
+                  <span class="font-body text-xs text-on-surface-variant">{{ __('Due Date') }}</span>
+                  <span class="font-body text-sm font-semibold text-on-surface">{{ now()->addDays(7)->format('M d, Y') }}</span>
+                </div>
+                <div class="flex flex-col">
+                  <span class="font-body text-xs text-on-surface-variant">{{ __('Academic Year') }}</span>
+                  <span class="font-body text-sm font-semibold text-on-surface">{{ $application?->academicYear?->name ?? '-' }}</span>
+                </div>
+                <div class="flex flex-col">
+                  <span class="font-body text-xs text-on-surface-variant">{{ __('Grade') }}</span>
+                  <span class="font-body text-sm font-semibold text-on-surface">{{ $grade_level ?? '-' }}</span>
+                </div>
+              </div>
+
+              {{-- Line Items --}}
+              <div class="p-5">
                 <div class="overflow-hidden rounded-xl border border-outline-variant/40">
                   <table class="w-full text-left border-collapse">
                     <thead>
                       <tr class="bg-surface-container-lowest">
-                        <th
-                          class="py-3 px-4 font-body text-xs font-semibold text-on-surface-variant uppercase tracking-wider">
-                          {{ __('Description') }}</th>
-                        <th
-                          class="py-3 px-4 font-body text-xs font-semibold text-on-surface-variant uppercase tracking-wider text-right whitespace-nowrap">
-                          {{ __('Amount (IDR)') }}</th>
+                        <th class="py-3 px-4 font-body text-xs font-semibold text-on-surface-variant uppercase tracking-wider">{{ __('Description') }}</th>
+                        <th class="py-3 px-4 font-body text-xs font-semibold text-on-surface-variant uppercase tracking-wider text-right whitespace-nowrap">{{ __('Amount (IDR)') }}</th>
                       </tr>
                     </thead>
                     <tbody class="font-body text-base text-on-surface divide-y divide-outline-variant/20">
@@ -1454,17 +1468,17 @@ new #[Title('My Application')] class extends Component {
                         <tr wire:key="application-fee-{{ $fee->id }}">
                           <td class="py-4 px-4">
                             <div class="flex items-center gap-3">
-                              <span class="material-symbols-outlined text-navy text-[22px] shrink-0">{{ $this->paymentFeeIcon($fee->fee_type) }}</span>
+                              <div class="w-9 h-9 rounded-lg bg-navy/10 flex items-center justify-center shrink-0">
+                                <span class="material-symbols-outlined text-navy text-[20px]">{{ $this->paymentFeeIcon($fee->fee_type) }}</span>
+                              </div>
                               <div>
-                                <div class="font-medium leading-tight">{{ __($fee->name) }}</div>
+                                <div class="font-medium leading-tight text-sm">{{ __($fee->name) }}</div>
                                 <div class="text-xs text-on-surface-variant mt-0.5">{{ __($fee->description ?? '') }}</div>
-                                @if ($fee->fee_type !== 'admin')
-                                  <div class="text-xs text-on-surface-variant mt-0.5">{{ __('Grade') }} {{ $grade_level ?? '-' }}</div>
-                                @endif
                               </div>
                             </div>
                           </td>
-                          <td class="py-4 px-4 text-right font-medium tabular-nums whitespace-nowrap">Rp {{ number_format($fee->amount, 0, ',', '.') }}</td>
+                          <td class="py-4 px-4 text-right font-medium tabular-nums whitespace-nowrap text-sm">
+                            Rp {{ number_format($fee->amount, 0, ',', '.') }}</td>
                         </tr>
                       @empty
                         <tr>
@@ -1476,33 +1490,36 @@ new #[Title('My Application')] class extends Component {
                 </div>
 
                 {{-- Totals Summary --}}
-                <div class="mt-6 flex justify-end">
-                  <div class="w-full md:w-2/3 lg:w-1/2 flex flex-col gap-2.5">
-                    <div class="flex items-center justify-between font-body font-bold text-lg">
-                      <span class="text-on-surface-variant">{{ __('Subtotal') }}</span>
-                      <span class="text-on-surface tabular-nums">Rp {{ number_format($this->paymentTotals['subtotal'], 0, ',', '.') }}</span>
+                <div class="mt-5 flex justify-end">
+                  <div class="w-full md:w-2/3 lg:w-1/2 flex flex-col gap-2">
+                    <div class="flex items-center justify-between px-2">
+                      <span class="font-body text-sm text-on-surface-variant">{{ __('Subtotal') }}</span>
+                      <span class="font-body text-sm font-semibold text-on-surface tabular-nums">
+                        Rp {{ number_format($this->paymentTotals['subtotal'], 0, ',', '.') }}</span>
                     </div>
-                    <div class="flex items-center justify-between font-body font-bold text-lg">
-                      <span class="text-on-surface-variant">{{ __('Admin Fee (Virtual Account)') }}</span>
-                      <span class="text-on-surface tabular-nums">Rp {{ number_format($this->paymentTotals['admin_fee'], 0, ',', '.') }}</span>
+                    <div class="flex items-center justify-between px-2">
+                      <span class="font-body text-sm text-on-surface-variant">{{ __('Admin Fee') }}</span>
+                      <span class="font-body text-sm font-semibold text-on-surface tabular-nums">
+                        Rp {{ number_format($this->paymentTotals['admin_fee'], 0, ',', '.') }}</span>
                     </div>
-                    <div
-                      class="mt-2 flex items-center justify-between rounded-xl bg-navy px-5 py-4 shadow-sm shadow-navy/20">
+                    <div class="flex items-center justify-between rounded-xl bg-navy px-5 py-4 shadow-sm shadow-navy/20">
                       <span class="font-heading text-sm font-semibold text-white/80 uppercase tracking-wider">
                         {{ __('Total Due') }}</span>
-                      <span class="font-heading text-2xl font-bold text-white tabular-nums">Rp {{ number_format($this->paymentTotals['total'], 0, ',', '.') }}</span>
+                      <span class="font-heading text-2xl font-bold text-white tabular-nums">
+                        Rp {{ number_format($this->paymentTotals['total'], 0, ',', '.') }}</span>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-            <div class="bg-surface-container rounded-xl p-6 flex items-start gap-4">
-              <span class="material-symbols-outlined text-gold-dark mt-1">info</span>
+
+            {{-- Payment Info --}}
+            <div class="bg-surface-container rounded-xl p-5 flex items-start gap-4">
+              <span class="material-symbols-outlined text-gold-dark mt-0.5 shrink-0">info</span>
               <div>
-                <h4 class="font-body text-sm font-semibold text-on-surface mb-1">{{ __('Payment Verification') }}
-                </h4>
+                <h4 class="font-body text-sm font-semibold text-on-surface mb-1">{{ __('Payment Instructions') }}</h4>
                 <p class="font-body text-sm text-on-surface-variant">
-                  {{ __('Payments made via Virtual Account or QRIS are verified automatically within 10-15 minutes. Please retain your payment receipt until the status updates to "Lunas".') }}
+                  {{ __('You will be redirected to the Duitku payment gateway where you can choose your preferred payment method, including Virtual Account, QRIS, and more. Payment verification is processed automatically within 10-15 minutes. Please keep your payment receipt until the status updates to "Lunas".') }}
                 </p>
               </div>
             </div>
@@ -1516,150 +1533,64 @@ new #[Title('My Application')] class extends Component {
     <div class="col-span-12 lg:col-span-4 flex flex-col gap-8">
 
       @if ($currentStep === 4)
-        <div class="flex flex-col gap-6">
-          <h3 class="font-heading text-xl font-semibold text-on-surface mb-2">{{ __('Select Payment Method') }}
-          </h3>
-          <div class="flex flex-col gap-3">
-            <label
-              class="relative flex flex-col bg-white border {{ $payment_method === 'bca' ? 'border-navy ring-1 ring-navy' : 'border-outline-variant/50 hover:border-navy opacity-70' }} rounded-xl p-4 cursor-pointer transition-colors">
-              <div class="flex items-center justify-between {{ $payment_method === 'bca' ? 'mb-3' : '' }}">
-                <div class="flex items-center gap-3">
-                  <input wire:model.live="payment_method" class="text-navy focus:ring-navy h-4 w-4 border-outline"
-                    name="payment_method" type="radio" value="bca">
-                  <span class="font-body text-sm font-semibold text-on-surface">BCA Virtual Account</span>
-                </div>
-                <div
-                  class="w-10 h-10 bg-surface-container rounded flex items-center justify-center font-bold text-on-surface-variant text-[10px]">
-                  BCA</div>
-              </div>
-              @if ($payment_method === 'bca')
-                <div class="pl-7">
-                  <div
-                    class="font-heading text-lg font-semibold text-on-surface tracking-widest bg-surface-container p-2 rounded inline-block">
-                    089 2384 1928 44</div>
-                  <p class="font-body text-xs text-on-surface-variant mt-1">Expires in 23:59:12</p>
-                </div>
-              @endif
-            </label>
+        <div class="flex flex-col gap-5">
+          <div class="bg-white rounded-xl shadow-sm border border-outline-variant/30 p-6">
+            <h3 class="font-heading text-lg font-semibold text-navy mb-4">{{ __('Payment Actions') }}</h3>
 
-            <label
-              class="relative flex flex-col bg-white border {{ $payment_method === 'mandiri' ? 'border-navy ring-1 ring-navy' : 'border-outline-variant/50 hover:border-navy opacity-70' }} rounded-xl p-4 cursor-pointer transition-colors">
-              <div class="flex items-center justify-between {{ $payment_method === 'mandiri' ? 'mb-3' : '' }}">
-                <div class="flex items-center gap-3">
-                  <input wire:model.live="payment_method" class="text-navy focus:ring-navy h-4 w-4 border-outline"
-                    name="payment_method" type="radio" value="mandiri">
-                  <span class="font-body text-sm font-semibold text-on-surface">Mandiri Virtual Account</span>
-                </div>
-                <div
-                  class="w-10 h-10 bg-surface-container rounded flex items-center justify-center font-bold text-on-surface-variant text-[10px]">
-                  MNDR</div>
-              </div>
-              @if ($payment_method === 'mandiri')
-                <div class="pl-7">
+            @if ($payment_status === 'awaiting')
+              <div class="flex flex-col gap-3">
+                <button wire:click="payWithDuitku" wire:loading.attr="disabled"
+                  class="w-full py-3 px-6 bg-gold-dark text-white hover:bg-gold-darker font-body text-sm font-semibold rounded-lg shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 relative overflow-hidden group">
+                  <span class="relative z-10 flex items-center gap-2" wire:loading.remove wire:target="payWithDuitku">
+                    <span>{{ __('Bayar Sekarang') }}</span>
+                    <span class="material-symbols-outlined text-[18px]">payment</span>
+                  </span>
+                  <span class="relative z-10 flex items-center gap-2" wire:loading wire:target="payWithDuitku">
+                    <span class="material-symbols-outlined text-[18px] animate-spin">sync</span>
+                    <span>{{ __('Processing...') }}</span>
+                  </span>
                   <div
-                    class="font-heading text-lg font-semibold text-on-surface tracking-widest bg-surface-container p-2 rounded inline-block">
-                    8928 1192 8493</div>
-                  <p class="font-body text-xs text-on-surface-variant mt-1">Expires in 23:59:12</p>
-                </div>
-              @endif
-            </label>
-
-            <label
-              class="relative flex flex-col bg-white border {{ $payment_method === 'bni' ? 'border-navy ring-1 ring-navy' : 'border-outline-variant/50 hover:border-navy opacity-70' }} rounded-xl p-4 cursor-pointer transition-colors">
-              <div class="flex items-center justify-between {{ $payment_method === 'bni' ? 'mb-3' : '' }}">
-                <div class="flex items-center gap-3">
-                  <input wire:model.live="payment_method" class="text-navy focus:ring-navy h-4 w-4 border-outline"
-                    name="payment_method" type="radio" value="bni">
-                  <span class="font-body text-sm font-semibold text-on-surface">BNI Virtual Account</span>
-                </div>
-                <div
-                  class="w-10 h-10 bg-surface-container rounded flex items-center justify-center font-bold text-on-surface-variant text-[10px]">
-                  BNI</div>
-              </div>
-              @if ($payment_method === 'bni')
-                <div class="pl-7">
-                  <div
-                    class="font-heading text-lg font-semibold text-on-surface tracking-widest bg-surface-container p-2 rounded inline-block">
-                    988 2938 4810</div>
-                  <p class="font-body text-xs text-on-surface-variant mt-1">Expires in 23:59:12</p>
-                </div>
-              @endif
-            </label>
-
-            <label
-              class="relative flex flex-col bg-white border {{ $payment_method === 'qris' ? 'border-navy ring-1 ring-navy' : 'border-outline-variant/50 hover:border-navy opacity-70' }} rounded-xl p-4 cursor-pointer transition-colors">
-              <div class="flex items-center justify-between {{ $payment_method === 'qris' ? 'mb-3' : '' }}">
-                <div class="flex items-center gap-3">
-                  <input wire:model.live="payment_method" class="text-navy focus:ring-navy h-4 w-4 border-outline"
-                    name="payment_method" type="radio" value="qris">
-                  <span class="font-body text-sm font-semibold text-on-surface">QRIS</span>
-                </div>
-                <span class="material-symbols-outlined text-on-surface-variant">qr_code_2</span>
-              </div>
-              @if ($payment_method === 'qris')
-                <div class="pl-7 mt-3 flex justify-center">
-                  <div
-                    class="w-32 h-32 bg-surface-container-high rounded border border-outline-variant flex items-center justify-center">
-                    <span class="material-symbols-outlined text-[48px] text-on-surface-variant">qr_code_2</span>
+                    class="absolute inset-0 bg-white/10 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out z-0">
                   </div>
-                </div>
-              @endif
-            </label>
-          </div>
+                </button>
 
-          @if ($payment_status === 'awaiting')
-            <div class="flex flex-col gap-3 mt-6">
-              <button wire:click="payWithDuitku" wire:loading.attr="disabled"
-                class="w-full py-3 px-6 bg-gold-dark text-white hover:bg-gold-darker font-body text-sm font-semibold rounded-lg shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 relative overflow-hidden group">
-                <span class="relative z-10 flex items-center gap-2" wire:loading.remove wire:target="payWithDuitku">
-                  <span>{{ __('Bayar Sekarang') }}</span>
-                  <span class="material-symbols-outlined text-[18px]">payment</span>
-                </span>
-                <span class="relative z-10 flex items-center gap-2" wire:loading wire:target="payWithDuitku">
-                  <span class="material-symbols-outlined text-[18px] animate-spin">sync</span>
-                  <span>{{ __('Processing...') }}</span>
-                </span>
-                <div
-                  class="absolute inset-0 bg-white/10 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out z-0">
-                </div>
-              </button>
-
-              <button wire:click="simulatePayment" wire:loading.attr="disabled"
-                class="w-full py-3 px-6 bg-navy text-white hover:bg-navy-dark font-body text-sm font-semibold rounded-lg shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 relative overflow-hidden group">
-                <span class="relative z-10 flex items-center gap-2" wire:loading.remove wire:target="simulatePayment">
-                  <span>Simulate Payment (Auto-Lunas)</span>
-                  <span class="material-symbols-outlined text-[18px]">bolt</span>
-                </span>
-                <span class="relative z-10 flex items-center gap-2" wire:loading wire:target="simulatePayment">
-                  <span class="material-symbols-outlined text-[18px] animate-spin">sync</span>
-                  <span>Processing...</span>
-                </span>
-                <div
-                  class="absolute inset-0 bg-white/10 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out z-0">
-                </div>
-              </button>
-            </div>
-          @else
-            <div class="flex flex-col gap-3 mt-6">
-              <div
-                class="w-full py-3 px-6 bg-green-100 text-green-800 font-body text-sm font-semibold rounded-lg flex items-center justify-center gap-2">
-                <span class="material-symbols-outlined text-[18px]">check_circle</span>
-                <span>{{ __('Payment Confirmed') }}</span>
+                <button wire:click="simulatePayment" wire:loading.attr="disabled"
+                  class="w-full py-2.5 px-6 bg-navy text-white hover:bg-navy-dark font-body text-sm font-semibold rounded-lg shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 relative overflow-hidden group">
+                  <span class="relative z-10 flex items-center gap-2" wire:loading.remove wire:target="simulatePayment">
+                    <span>Simulate Payment (Auto-Lunas)</span>
+                    <span class="material-symbols-outlined text-[18px]">bolt</span>
+                  </span>
+                  <span class="relative z-10 flex items-center gap-2" wire:loading wire:target="simulatePayment">
+                    <span class="material-symbols-outlined text-[18px] animate-spin">sync</span>
+                    <span>Processing...</span>
+                  </span>
+                  <div
+                    class="absolute inset-0 bg-white/10 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out z-0">
+                  </div>
+                </button>
               </div>
-              
-              <button wire:click="cancelPayment" wire:loading.attr="disabled"
-                class="w-full py-2.5 px-6 bg-red-50 text-red-700 hover:bg-red-100 font-body text-sm font-semibold rounded-lg transition-all flex items-center justify-center gap-2 border border-red-200">
-                <span wire:loading.remove wire:target="cancelPayment" class="flex items-center gap-2">
-                  <span>{{ __('Cancel Payment') }}</span>
-                  <span class="material-symbols-outlined text-[18px]">cancel</span>
-                </span>
-                <span wire:loading wire:target="cancelPayment" class="flex items-center gap-2">
-                  <span class="material-symbols-outlined text-[18px] animate-spin">sync</span>
-                  <span>{{ __('Canceling...') }}</span>
-                </span>
-              </button>
-            </div>
-          @endif
+            @else
+              <div class="flex flex-col gap-3">
+                <div
+                  class="w-full py-3 px-6 bg-green-100 text-green-800 font-body text-sm font-semibold rounded-lg flex items-center justify-center gap-2">
+                  <span class="material-symbols-outlined text-[18px]">check_circle</span>
+                  <span>{{ __('Payment Confirmed') }}</span>
+                </div>
+
+                <button wire:click="cancelPayment" wire:loading.attr="disabled"
+                  class="w-full py-2.5 px-6 bg-red-50 text-red-700 hover:bg-red-100 font-body text-sm font-semibold rounded-lg transition-all flex items-center justify-center gap-2 border border-red-200">
+                  <span wire:loading.remove wire:target="cancelPayment" class="flex items-center gap-2">
+                    <span>{{ __('Cancel Payment') }}</span>
+                    <span class="material-symbols-outlined text-[18px]">cancel</span>
+                  </span>
+                  <span wire:loading wire:target="cancelPayment" class="flex items-center gap-2">
+                    <span class="material-symbols-outlined text-[18px] animate-spin">sync</span>
+                    <span>{{ __('Canceling...') }}</span>
+                  </span>
+                </button>
+              </div>
+            @endif
+          </div>
         </div>
       @endif
 
